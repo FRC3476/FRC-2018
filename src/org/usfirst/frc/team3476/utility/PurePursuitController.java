@@ -1,5 +1,6 @@
 package org.usfirst.frc.team3476.utility;
 
+import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
 import org.usfirst.frc.team3476.utility.Path.DrivingData;
 
 public class PurePursuitController {
@@ -48,19 +49,5 @@ public class PurePursuitController {
 		lookAheadPointToRobot.rotateBy(robotPose.rotationMat.inverse());
 		double radius = Math.pow(Math.hypot(lookAheadPointToRobot.getX(), lookAheadPointToRobot.getY()), 2)	/ (2 * -lookAheadPointToRobot.getX());
 		return radius;
-	}
-	
-
-	public static class DriveVelocity {
-		/*
-		 * Inches per second for speed
-		 */
-		public double wheelSpeed;
-		public double deltaSpeed;
-
-		public DriveVelocity(double wheelSpeed, double deltaSpeed) {
-			this.wheelSpeed = wheelSpeed;
-			this.deltaSpeed = deltaSpeed;
-		}
 	}
 }

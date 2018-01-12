@@ -1,7 +1,6 @@
 package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.utility.CircularQueue;
-import org.usfirst.frc.team3476.utility.InterpolableValue;
 import org.usfirst.frc.team3476.utility.RigidTransform;
 import org.usfirst.frc.team3476.utility.Rotation;
 import org.usfirst.frc.team3476.utility.Threaded;
@@ -50,8 +49,7 @@ public class RobotTracker extends Threaded {
 		deltaDistance = currentDistance - oldDistance;
 		synchronized(this){
 			Rotation deltaRotation = driveBase.getGyroAngle();
-			Translation2d deltaPosition = new Translation2d(deltaRotation.sin() * deltaDistance, deltaRotation.cos() * deltaDistance);
-			//currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition, deltaRotation));
+			Translation2d deltaPosition = new Translation2d(deltaRotation.cos() * deltaDistance, deltaRotation.sin() * deltaDistance);
 			currentOdometry = new RigidTransform(currentOdometry.translationMat.translateBy(deltaPosition), driveBase.getGyroAngle());
 			oldDistance = currentDistance;
 			//vehicleHistory.add(new InterpolableValue<>(System.nanoTime(), currentOdometry));
@@ -75,11 +73,3 @@ public class RobotTracker extends Threaded {
 		*/
 	}
 }
-
-/*
- * How we calculate curvature
- * 
- * From https://github.com/strasdat/Sophus/blob/master/sophus/se2.hpp //Group
- * exponential
- * 
- */

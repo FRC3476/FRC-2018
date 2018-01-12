@@ -46,9 +46,9 @@ public class Translation2d implements Interpolable {
 	}
 
 	public Translation2d rotateBy(Rotation rotationMat) {
-		x = x * rotationMat.cos() - y * rotationMat.sin();
-		y = x * rotationMat.sin() + y * rotationMat.cos();
-		return new Translation2d(x, y);
+		double x2 = x * rotationMat.cos() - y * rotationMat.sin();
+		double y2 = x * rotationMat.sin() + y * rotationMat.cos();
+		return new Translation2d(x2, y2);
 	}
 
 	public void setX(double x) {

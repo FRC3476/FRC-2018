@@ -75,13 +75,13 @@ public class Path {
 		while(segments.size() > 1){
 			double distToClosest = Math.hypot(closestToRobot.getX(), closestToRobot.getY());
 			Translation2d closestNextPoint = segments.get(1).getClosestPoint(pose);
-			Translation2d cloestNextToRobot = closestNextPoint.inverse().translateBy(pose);
-			double distToNext = Math.hypot(cloestNextToRobot.getX(), cloestNextToRobot.getY());
+			Translation2d closestNextToRobot = closestNextPoint.inverse().translateBy(pose);
+			double distToNext = Math.hypot(closestNextToRobot.getX(), closestNextToRobot.getY());
 			if(distToClosest > distToNext){
 				System.out.println("removed");
 				segments.remove(0);
 				closestPoint = closestNextPoint;
-				closestToRobot = cloestNextToRobot;
+				closestToRobot = closestNextToRobot;
 			} else {
 				break;
 			}

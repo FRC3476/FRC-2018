@@ -9,6 +9,7 @@ public class SynchronousPid {
 	private double m_I; // factor for "integral" control
 	private double m_D; // factor for "derivative" control
 	private double m_F; // factor for feedforward term
+	private double m_izone = 0; // minimum for i control to accumulate
 	private double m_maximumOutput = 1.0; // |maximum output|
 	private double m_minimumOutput = -1.0; // |minimum output|
 	private double m_maximumInput = 0.0; // maximum input - limit leftSetpoint
@@ -65,6 +66,10 @@ public class SynchronousPid {
 	public synchronized void setI(double I) {
 		m_I = I;
 	}
+	
+	public synchronized void setIzone(double izone) {
+		m_izone = izone;
+	}
 
 	public synchronized void setInputRange(double maximumInput, double minimumInput) {
 		m_maximumInput = maximumInput;
@@ -113,6 +118,7 @@ public class SynchronousPid {
 			}
 		}
 		if (m_I != 0) {
+			if(Math.abs(m_error) > m_izone) {
 			double potentialIGain = (m_totalError + m_error) * m_I;
 			if (potentialIGain < m_maximumOutput) {
 				if (potentialIGain > m_minimumOutput) {
@@ -122,6 +128,7 @@ public class SynchronousPid {
 				}
 			} else {
 				m_totalError = m_maximumOutput / m_I;
+			}
 			}
 		}
 

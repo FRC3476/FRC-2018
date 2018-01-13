@@ -18,7 +18,7 @@ public class PurePursuitController {
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
-		turnPID = new SynchronousPid(0.00812346, 0, 0, 0);
+		turnPID = new SynchronousPid(0.01612346, 0, 0, 0);
 		turnPID.setIzone(15);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
@@ -29,14 +29,16 @@ public class PurePursuitController {
 			robotPose = new RigidTransform(robotPose.translationMat,
 					robotPose.rotationMat.rotateBy(Rotation.fromDegrees(180)));
 		}
-		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 30);
+		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 20);
 		
 		//TODO: Slow down
 		if(data.remainingDist < 1){
 			return new DriveVelocity(0, 0);
 		}
 
-		double angleToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint).getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
+		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
+		System.out.println(robotPose.translationMat.getX() + "  " + robotPose.translationMat.getY());
+		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
 		double deltaSpeed = turnPID.update(angleToLookAhead) * Constants.MaxTurningSpeed;
 		double robotSpeed = data.maxSpeed;
 		if (isReversed) {
@@ -46,6 +48,7 @@ public class PurePursuitController {
 		return new DriveVelocity(robotSpeed, deltaSpeed);
 	}
 	
+	@Deprecated
 	public double getRadius(RigidTransform robotPose, Translation2d lookAheadPoint) {
 		Translation2d robotToLookAheadPoint = getRobotToLookAheadPoint(robotPose, lookAheadPoint);
 		//Hypotenuse^2 / (2 * X)

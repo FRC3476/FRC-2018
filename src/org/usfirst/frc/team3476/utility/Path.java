@@ -30,9 +30,8 @@ public class Path {
 		
 		private Translation2d getClosestPoint(Translation2d point){
 			double u = ((point.getX() - start.getX()) * delta.getX() + (point.getY() - start.getY()) * delta.getY()) / deltaDistSquared;
-
 			u = Math.max(Math.min(u, 1), 0);
-			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);			
+			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);	
 		}
 		
 		private Translation2d getPointByDistance(double lookAheadDistance){
@@ -71,12 +70,13 @@ public class Path {
 	synchronized public DrivingData getLookAheadPoint(Translation2d pose, double lookAheadDistance){
 		DrivingData data = new DrivingData();
 		Translation2d closestPoint = segments.get(0).getClosestPoint(pose);
-		Translation2d closestToRobot = closestPoint.inverse().translateBy(pose);	
+		Translation2d closestToRobot = closestPoint.inverse().translateBy(pose);
 		while(segments.size() > 1){
 			double distToClosest = Math.hypot(closestToRobot.getX(), closestToRobot.getY());
 			Translation2d closestNextPoint = segments.get(1).getClosestPoint(pose);
 			Translation2d closestNextToRobot = closestNextPoint.inverse().translateBy(pose);
 			double distToNext = Math.hypot(closestNextToRobot.getX(), closestNextToRobot.getY());
+			System.out.println(distToClosest + "  " + distToNext);
 			if(distToClosest > distToNext){
 				System.out.println("removed");
 				segments.remove(0);

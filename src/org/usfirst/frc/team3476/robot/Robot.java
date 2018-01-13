@@ -64,10 +64,10 @@ public class Robot extends IterativeRobot {
 		// defaultAuto);
 		tracker.resetOdometry();
 		Path autoPath = new Path(new Translation2d(0, 0));
-		autoPath.addPoint(0, 60, 30);
-		autoPath.addPoint(30, 60, 30);
-		autoPath.addPoint(30, 30, 30);
-		autoPath.addPoint(0, 30, 30);
+		autoPath.addPoint(80, 0, 30);
+		autoPath.addPoint(80, -50, 30);
+		autoPath.addPoint(30, -50, 30);
+		autoPath.addPoint(30, 0, 30);
 		autoPath.addPoint(0, 0, 30);
 		drive.setAutoPath(autoPath, false);
 		System.out.println("Auto selected: " + autoSelected);

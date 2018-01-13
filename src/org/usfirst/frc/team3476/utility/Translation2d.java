@@ -20,13 +20,22 @@ public class Translation2d implements Interpolable {
 		this.y = y;
 	}
 
+	public Rotation getAngleFromOffsetFromYAxis(Translation2d offset) {
+		return offset.getAngleFromYAxis(this);
+	}
+	
 	public Rotation getAngleFromOffset(Translation2d offset) {
-		return offset.getAngleTo(this);
+		return offset.getAngle(this);
 	}
 
-	public Rotation getAngleTo(Translation2d nextPoint) {
+	public Rotation getAngleFromYAxis(Translation2d nextPoint) {
 		double angleOffset = Math.asin((x - nextPoint.getX()) / getDistanceTo(nextPoint));
 		return Rotation.fromRadians(angleOffset);
+	}
+	
+	public Rotation getAngle(Translation2d nextPoint){
+		double angleOffset = Math.atan2(nextPoint.getY() - y, nextPoint.getX() - x);
+		return Rotation.fromRadians(angleOffset);		
 	}
 
 	public double getDistanceTo(Translation2d nextPoint) {

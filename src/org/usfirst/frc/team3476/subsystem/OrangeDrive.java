@@ -92,6 +92,11 @@ public class OrangeDrive extends Threaded {
 		driveMultiplier = 0;
 		drivePercentVbus = true;
 		driveState = DriveState.TELEOP;
+
+		rightTalon.setP(0.2); // 0.45 on practice
+		rightTalon.setF(0.1453);
+		leftTalon.setP(0.2);
+		leftTalon.setF(0.1453);
 	}
 
 	public synchronized void arcadeDrive(double moveValue, double rotateValue) {
@@ -140,9 +145,6 @@ public class OrangeDrive extends Threaded {
 			leftMotorSpeed *= driveMultiplier;
 			rightMotorSpeed *= driveMultiplier;
 
-			// get acceleration
-			// assumes that wheel speed pid works
-			// works by limiting how much higher/lower we can set the speed
 			double now = Timer.getFPGATimestamp();
 			double dt = (now - lastTime);
 
@@ -256,7 +258,7 @@ public class OrangeDrive extends Threaded {
 
 	public double scaleValues(double rawValue, double minInput, double maxInput, double minOutput, double maxOutput) {
 		// scales ranges IE. 0.15 - 1 to 0 - 1
-		// the absolute value of the rawValue under minimum are treated as 0
+		// the absolute value of rawValue under minimum are treated as 0
 		// negative values also work
 		// values higher than maxInput returns maxOutput
 		if (Math.abs(rawValue) >= minInput) {
@@ -307,6 +309,7 @@ public class OrangeDrive extends Threaded {
 			return;
 		}
 		// in/s -> (in / pi) * 15
+		// positive deltaSpeed turns right by making left wheels faster than right
 		leftTalon.setSetpoint((setVelocity.wheelSpeed + setVelocity.deltaSpeed) / Math.PI * 15);
 		rightTalon.setSetpoint((setVelocity.wheelSpeed - setVelocity.deltaSpeed) / Math.PI * 15);
 

@@ -50,6 +50,7 @@ public class Rotation implements Interpolable<Rotation> {
 		return rotateBy(Rotation.fromRadians(diff.getRadians() * percentage));
 	}
 
+	//Flip over Y-Axis
 	public Rotation inverse() {
 		return new Rotation(cos, -sin);
 	}

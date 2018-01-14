@@ -52,6 +52,7 @@ public class Path {
 	public static class DrivingData {
 		public double remainingDist, maxSpeed;
 		public Translation2d lookAheadPoint;
+		public Translation2d closestPoint;
 	}
 	
 	private List<PathSegment> segments;
@@ -76,16 +77,15 @@ public class Path {
 			Translation2d closestNextPoint = segments.get(1).getClosestPoint(pose);
 			Translation2d closestNextToRobot = closestNextPoint.inverse().translateBy(pose);
 			double distToNext = Math.hypot(closestNextToRobot.getX(), closestNextToRobot.getY());
-			System.out.println(distToClosest + "  " + distToNext);
 			if(distToClosest > distToNext){
-				System.out.println("removed");
 				segments.remove(0);
 				closestPoint = closestNextPoint;
 				closestToRobot = closestNextToRobot;
 			} else {
 				break;
 			}
-		}	
+		}
+		data.closestPoint = closestPoint;
 		Translation2d closestToEnd = closestPoint.inverse().translateBy(segments.get(0).getEnd());			
 		Translation2d closestToStart = segments.get(0).getStart().inverse().translateBy(closestPoint);
 		

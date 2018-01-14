@@ -44,6 +44,13 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 		scheduler.schedule(drive, 500000, mainExecutor);
 		scheduler.schedule(tracker, 500000, mainExecutor);
+		Path autoPath = new Path(new Translation2d(0, 0));
+		autoPath.addPoint(80, 0, 30);
+		autoPath.addPoint(80, -50, 30);
+		autoPath.addPoint(30, -50, 30);
+		autoPath.addPoint(30, 0, 30);
+		autoPath.addPoint(0, 0, 30);
+		drive.setAutoPath(autoPath, false);
 	}
 
 	/**

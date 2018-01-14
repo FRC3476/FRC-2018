@@ -21,7 +21,7 @@ import org.usfirst.frc.team3476.utility.Threaded;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class UDPServer extends Threaded {
+public class UDP extends Threaded {
 
 	private class MessageHandler extends Threaded {
 
@@ -39,10 +39,10 @@ public class UDPServer extends Threaded {
 		}
 	}
 	
-	private static final UDPServer instance = new UDPServer();
+	private static final UDP instance = new UDP();
 
-	public static UDPServer getInstance() {
-		return UDPServer.instance;
+	public static UDP getInstance() {
+		return UDP.instance;
 	}
 
 	private ExecutorService workers;
@@ -50,7 +50,7 @@ public class UDPServer extends Threaded {
 	private DatagramSocket listener;
 	private HashMap<Integer, DatagramSocket> senders;
 
-	private UDPServer() {
+	private UDP() {
 		senders = new HashMap<Integer, DatagramSocket>();
 		try {
 			listener = new DatagramSocket(5800);
@@ -72,7 +72,7 @@ public class UDPServer extends Threaded {
 		workers.execute(new MessageHandler(msg));
 	}
 	
-	public void send(String message, int port) {
+	public void send(String addr, String message, int port) {
 		if(!senders.containsKey(port)){
 			try {
 				senders.put(port, new DatagramSocket(port));
@@ -83,13 +83,10 @@ public class UDPServer extends Threaded {
 		DatagramPacket msg = null;
 		
 		try {
-			msg = new DatagramPacket(message.getBytes(), message.getBytes().length, InetAddress.getByName("10.34.76.5"), port);
+			msg = new DatagramPacket(message.getBytes(), message.getBytes().length, InetAddress.getByName(addr), port);
+			senders.get(port).send(msg);
 		} catch (UnknownHostException e1) {
 			e1.printStackTrace();
-		}
-		
-		try {
-			senders.get(port).send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

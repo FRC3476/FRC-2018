@@ -40,7 +40,7 @@ public class OrangeDrive extends Threaded {
 	private static final OrangeDrive instance = new OrangeDrive();
 
 	public static OrangeDrive getInstance() {
-		return OrangeDrive.instance;
+		return instance;
 	}
 
 	private double quickStopAccumulator;

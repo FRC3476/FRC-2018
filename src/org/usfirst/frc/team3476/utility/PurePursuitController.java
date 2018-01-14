@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3476.utility;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
 import org.usfirst.frc.team3476.utility.Path.DrivingData;
@@ -24,6 +27,7 @@ public class PurePursuitController {
 		turnPID.setOutputRange(1, -1);
 	}
 
+	@SuppressWarnings("unchecked")
 	public DriveVelocity calculate(RigidTransform robotPose) {	
 		if (isReversed) {
 			robotPose = new RigidTransform(robotPose.translationMat,
@@ -37,10 +41,25 @@ public class PurePursuitController {
 		}
 
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
-		System.out.println(robotPose.translationMat.getX() + "  " + robotPose.translationMat.getY());
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
 		double deltaSpeed = turnPID.update(angleToLookAhead) * Constants.MaxTurningSpeed;
 		double robotSpeed = data.maxSpeed;
+
+		JSONObject message = new JSONObject();
+		JSONArray pose = new JSONArray();
+		JSONArray lookAhead = new JSONArray();
+		JSONArray closest = new JSONArray();
+		pose.add(robotPose.translationMat.getX());
+		pose.add(robotPose.translationMat.getY());
+		lookAhead.add(data.lookAheadPoint.getX());
+		lookAhead.add(data.lookAheadPoint.getY());
+		closest.add(data.closestPoint.getX());
+		closest.add(data.closestPoint.getY());		
+		message.put("pose", pose);
+		message.put("lookAhead", lookAhead);
+		message.put("closest", closest);
+		UDP.getInstance().send("10.34.76.5", message.toJSONString(), 5801);
+		
 		if (isReversed) {
 			robotSpeed *= -1;
 			deltaSpeed *= -1;

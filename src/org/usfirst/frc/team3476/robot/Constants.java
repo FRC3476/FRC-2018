@@ -21,13 +21,23 @@ public final class Constants {
 	public static double ScrubFactor = 0.65;
 	public static double MaxTurningSpeed = 60;
 	
+	public static double ElevatorTicksPerInc = 100000000000000000000000000000.0; //change to actual value
+	public static double ElevatorStallCurrent = 100000000000.0;
+	
 	//CAN IDs
 	public static int LeftMasterDriveId = 2;
 	public static int LeftSlaveDriveId = 3;
 	public static int RightMasterDriveId = 4;
 	public static int RightSlaveDriveId = 5;
+	public static int ElevatorId = 1000; //change to actual value
+	public static int ArmId = 1001; //change to actual value
 
 	public static int TurretTicksPerRotations = 10;
+
+	public static double ElevatorHeight = 1000000;
+	public static double ArmLength = 1000000;
+	public static double ElevatorHeightToEncoderTicks = 10000000000.0;
+	
 	private Constants() {
 	}
 }

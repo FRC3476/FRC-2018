@@ -54,6 +54,10 @@ public class Rotation implements Interpolable<Rotation> {
 	public Rotation inverse() {
 		return new Rotation(cos, -sin);
 	}
+	
+	public Rotation flip() {
+		return new Rotation(-cos, -sin);
+	}
 
 	public void normalize() {
 		double magnitude = Math.hypot(cos, sin);

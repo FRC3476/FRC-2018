@@ -2,7 +2,6 @@ package org.usfirst.frc.team3476.utility;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
 import org.usfirst.frc.team3476.utility.Path.DrivingData;
@@ -29,12 +28,13 @@ public class PurePursuitController {
 
 	@SuppressWarnings("unchecked")
 	public DriveVelocity calculate(RigidTransform robotPose) {	
+	
 		if (isReversed) {
 			robotPose = new RigidTransform(robotPose.translationMat,
-					robotPose.rotationMat.rotateBy(Rotation.fromDegrees(180)));
+					robotPose.rotationMat.flip());
 		}
-		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 20);
 		
+		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 20);
 		//TODO: Slow down
 		if(data.remainingDist < 1){
 			return new DriveVelocity(0, 0);
@@ -62,7 +62,6 @@ public class PurePursuitController {
 		
 		if (isReversed) {
 			robotSpeed *= -1;
-			deltaSpeed *= -1;
 		}
 		return new DriveVelocity(robotSpeed, deltaSpeed);
 	}

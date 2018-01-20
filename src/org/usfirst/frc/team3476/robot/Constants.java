@@ -20,6 +20,7 @@ public final class Constants {
 	public static double WheelDiameter = 4;
 	public static double ScrubFactor = 0.65;
 	public static double MaxTurningSpeed = 60;
+	public static double MinimumTurningRadius = 40;
 	
 	//CAN IDs
 	public static int LeftMasterDriveId = 2;

@@ -22,6 +22,7 @@ public class RobotTracker extends Threaded {
 	private CircularQueue<Rotation> gyroHistory;
 
 	private double currentDistance, oldDistance, deltaDistance;
+	private Rotation offset;
 
 	private RobotTracker() {
 		vehicleHistory = new CircularQueue<>(100);
@@ -29,6 +30,7 @@ public class RobotTracker extends Threaded {
 		driveBase = OrangeDrive.getInstance();
 		driveBase.zeroSensors();
 		currentOdometry = new RigidTransform(new Translation2d(), driveBase.getGyroAngle());
+		offset = Rotation.fromDegrees(0);
 	}
 
 	public Rotation getGyroAngle(long time) {
@@ -48,7 +50,7 @@ public class RobotTracker extends Threaded {
 	@Override
 	public void update() {
 		currentDistance = (driveBase.getLeftDistance() + driveBase.getRightDistance()) / 2;
-		Rotation deltaRotation = driveBase.getGyroAngle().inverse();
+		Rotation deltaRotation = driveBase.getGyroAngle().inverse().rotateBy(offset);
 		deltaDistance = currentDistance - oldDistance;		
 		Translation2d deltaPosition = new Translation2d(deltaRotation.cos() * deltaDistance, deltaRotation.sin() * deltaDistance);
 		synchronized(this){
@@ -74,5 +76,9 @@ public class RobotTracker extends Threaded {
 			oldDistance = currentDistance;
 		}
 		*/
+	}
+	
+	synchronized public void setRotationOffset(Rotation offset){
+		this.offset = offset;
 	}
 }

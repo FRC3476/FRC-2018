@@ -16,34 +16,45 @@ public class PurePursuitController {
 	private volatile Path robotPath;
 	private boolean isReversed;
 	private SynchronousPid turnPID;
-
+	private RateLimiter speedProfiler;
+	private long lastTime;
+	
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
-		turnPID = new SynchronousPid(0.01612346, 0, 0, 0);
+		turnPID = new SynchronousPid(0.0252346, 0, 0, 0);
 		turnPID.setIzone(15);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
+		speedProfiler = new RateLimiter(40, 40);
+		lastTime = System.currentTimeMillis();
 	}
 
 	@SuppressWarnings("unchecked")
 	public DriveVelocity calculate(RigidTransform robotPose) {	
-	
 		if (isReversed) {
 			robotPose = new RigidTransform(robotPose.translationMat,
 					robotPose.rotationMat.flip());
 		}
-		
-		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 20);
-		//TODO: Slow down
-		if(data.remainingDist < 1){
-			return new DriveVelocity(0, 0);
-		}
 
+		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 20);
+
+		double timeToSwitchAcc = (speedProfiler.getAcc() / speedProfiler.getMaxJerk()) + (speedProfiler.getMaxAccel() / speedProfiler.getMaxJerk());
+		double timeToDecel = speedProfiler.getLatestValue() / speedProfiler.getMaxAccel();
+		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * speedProfiler.getLatestValue();
+		double dt = System.currentTimeMillis() - lastTime;
+		dt = Math.min(20, dt);
+		lastTime = System.currentTimeMillis();
+		double robotSpeed;
+		if(distanceTillStop > data.remainingDist){
+			robotSpeed = speedProfiler.update(0, dt / 1000.0);
+		} else {
+			robotSpeed = speedProfiler.update(data.maxSpeed, dt / 1000.0);			
+		}
+		
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
-		double deltaSpeed = turnPID.update(angleToLookAhead) * Constants.MaxTurningSpeed;
-		double robotSpeed = data.maxSpeed;
+		double deltaSpeed = turnPID.update(angleToLookAhead) * robotSpeed;
 
 		JSONObject message = new JSONObject();
 		JSONArray pose = new JSONArray();

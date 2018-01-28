@@ -3,6 +3,7 @@ package org.usfirst.frc.team3476.robot;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.usfirst.frc.team3476.subsystem.Elevator;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.utility.Controller;
@@ -11,6 +12,7 @@ import org.usfirst.frc.team3476.utility.ThreadScheduler;
 import org.usfirst.frc.team3476.utility.Translation2d;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick.ButtonType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -30,6 +32,7 @@ public class Robot extends IterativeRobot {
 	
 	Controller xbox = new Controller(0);
 	OrangeDrive drive = OrangeDrive.getInstance();
+	Elevator elevator = Elevator.getInstance();
 	RobotTracker tracker = RobotTracker.getInstance();
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
@@ -101,7 +104,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		
+		
 	}
 
 	/**

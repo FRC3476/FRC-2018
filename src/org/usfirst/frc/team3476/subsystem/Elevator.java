@@ -10,35 +10,26 @@ import com.ctre.CANTalon.TalonControlMode;
 
 public class Elevator extends Threaded {
 
-	public enum ElevatorState
-	{
-		HOMING, UP, DOWN, MANUAL
-	}
-	
-	public final double UP = 100000, DOWN = 0; //Replace with actual values
-	
-	private Elevator() {
-		elevatorTalon = new CANTalon(Constants.ElevatorId);
-		armTalon = new CANTalon(Constants.ArmId);
-		
-		elevatorTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-		armTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-
-		elevatorTalon.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 10);
-		armTalon.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 10);
-
-		elevatorTalon.configEncoderCodesPerRev(1024);
-		armTalon.configEncoderCodesPerRev(1024);
-		
-		
-	}
-	
-	private CANTalon elevatorTalon, armTalon;
+	private CANTalon elevatorTalon;
+	public enum ElevatorState { HOMING, MANUAL }
 	private ElevatorState currentState = ElevatorState.MANUAL;
 	private double homeStartTime;
+	private double setpoint;
+	public final double UP = 100000, DOWN = 0; //Replace with actual values
 	
 	private static final Elevator instance = new Elevator();
-		
+	
+	private Elevator() {
+		elevatorTalon= new CANTalon(Constants.ElevatorId);
+		elevatorTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		elevatorTalon.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 10);
+		elevatorTalon.configEncoderCodesPerRev(1024);
+	}
+	
+	public static Elevator getInstance()
+	{
+		return instance;
+	}
 	
 	public void homeElevator()
 	{
@@ -48,15 +39,11 @@ public class Elevator extends Threaded {
 	
 	public void setElevatorHeight(double height)
 	{
-		elevatorTalon.changeControlMode(TalonControlMode.Position);
+		elevatorTalon.changeControlMode(TalonControlMode.Position);		
 		elevatorTalon.setSetpoint(height * Constants.ElevatorHeightToEncoderTicks);
 	}
 	
-	public void setArmDistance(double distance)
-	{
-		
-	}
-	
+	/*
 	public void setOverallPosition(double distance, double height)
 	{	
 		if (distance > Constants.ArmLength || height > Constants.ElevatorHeight)
@@ -69,23 +56,15 @@ public class Elevator extends Threaded {
 		double elevatorPosition = height - Math.sqrt(Constants.ArmLength * Constants.ArmLength - distance * distance);
 		
 		setElevatorHeight(elevatorPosition);
-		
-		
-		//theta = arcsin(distance/armlength)
-		//y = height - sqrt(arm^2 - distance^2)
+		setArmAngle(armAngle);
 	}
-
+*/
 	@Override
 	public void update() {
 		switch(currentState)
 		{
 		case MANUAL:
-			break;
-		case UP:
-			setElevatorHeight(UP);
-			break;
-		case DOWN:
-			setElevatorHeight(DOWN);
+			setElevatorHeight(setpoint);
 			break;
 		case HOMING:
 			elevatorTalon.changeControlMode(TalonControlMode.PercentVbus);
@@ -93,18 +72,17 @@ public class Elevator extends Threaded {
 			if (elevatorTalon.getOutputCurrent() > Constants.ElevatorStallCurrent)
 				{
 					elevatorTalon.setSetpoint(0);
-					elevatorTalon.setPosition(0); //Set Encoder value to 0
-					currentState = ElevatorState.DOWN;
+					elevatorTalon.setPosition(0); //Sets encoder value to 0
+					currentState = ElevatorState.MANUAL;
 				}
 			else if (System.currentTimeMillis() - homeStartTime > 1000)
 			{
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
 				elevatorTalon.setSetpoint(0);
 				elevatorTalon.setPosition(0);
-				currentState = ElevatorState.DOWN;
+				currentState = ElevatorState.MANUAL;
 			}
 			break;
-		
 		}
 
 	}

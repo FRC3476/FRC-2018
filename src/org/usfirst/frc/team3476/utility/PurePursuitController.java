@@ -6,19 +6,19 @@ import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
 import org.usfirst.frc.team3476.utility.Path.DrivingData;
 
+import edu.wpi.first.wpilibj.Timer;
+
 public class PurePursuitController {
 	/*
-	 * 1. Translation delta compared to robot 2. Check x offset * angle to see
-	 * if past tolerance 3. Create circle 4. Follow circle path 5. Actual path
-	 * looks like a spline
+	 * 1. Translation delta compared to robot 2. Find angle to path relative to robot 3. Drive towards point
 	 */
 
-	private volatile Path robotPath;
+	private Path robotPath;
 	private boolean isReversed;
 	private SynchronousPid turnPID;
 	private RateLimiter speedProfiler;
-	private long lastTime;
-	
+	private double lastTime;
+
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
@@ -26,31 +26,24 @@ public class PurePursuitController {
 		turnPID.setIzone(15);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
-		speedProfiler = new RateLimiter(40, 40);
-		lastTime = System.currentTimeMillis();
+		speedProfiler = new RateLimiter(40, 120);
+		lastTime = Timer.getFPGATimestamp();
 	}
 
 	@SuppressWarnings("unchecked")
-	public DriveVelocity calculate(RigidTransform robotPose) {	
+	public DriveVelocity calculate(RigidTransform robotPose) {
 		if (isReversed) {
-			robotPose = new RigidTransform(robotPose.translationMat,
-					robotPose.rotationMat.flip());
+			robotPose = new RigidTransform(robotPose.translationMat, robotPose.rotationMat.flip());
 		}
-
+		
+		/*
+		Adaptive Lookahead
+		double lookAheadDist = OrangeUtility.coercedNormalize(speedProfiler.getLatestValue(), Constants.MinPathSpeed,
+				Constants.MaxPathSpeed, Constants.MinLookAheadDistance, Constants.MaxLookAheadDistance);
+		*/
+		//Motion Profiling
 		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 20);
-
-		double timeToSwitchAcc = (speedProfiler.getAcc() / speedProfiler.getMaxJerk()) + (speedProfiler.getMaxAccel() / speedProfiler.getMaxJerk());
-		double timeToDecel = speedProfiler.getLatestValue() / speedProfiler.getMaxAccel();
-		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * speedProfiler.getLatestValue();
-		double dt = System.currentTimeMillis() - lastTime;
-		dt = Math.min(20, dt);
-		lastTime = System.currentTimeMillis();
-		double robotSpeed;
-		if(distanceTillStop > data.remainingDist){
-			robotSpeed = speedProfiler.update(0, dt / 1000.0);
-		} else {
-			robotSpeed = speedProfiler.update(data.maxSpeed, dt / 1000.0);			
-		}
+		double robotSpeed = getProfiledSpeed(data.maxSpeed, data.remainingDist);
 		
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
@@ -65,29 +58,50 @@ public class PurePursuitController {
 		lookAhead.add(data.lookAheadPoint.getX());
 		lookAhead.add(data.lookAheadPoint.getY());
 		closest.add(data.closestPoint.getX());
-		closest.add(data.closestPoint.getY());		
+		closest.add(data.closestPoint.getY());
 		message.put("pose", pose);
 		message.put("lookAhead", lookAhead);
 		message.put("closest", closest);
 		UDP.getInstance().send("10.34.76.5", message.toJSONString(), 5801);
-		
+
 		if (isReversed) {
 			robotSpeed *= -1;
 		}
-		return new DriveVelocity(robotSpeed, deltaSpeed);
+		return new DriveVelocity(robotSpeed + deltaSpeed, robotSpeed - deltaSpeed);
 	}
-	
+
 	@Deprecated
 	public double getRadius(RigidTransform robotPose, Translation2d lookAheadPoint) {
 		Translation2d robotToLookAheadPoint = getRobotToLookAheadPoint(robotPose, lookAheadPoint);
-		//Hypotenuse^2 / (2 * X)
-		double radius = Math.pow(Math.hypot(robotToLookAheadPoint.getX(), robotToLookAheadPoint.getY()), 2)	/ (2 * robotToLookAheadPoint.getX());
+		// Hypotenuse^2 / (2 * X)
+		double radius = Math.pow(Math.hypot(robotToLookAheadPoint.getX(), robotToLookAheadPoint.getY()), 2)
+				/ (2 * robotToLookAheadPoint.getX());
 		return radius;
 	}
-	
-	public Translation2d getRobotToLookAheadPoint(RigidTransform robotPose, Translation2d lookAheadPoint) {
+
+	private Translation2d getRobotToLookAheadPoint(RigidTransform robotPose, Translation2d lookAheadPoint) {
 		Translation2d lookAheadPointToRobot = robotPose.translationMat.inverse().translateBy(lookAheadPoint);
 		lookAheadPointToRobot = lookAheadPointToRobot.rotateBy(robotPose.rotationMat.inverse());
 		return lookAheadPointToRobot;
+	}
+	
+	private double getProfiledSpeed(double setpoint, double remainingDist){
+		double timeToSwitchAcc = (speedProfiler.getAcc() / speedProfiler.getMaxJerk())
+				+ (speedProfiler.getMaxAccel() / speedProfiler.getMaxJerk());
+		double timeToDecel = speedProfiler.getLatestValue() / speedProfiler.getMaxAccel();
+		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * speedProfiler.getLatestValue();
+		double dt = Timer.getFPGATimestamp() - lastTime;
+		dt = Math.min(20, dt);
+		lastTime = System.currentTimeMillis();
+		if (distanceTillStop > remainingDist) {
+			return speedProfiler.update(0, dt);
+		} else {
+			return speedProfiler.update(setpoint, dt);
+		}		
+	}
+	
+	public void resetTime(){
+		//TODO: Big Bang
+		lastTime = System.currentTimeMillis();
 	}
 }

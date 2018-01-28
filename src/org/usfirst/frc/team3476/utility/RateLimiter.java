@@ -26,13 +26,14 @@ public class RateLimiter {
 			latestValue += accValue * dt;
 		} else {
 			accValue = accValue - Math.copySign(maxJerk * dt, diff);
-			if(Math.signum(accValue) != Math.signum(accValue)){
-				accValue = 0;
+			if(Math.abs(accValue) > maxAccel){
+				accValue = Math.copySign(maxAccel, accValue);
 			}
 			latestValue += accValue * dt;
 		}
 		if(Math.signum(setpoint - latestValue) !=  Math.signum(diff)){
 			latestValue = setpoint;
+			accValue = 0;
 		}
 		return latestValue;
 	}
@@ -51,5 +52,14 @@ public class RateLimiter {
 	
 	public double getLatestValue(){
 		return latestValue;
+	}
+	
+	public void setLatestValue(double val){
+		latestValue = val;
+	}
+	
+	public void reset(){
+		latestValue = 0;
+		accValue = 0;
 	}
 }

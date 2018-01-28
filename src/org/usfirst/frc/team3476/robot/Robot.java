@@ -67,15 +67,14 @@ public class Robot extends IterativeRobot {
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		tracker.resetOdometry();
-		tracker.setRotationOffset(Rotation.fromDegrees(180));
-		autoPath.addPoint(100, 0, 30);
-		autoPath.addPoint(75, -85, 30);
+		autoPath.addPoint(100, 0, 40);
+		autoPath.addPoint(75, -85, 35);
 		autoPath.addPoint(50, -85, 30);
 		autoPath.addPoint(50, -40, 30);
 		autoPath.addPoint(0, -40, 30);
 		autoPath.setAngle(Rotation.fromDegrees(90));
 		autoPath.processPoints();
-		drive.setAutoPath(autoPath, true);
+		drive.setAutoPath(autoPath, false);
 		System.out.println("Auto selected: " + autoSelected);
 	}
 
@@ -95,6 +94,10 @@ public class Robot extends IterativeRobot {
 		}
 	}
 
+	@Override 
+	public void teleopInit(){
+		drive.resetMotionProfile();
+	}
 	/**
 	 * This function is called periodically during operator control
 	 */

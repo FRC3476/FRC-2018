@@ -21,6 +21,11 @@ import org.usfirst.frc.team3476.utility.Threaded;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
+/**
+ * Class that handles sockets for receiving and sending. It doesn't release
+ * sockets and keeps them for later use. There is one worker thread for handling
+ * messages. The buffer is 2048 bytes long.
+ */
 public class UDP extends Threaded {
 
 	private class MessageHandler extends Threaded {
@@ -34,11 +39,11 @@ public class UDP extends Threaded {
 		@Override
 		public void update() {
 			String rawMessage = new String(packet.getData(), 0, packet.getLength());
-			JSONObject message = (JSONObject) JSONValue.parse(rawMessage);		
-			//TODO: do whatever with message bruh
+			// TODO: do whatever with message bruh
+			JSONObject message = (JSONObject) JSONValue.parse(rawMessage);
 		}
 	}
-	
+
 	private static final UDP instance = new UDP();
 
 	public static UDP getInstance() {
@@ -71,9 +76,18 @@ public class UDP extends Threaded {
 		}
 		workers.execute(new MessageHandler(msg));
 	}
-	
+
+	/**
+	 * 
+	 * @param addr
+	 * 			Address to send message to
+	 * @param message
+	 * 			Contents of UDP packets
+	 * @param port
+	 * 			Port to send message over 
+	 */
 	public void send(String addr, String message, int port) {
-		if(!senders.containsKey(port)){
+		if (!senders.containsKey(port)) {
 			try {
 				senders.put(port, new DatagramSocket(port));
 			} catch (SocketException e) {
@@ -81,12 +95,12 @@ public class UDP extends Threaded {
 			}
 		}
 		DatagramPacket msg = null;
-		
 		try {
 			msg = new DatagramPacket(message.getBytes(), message.getBytes().length, InetAddress.getByName(addr), port);
 			senders.get(port).send(msg);
 		} catch (UnknownHostException e1) {
 			e1.printStackTrace();
+			System.out.println("Host:" + addr + " not found!");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

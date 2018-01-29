@@ -1,6 +1,9 @@
 package org.usfirst.frc.team3476.utility;
 
-public class Translation2d implements Interpolable {
+/**
+ * Stores an x and y value
+ */
+public class Translation2d implements Interpolable<Translation2d> {
 
 	public static Translation2d fromAngleDistance(double distance, Rotation angle) {
 		return new Translation2d(angle.sin() * distance, angle.cos() * distance);
@@ -72,9 +75,10 @@ public class Translation2d implements Interpolable {
 
 		return new Translation2d(x + delta.getX(), y + delta.getY());
 	}
-
+	
 	@Override
-	public Interpolable interpolate(Interpolable other, double percentage) {
+	public Translation2d interpolate(Translation2d other, double percentage) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

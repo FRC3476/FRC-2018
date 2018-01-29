@@ -3,6 +3,9 @@ package org.usfirst.frc.team3476.utility;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import org.usfirst.frc.team3476.robot.Constants;
 
 public class Path {
 
@@ -14,6 +17,15 @@ public class Path {
 		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed){
 			start = new Translation2d(xStart, yStart);
 			end = new Translation2d(xEnd, yEnd);
+			this.maxSpeed = maxSpeed;
+			delta = start.inverse().translateBy(end);
+			deltaDist = Math.hypot(delta.getX(), delta.getY());
+			deltaDistSquared = Math.pow(deltaDist, 2);
+		}
+		
+		private PathSegment(Translation2d start, Translation2d end, double maxSpeed){
+			this.start = start;
+			this.end = end;
 			this.maxSpeed = maxSpeed;
 			delta = start.inverse().translateBy(end);
 			deltaDist = Math.hypot(delta.getX(), delta.getY());
@@ -34,10 +46,16 @@ public class Path {
 			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);	
 		}
 		
-		private Translation2d getPointByDistance(double lookAheadDistance){
-			lookAheadDistance = Math.pow(lookAheadDistance, 2);
-			double u = Math.sqrt(lookAheadDistance / deltaDistSquared);
+		private Translation2d getPointByDistance(double distance){
+			distance = Math.pow(distance, 2);
+			double u = Math.sqrt(distance / deltaDistSquared);
 			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);
+		}
+		
+		private Translation2d getPointByDistanceFromEnd(double distance){
+			distance = Math.pow(distance, 2);
+			double u = Math.sqrt(distance / deltaDistSquared);
+			return new Translation2d(end.getX() - delta.getX() * u, end.getY() - end.getY() * u);
 		}
 		
 		private double getSpeed(){
@@ -47,6 +65,10 @@ public class Path {
 		private double getDistance(){
 			return deltaDist;
 		}		
+		
+		private Translation2d getDelta(){
+			return delta;
+		}
 	}
 	
 	public static class DrivingData {
@@ -57,7 +79,7 @@ public class Path {
 	
 	private List<PathSegment> segments;
 	private Translation2d lastPoint;
-	
+	private Rotation endAngle = null;
 	public Path(Translation2d start) {
 		segments = new ArrayList<PathSegment>();
 		lastPoint = start;
@@ -65,10 +87,45 @@ public class Path {
 	
 	public void addPoint(double x, double y, double speed){
 		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed));
-		lastPoint = new Translation2d(x, y);		
+		lastPoint = new Translation2d(x, y);
 	}	
 	
-	synchronized public DrivingData getLookAheadPoint(Translation2d pose, double lookAheadDistance){
+	public void setAngle(Rotation angle){
+		endAngle = angle;
+	}
+	
+	public void processPoints(){
+		if(endAngle != null){
+			PathSegment lastSegment = segments.get(segments.size() - 1);
+			Rotation angleOfPath = lastSegment.getStart().getAngle(lastSegment.getEnd());
+			Rotation rotatedEndAngle = angleOfPath.inverse().rotateBy(endAngle);
+			boolean rotateLeft = rotatedEndAngle.sin() > 0;
+		
+			Translation2d finalSegmentStart = new Translation2d(Constants.MinimumTurningRadius, 0).rotateBy(endAngle.flip());
+			Translation2d secondSegmentStart = finalSegmentStart.rotateBy(Rotation.fromDegrees(rotateLeft ? 90 : -90));
+			finalSegmentStart = finalSegmentStart.translateBy(lastSegment.getEnd());
+			secondSegmentStart = secondSegmentStart.translateBy(finalSegmentStart);
+
+			segments.remove(segments.size() - 1);
+			//sharper than a 90 degree turn
+			if(rotatedEndAngle.cos() < 0){
+				segments.add(new PathSegment(lastSegment.getStart(), secondSegmentStart, lastSegment.getSpeed()));
+				segments.add(new PathSegment(secondSegmentStart, finalSegmentStart, lastSegment.getSpeed()));
+			} else {
+				segments.add(new PathSegment(lastSegment.getStart(), finalSegmentStart, lastSegment.getSpeed()));
+			}
+			segments.add(new PathSegment(finalSegmentStart, lastSegment.getEnd(), lastSegment.getSpeed()));
+		}
+	}
+	
+	synchronized public void printAllPoints() {
+		for(PathSegment segment : segments) {
+			System.out.println(segment.getStart().getX() + "    " + segment.getStart().getY());
+		}
+		System.out.println(segments.get(segments.size()).getEnd().getX() + "   " + segments.get(segments.size()).getEnd().getY());
+	}
+	
+	public DrivingData getLookAheadPoint(Translation2d pose, double lookAheadDistance){
 		DrivingData data = new DrivingData();
 		Translation2d closestPoint = segments.get(0).getClosestPoint(pose);
 		Translation2d closestToRobot = closestPoint.inverse().translateBy(pose);

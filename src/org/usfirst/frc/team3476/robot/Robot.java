@@ -7,6 +7,7 @@ import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.utility.Controller;
 import org.usfirst.frc.team3476.utility.Path;
+import org.usfirst.frc.team3476.utility.Rotation;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
 import org.usfirst.frc.team3476.utility.Translation2d;
 
@@ -33,6 +34,9 @@ public class Robot extends IterativeRobot {
 	RobotTracker tracker = RobotTracker.getInstance();
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
+
+	Path autoPath = new Path(new Translation2d(0, 0));
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -44,13 +48,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Auto choices", chooser);
 		scheduler.schedule(drive, 500000, mainExecutor);
 		scheduler.schedule(tracker, 500000, mainExecutor);
-		Path autoPath = new Path(new Translation2d(0, 0));
-		autoPath.addPoint(80, 0, 30);
-		autoPath.addPoint(80, -50, 30);
-		autoPath.addPoint(30, -50, 30);
-		autoPath.addPoint(30, 0, 30);
-		autoPath.addPoint(0, 0, 30);
-		drive.setAutoPath(autoPath, false);
 	}
 
 	/**
@@ -70,12 +67,13 @@ public class Robot extends IterativeRobot {
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		tracker.resetOdometry();
-		Path autoPath = new Path(new Translation2d(0, 0));
-		autoPath.addPoint(80, 0, 30);
-		autoPath.addPoint(80, -50, 30);
-		autoPath.addPoint(30, -50, 30);
-		autoPath.addPoint(30, 0, 30);
-		autoPath.addPoint(0, 0, 30);
+		autoPath.addPoint(100, 0, 40);
+		autoPath.addPoint(75, -85, 35);
+		autoPath.addPoint(50, -85, 30);
+		autoPath.addPoint(50, -40, 30);
+		autoPath.addPoint(0, -40, 30);
+		autoPath.setAngle(Rotation.fromDegrees(90));
+		autoPath.processPoints();
 		drive.setAutoPath(autoPath, false);
 		System.out.println("Auto selected: " + autoSelected);
 	}
@@ -96,6 +94,10 @@ public class Robot extends IterativeRobot {
 		}
 	}
 
+	@Override 
+	public void teleopInit(){
+		drive.resetMotionProfile();
+	}
 	/**
 	 * This function is called periodically during operator control
 	 */

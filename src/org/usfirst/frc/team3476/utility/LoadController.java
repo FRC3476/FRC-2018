@@ -1,5 +1,10 @@
 package org.usfirst.frc.team3476.utility;
 
+/**
+ * Controller that adds a specific amount of extra load for rising edges that
+ * decays linearly to 0.
+ */
+
 public class LoadController {
 
 	private double loadAccum;
@@ -10,19 +15,32 @@ public class LoadController {
 	private boolean shoot = false;
 	private boolean lastShoot = false;
 
+	/**
+	 * 
+	 * @param baseF
+	 *            Feed forward
+	 * @param loadIncrease
+	 *            Amount of load to increase for each rising edge
+	 * @param decayRate
+	 *            Amount of load to decrease for each iteration
+	 */
 	public LoadController(double baseF, double loadIncrease, double decayRate) {
 		this.baseF = baseF;
 		this.loadIncrease = loadIncrease;
 		this.decayRate = decayRate;
 	}
 
+	/**
+	 * 
+	 * @param input
+	 * 			True if adding load and false if not 
+	 * @param setpoint
+	 * 			Setpoint that feed forward uses to calculate output
+	 * @return
+	 */
 	public double calculate(boolean input, double setpoint) {
 		lastShoot = shoot;
 		shoot = input;
-		// hoping this will make the algorithm more linear than the previous
-		// version
-		// I noticed that the sawtooth pattern was more similar to a pid where
-		// it was slowing down the recovery rate
 		loadAccum = loadAccum - decayRate;
 
 		if (loadAccum < 0) {
@@ -37,30 +55,59 @@ public class LoadController {
 		if (setpoint == 0) {
 			return 0;
 		}
-		// return correctedOutput / setpoint;
 		return correctedOutput;
 	}
 
+	/**
+	 * 
+	 * @return
+	 * 			Current feed forward coefficient
+	 */
 	public double getBaseF() {
 		return baseF;
 	}
 
+	/**
+	 * 
+	 * @param baseF
+	 * 			Feed forward coefficient to set controller to
+	 */
 	public void setBaseF(double baseF) {
 		this.baseF = baseF;
 	}
 
-	public double setDecayRate() {
+	/**
+	 * 
+	 * @return
+	 * 			Current decay rate
+	 */
+	public double getDecayRate() {
 		return decayRate;
 	}
 
+	/**
+	 * 
+	 * @param decayRate
+	 * 			Decay rate to set controller to
+	 */
 	public void setDecayRate(double decayRate) {
 		this.decayRate = decayRate;
 	}
 
-	public double setLoadIncrease() {
+	/**
+	 * 
+	 * @return
+	 * 			Current load increase 
+	 */
+	public double getLoadIncrease() {
 		return loadIncrease;
 	}
 
+	/**
+	 * 
+	 * @param loadIncrease
+	 * 			Load increase to set controller to
+	 */
 	public void setLoadIncrease(double loadIncrease) {
 		this.loadIncrease = loadIncrease;
 	}

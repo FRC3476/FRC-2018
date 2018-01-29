@@ -62,7 +62,7 @@ public class OrangeDrive extends Threaded {
 
 		leftTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		rightTalon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-
+		
 		leftTalon.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 10);
 		rightTalon.setStatusFrameRateMs(StatusFrameRate.QuadEncoder, 10);
 

@@ -1,13 +1,12 @@
 package org.usfirst.frc.team3476.utility;
 
-public class CircularQueue<D extends Interpolable<D>> {
-	/*
-	 * TimeStampedDatahis class is thread safe so there is no need to
-	 * synchronize when using it TimeStampedDatahis class assumes the data added
-	 * is sorted! O(1) add and O(log n) search
+public class CircularQueue<T extends Interpolable<T>> {
+	/**
+	 * NOT thread safe. This class assumes the data added is sorted! It has
+	 * O(1)insertion (only able to insert at end) and O(n log n) search
 	 */
 
-	private InterpolableValue<D>[] queue;
+	private InterpolableValue<T>[] queue;
 	private long back;
 	public final int size;
 
@@ -18,19 +17,41 @@ public class CircularQueue<D extends Interpolable<D>> {
 		this.size = size;
 	}
 
-	synchronized public void add(InterpolableValue<D> t) {
+	/**
+	 * 
+	 * @param t
+	 *            Add new a new value to the end of the queue
+	 */
+	public void add(InterpolableValue<T> t) {
 		queue[(int) back % size] = t;
 		back++;
 	}
 
-	synchronized public InterpolableValue<D> getFromQueue(int position) {
+	/**
+	 * Get InterpolableValue<T> from the queue that is a specified distance from
+	 * the back
+	 * 
+	 * @param position
+	 *            Distance from back of queue
+	 * @return InterpolableValue<T> from position in argument
+	 */
+	public InterpolableValue<T> getFromQueue(int position) {
 		position %= size;
 		return queue[(int) (back - position - 1) % size];
 	}
 
-	synchronized public D getInterpolatedKey(long key) {		
+	/**
+	 * Get T with given key. If an exact match isn't found it will interpolate
+	 * the value always. Keys outside the range will return the front or end of
+	 * the queue.
+	 * 
+	 * @param key
+	 *            Key of wanted T
+	 * @return Matching interpolated T from key in argument
+	 */
+	public T getInterpolatedKey(long key) {
 		int low = 0;
-		int high = queue.length - 1; 
+		int high = queue.length - 1;
 		while (low <= high) {
 			int mid = (low + high) / 2;
 			double midVal = getFromQueue(mid).getKey();

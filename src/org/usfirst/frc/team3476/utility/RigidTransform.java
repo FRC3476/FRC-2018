@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3476.utility;
 
+/**
+ * Stores a Translation2d and a Rotation 
+ */
 public class RigidTransform implements Interpolable<RigidTransform> {
 
 	public Rotation rotationMat;

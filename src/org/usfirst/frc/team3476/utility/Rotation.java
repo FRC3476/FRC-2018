@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3476.utility;
 
+/**
+ * Stores a cos and sin that is used like a rotation matrix
+ */
 public class Rotation implements Interpolable<Rotation> {
 
 	public static Rotation fromDegrees(double angle) {

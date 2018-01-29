@@ -115,34 +115,6 @@ public class Path {
 				segments.add(new PathSegment(lastSegment.getStart(), finalSegmentStart, lastSegment.getSpeed()));
 			}
 			segments.add(new PathSegment(finalSegmentStart, lastSegment.getEnd(), lastSegment.getSpeed()));
-			
-			/*
-			PathSegment lastSegment = segments.get(segments.size() - 1);
-			Rotation angleOfPath = lastSegment.getStart().getAngle(lastSegment.getEnd());
-			Rotation rotatedEndAngle = angleOfPath.inverse().rotateBy(endAngle);
-			boolean rotateRight = rotatedEndAngle.sin() > 0;
-			Rotation angleToCircle;
-			if(rotateRight){
-				angleToCircle = endAngle.rotateBy(Rotation.fromDegrees(-90));
-			} else {
-				angleToCircle = endAngle.rotateBy(Rotation.fromDegrees(90));				
-			}
-			Translation2d endToCircle = new Translation2d(Constants.MinimumTurningRadius, 0).rotateBy(angleToCircle);
-			Translation2d circleCenter = lastSegment.getEnd().translateBy(endToCircle);
-			double startToCircleDistance = circleCenter.getDistanceTo(lastSegment.getStart());
-			Rotation angleToNewPoint = Rotation.fromRadians(Math.acos(Constants.MinimumTurningRadius / startToCircleDistance));
-			PathSegment startToCircle = new PathSegment(lastSegment.getStart().getX(), lastSegment.getStart().getX(), circleCenter.getX(), circleCenter.getY(), 0);
-			Translation2d circleIntersection = startToCircle.getPointByDistanceFromEnd(Constants.MinimumTurningRadius);
-			Translation2d circleIntersectionDelta = lastSegment.getEnd().inverse().translateBy(circleIntersection);
-			Translation2d newPointDelta;
-			if(rotateRight) {
-				newPointDelta = circleIntersectionDelta.rotateBy(angleToNewPoint);
-			} else {
-				newPointDelta = circleIntersectionDelta.rotateBy(angleToNewPoint.inverse());				
-			}
-			Translation2d additionalPoint = lastSegment.getEnd().translateBy(newPointDelta);
-			PathSegment 
-			*/
 		}
 	}
 	
@@ -153,7 +125,7 @@ public class Path {
 		System.out.println(segments.get(segments.size()).getEnd().getX() + "   " + segments.get(segments.size()).getEnd().getY());
 	}
 	
-	synchronized public DrivingData getLookAheadPoint(Translation2d pose, double lookAheadDistance){
+	public DrivingData getLookAheadPoint(Translation2d pose, double lookAheadDistance){
 		DrivingData data = new DrivingData();
 		Translation2d closestPoint = segments.get(0).getClosestPoint(pose);
 		Translation2d closestToRobot = closestPoint.inverse().translateBy(pose);

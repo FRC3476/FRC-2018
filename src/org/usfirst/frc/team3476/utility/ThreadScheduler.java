@@ -8,6 +8,12 @@ import java.util.concurrent.locks.LockSupport;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
+/**
+ * Keeps track of scheduled tasks and checks every 1ms to execute the task with
+ * given threads. Tasks that have not finished in the given time will not be ran
+ * again until it finishes.
+ */
+//TODO: Add remove function
 public class ThreadScheduler implements Runnable {
 
 	private ArrayList<Threaded> scheduledTasks;
@@ -28,9 +34,6 @@ public class ThreadScheduler implements Runnable {
 		schedulingThread.execute(this);
 	}
 
-	/**
-	 * 
-	 */
 	@Override
 	public void run() {
 		while (isRunning) {
@@ -44,7 +47,7 @@ public class ThreadScheduler implements Runnable {
 							scheduledFutures.set(task, threadPools.get(task).submit(scheduledTasks.get(task)));
 							taskTimes.set(task, System.nanoTime());
 						} else {
-							//TODO: log error
+							// TODO: log error
 						}
 					} else {
 						if (timeUntilCalled < waitTime) {

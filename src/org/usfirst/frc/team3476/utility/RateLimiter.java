@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3476.utility;
 
+/**
+ * Limits acceleration and optionally jerk
+ */
 public class RateLimiter {
 	
 	private double maxAccel, maxJerk, latestValue;

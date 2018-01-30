@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3476.utility;
 
+/**
+ * Class that implements Interpolable for use in InterpolableValue
+ */
 public class InterpolatingDouble implements Interpolable<InterpolatingDouble> {
 
 	private double value;

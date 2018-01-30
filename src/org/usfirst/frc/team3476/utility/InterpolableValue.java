@@ -1,11 +1,18 @@
 package org.usfirst.frc.team3476.utility;
 
-public class InterpolableValue<D extends Interpolable<D>> {
+/**
+ * This class uses a double to interpolate between Interpolable<T>
+ * 
+ * @param <T>
+ * 			Class that implements Interpolable<T>
+ */
 
-	private D value;
+public class InterpolableValue<T extends Interpolable<T>> {
+
+	private T value;
 	private double key;
 
-	public InterpolableValue(double key, D value) {
+	public InterpolableValue(double key, T value) {
 		this.key = key;
 		this.value = value;
 	}
@@ -14,7 +21,7 @@ public class InterpolableValue<D extends Interpolable<D>> {
 		return key;
 	}
 
-	public D getValue() {
+	public T getValue() {
 		return value;
 	}
 }

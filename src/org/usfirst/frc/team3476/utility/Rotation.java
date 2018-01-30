@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3476.utility;
 
+/**
+ * Stores a cos and sin that is used like a rotation matrix
+ */
 public class Rotation implements Interpolable<Rotation> {
 
 	public static Rotation fromDegrees(double angle) {
@@ -53,6 +56,10 @@ public class Rotation implements Interpolable<Rotation> {
 	//Flip over Y-Axis
 	public Rotation inverse() {
 		return new Rotation(cos, -sin);
+	}
+	
+	public Rotation flip() {
+		return new Rotation(-cos, -sin);
 	}
 
 	public void normalize() {

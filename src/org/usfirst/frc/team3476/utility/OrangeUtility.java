@@ -191,6 +191,19 @@ public class OrangeUtility {
 		double add = toLow - fromLow * factor;
 		return toNormalize * factor + add;
 	}
+	
+
+	public static double coercedNormalize(double rawValue, double minInput, double maxInput, double minOutput, double maxOutput) {
+		if (rawValue < minInput) {
+			return minOutput;
+		} else if(rawValue > maxInput) {
+			return maxOutput;
+		}
+		double norm = (Math.abs(rawValue) - minInput) / (maxInput - minInput);
+		norm = Math.copySign(norm * (maxOutput - minOutput), rawValue);
+		return norm;
+	}
+
 
 	/**
 	 * Returns a string with all the parameters of the passed PID.

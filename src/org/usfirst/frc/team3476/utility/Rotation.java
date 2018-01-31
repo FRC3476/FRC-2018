@@ -5,10 +5,26 @@ package org.usfirst.frc.team3476.utility;
  */
 public class Rotation implements Interpolable<Rotation> {
 
+	/**
+	 * Gets a Rotation from a specified degree
+	 * 
+	 * @param angle
+	 * 			Angle to turn into a rotation matrix
+	 * @return
+	 * 			Rotation from specified angle in argument
+	 */
 	public static Rotation fromDegrees(double angle) {
 		return Rotation.fromRadians(Math.toRadians(angle));
 	}
 
+	/**
+	 * Gets a Rotation matrix from a specified radian
+	 * 
+	 * @param radians
+	 * 			Radian to turn into a rotation matrix
+	 * @return
+	 * 			Rotation from specified radian in argument 			
+	 */
 	public static Rotation fromRadians(double radians) {
 		return new Rotation(Math.cos(radians), Math.sin(radians));
 	}
@@ -34,15 +50,30 @@ public class Rotation implements Interpolable<Rotation> {
 			normalize();
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @return
+	 * 			The cosine of this Rotation
+	 */
 	public double cos() {
 		return cos;
 	}
 
+	/**
+	 * 
+	 * @return
+	 * 			The rotation matrix in degrees
+	 */
 	public double getDegrees() {
 		return Math.toDegrees(getRadians());
 	}
 
+	/**
+	 * 
+	 * @return
+	 * 			The rotation matrix in radians
+	 */
 	public double getRadians() {
 		return Math.atan2(sin, cos);
 	}
@@ -53,15 +84,27 @@ public class Rotation implements Interpolable<Rotation> {
 		return rotateBy(Rotation.fromRadians(diff.getRadians() * percentage));
 	}
 
-	//Flip over Y-Axis
+	/**
+	 * 
+	 * @return
+	 * 			The Rotation that when rotated with this Rotation moves the cos to 1 and the sin to 0
+	 */
 	public Rotation inverse() {
 		return new Rotation(cos, -sin);
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * 			The Rotation that is flipped on the unit circle
+	 */
 	public Rotation flip() {
 		return new Rotation(-cos, -sin);
 	}
-
+	
+	/**
+	 * Makes it so that cos^2 + sin^2 = 1
+	 */
 	public void normalize() {
 		double magnitude = Math.hypot(cos, sin);
 		if (magnitude > 1E-9) {
@@ -73,11 +116,23 @@ public class Rotation implements Interpolable<Rotation> {
 		}
 	}
 
+	/**
+	 * 
+	 * @param rotationMat
+	 * 			Multiply this Rotation by this specified Rotation
+	 * @return
+	 * 			The multiplied Rotation
+	 */
 	public Rotation rotateBy(Rotation rotationMat) {
 		return new Rotation(cos * rotationMat.cos() - sin * rotationMat.sin(),
 				sin * rotationMat.cos() + cos * rotationMat.sin(), true);
 	}
 
+	/**
+	 * 
+	 * @return
+	 * 			The sin of this Rotation
+	 */
 	public double sin() {
 		return sin;
 	}

@@ -30,6 +30,15 @@ public class PurePursuitController {
 		lastTime = Timer.getFPGATimestamp();
 	}
 
+	/**
+	 * Calculates the look ahead and the desired speed for each side of the robot.
+	 * 
+	 * @param robotPose
+	 * 			Robot position and gyro angle.
+	 * @return
+	 * 			Speed for each side of the robot.
+	 * 			
+	 */
 	@SuppressWarnings("unchecked")
 	public DriveVelocity calculate(RigidTransform robotPose) {
 		if (isReversed) {
@@ -85,6 +94,16 @@ public class PurePursuitController {
 		return lookAheadPointToRobot;
 	}
 	
+	/**
+	 * Returns the speed after it's been passed through the motion profiler. It slows down the robot once decelerating will make it stop approximately at the end.
+	 * 
+	 * @param setpoint
+	 * 			Maximum speed possible for the robot
+	 * @param remainingDist
+	 * 			The distance on the path remaining for the robot.
+	 * @return
+	 * 			Profiled speed for the robot.
+	 */
 	private double getProfiledSpeed(double setpoint, double remainingDist){
 		double timeToSwitchAcc = (speedProfiler.getAcc() / speedProfiler.getMaxJerk())
 				+ (speedProfiler.getMaxAccel() / speedProfiler.getMaxJerk());
@@ -100,6 +119,9 @@ public class PurePursuitController {
 		}		
 	}
 	
+	/**
+	 * Resets the time for the speed profiler.
+	 */
 	public void resetTime(){
 		//TODO: Big Bang
 		lastTime = System.currentTimeMillis();

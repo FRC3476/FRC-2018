@@ -4,64 +4,113 @@ package org.usfirst.frc.team3476.utility;
  * Limits acceleration and optionally jerk
  */
 public class RateLimiter {
-	
+
 	private double maxAccel, maxJerk, latestValue;
 	private double accValue;
-	
-	public RateLimiter(double accel){
-		this(accel, Double.NEGATIVE_INFINITY);
+
+	public RateLimiter(double accel) {
+		this(accel, Double.POSITIVE_INFINITY);
 	}
-	
-	public RateLimiter(double accel, double jerk){
+
+	/**
+	 * 
+	 * @param accel
+	 *            Maximum acceleration in units with an arbitrary time unit. The
+	 *            units match whatever you send in update()
+	 * @param jerk
+	 *            Maximum jerk in units with an arbitrary time unit. The units
+	 *            match whatever you send in update()
+	 */
+	public RateLimiter(double accel, double jerk) {
 		this.maxAccel = accel;
 		this.maxJerk = jerk;
 		latestValue = 0;
 	}
-	
-	public double update(double setpoint, double dt){
+
+	/**
+	 * 
+	 * @param setpoint
+	 *            What value to accelerate towards
+	 * @param dt
+	 *            How much time has past between iterations
+	 * @return Calculated latest value
+	 */
+	public double update(double setpoint, double dt) {
 		double diff = setpoint - latestValue;
 		double area = (Math.pow(accValue, 2) / maxJerk);
-		if(Math.abs(diff) >= Math.abs(area)){
+		/*
+		 * Check if we need to start decelerating
+		 */
+		if (Math.abs(diff) >= Math.abs(area)) {
 			accValue = accValue + Math.copySign(maxJerk * dt, diff);
-			if(Math.abs(accValue) > maxAccel){
+			/*
+			 * Limit accValue to the maximum acceleration
+			 */
+			if (Math.abs(accValue) > maxAccel) {
 				accValue = Math.copySign(maxAccel, accValue);
 			}
 			latestValue += accValue * dt;
 		} else {
 			accValue = accValue - Math.copySign(maxJerk * dt, diff);
-			if(Math.abs(accValue) > maxAccel){
-				accValue = Math.copySign(maxAccel, accValue);
-			}
 			latestValue += accValue * dt;
 		}
-		if(Math.signum(setpoint - latestValue) !=  Math.signum(diff)){
+		/*
+		 * Makes sure latestValue isn't greater than setpoint. accValue is moved
+		 * to 0 because the else part of the statement above changes the
+		 * accValue without despite it not needing to be changed.
+		 */
+		if (Math.signum(setpoint - latestValue) != Math.signum(diff)) {
 			latestValue = setpoint;
 			accValue = 0;
 		}
 		return latestValue;
 	}
-	
-	public double getAcc(){
+
+	/**
+	 * 
+	 * @return Current acceleration value
+	 */
+	public double getAcc() {
 		return accValue;
 	}
-	
-	public double getMaxJerk(){
+
+	/**
+	 * 
+	 * @return Current maximum jerk value
+	 */
+	public double getMaxJerk() {
 		return maxJerk;
 	}
-	
-	public double getMaxAccel(){
+
+	/**
+	 * 
+	 * @return Current maximum acceleration value
+	 */
+	public double getMaxAccel() {
 		return maxAccel;
 	}
-	
-	public double getLatestValue(){
+
+	/**
+	 * 
+	 * @return Latest value calculated
+	 */
+	public double getLatestValue() {
 		return latestValue;
 	}
-	
-	public void setLatestValue(double val){
+
+	/**
+	 * 
+	 * @param val
+	 *            Value to set the latest value to
+	 */
+	public void setLatestValue(double val) {
 		latestValue = val;
 	}
-	
-	public void reset(){
+
+	/**
+	 * Sets the latest value to 0 and current acceleration value to 0
+	 */
+	public void reset() {
 		latestValue = 0;
 		accValue = 0;
 	}

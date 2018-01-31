@@ -7,8 +7,14 @@ import java.util.Optional;
 
 import org.usfirst.frc.team3476.robot.Constants;
 
+/**
+ * Contains a list of points and generated segments from these points. This can be used to calculate lookahead in this class.
+ */
 public class Path {
 
+	/**
+	 * Two points that function as a line. 
+	 */
 	public static class PathSegment {	
 		
 		private Translation2d start, end, delta;
@@ -40,32 +46,71 @@ public class Path {
 			return end;
 		}
 		
+		/**
+		 * Gets the point on the line closest to the point defined in the argument
+		 * 
+		 * @param point
+		 * 			Point to find the closest point to
+		 * @return
+		 * 			The closest point on the line to the point specified
+		 */
 		private Translation2d getClosestPoint(Translation2d point){
 			double u = ((point.getX() - start.getX()) * delta.getX() + (point.getY() - start.getY()) * delta.getY()) / deltaDistSquared;
 			u = Math.max(Math.min(u, 1), 0);
 			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);	
 		}
 		
+		/**
+		 * Returns the point on the line which is some distance away from the start. The point travels on the line towards the end.
+		 * 
+		 * @param distance
+		 * 			Distance from the start of the line.
+		 * @return
+		 * 			Point on the line that is the distance away specified.
+		 */
 		private Translation2d getPointByDistance(double distance){
 			distance = Math.pow(distance, 2);
 			double u = Math.sqrt(distance / deltaDistSquared);
 			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);
 		}
 		
+		/**
+		 * Returns the point on the line which is some distance away from the end. The point travels on the line towards the start.
+		 * 
+		 * @param distance
+		 * 			Distance from the end of the line.
+		 * @return
+		 * 			Point on the line that is the distance away from the end
+		 */
 		private Translation2d getPointByDistanceFromEnd(double distance){
 			distance = Math.pow(distance, 2);
 			double u = Math.sqrt(distance / deltaDistSquared);
 			return new Translation2d(end.getX() - delta.getX() * u, end.getY() - end.getY() * u);
 		}
 		
+		/**
+		 * 
+		 * @return
+		 * 			Maximum speed for the path segment.
+		 */
 		private double getSpeed(){
 			return maxSpeed;
 		}
 		
+		/**
+		 * 
+		 * @return
+		 * 			Total distance from start of the segment to the end.
+		 */
 		private double getDistance(){
 			return deltaDist;
 		}		
 		
+		/**
+		 * 
+		 * @return
+		 * 			X and Y offset from the start to the end of the segment.
+		 */
 		private Translation2d getDelta(){
 			return delta;
 		}
@@ -80,20 +125,43 @@ public class Path {
 	private List<PathSegment> segments;
 	private Translation2d lastPoint;
 	private Rotation endAngle = null;
+	
+	/**
+	 * Contains a list of points and can create path segments with them. Lookahead is calculated with using this.
+	 * 
+	 * @param start
+	 * 			Initial point in path.
+	 */
 	public Path(Translation2d start) {
 		segments = new ArrayList<PathSegment>();
 		lastPoint = start;
 	}
 	
+	/**
+	 * Add another point to the path.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param speed
+	 */
 	public void addPoint(double x, double y, double speed){
 		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed));
 		lastPoint = new Translation2d(x, y);
 	}	
 	
+	/**
+	 * Sets the desired angle for the robot to end in. It does this by placing up to two points that have a 90 degree angle to allow the robot to converge on the path.
+	 * 
+	 * @param angle
+	 * 			Angle for the robot to end in.
+	 */
 	public void setAngle(Rotation angle){
 		endAngle = angle;
 	}
 	
+	/**
+	 * 
+	 */
 	public void processPoints(){
 		if(endAngle != null){
 			PathSegment lastSegment = segments.get(segments.size() - 1);
@@ -118,6 +186,9 @@ public class Path {
 		}
 	}
 	
+	/**
+	 * Prints all the points on the path.
+	 */
 	synchronized public void printAllPoints() {
 		for(PathSegment segment : segments) {
 			System.out.println(segment.getStart().getX() + "    " + segment.getStart().getY());
@@ -125,6 +196,15 @@ public class Path {
 		System.out.println(segments.get(segments.size()).getEnd().getX() + "   " + segments.get(segments.size()).getEnd().getY());
 	}
 	
+	/**
+	 * TODO: Explain what's goin on in this function
+	 * 
+	 * @param pose
+	 * 			Current robot position
+	 * @param lookAheadDistance
+	 * 			Distance on the path to get the look ahead.
+	 * @return
+	 */
 	public DrivingData getLookAheadPoint(Translation2d pose, double lookAheadDistance){
 		DrivingData data = new DrivingData();
 		Translation2d closestPoint = segments.get(0).getClosestPoint(pose);

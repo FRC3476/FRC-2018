@@ -78,6 +78,7 @@ public class Rotation implements Interpolable<Rotation> {
 		return Math.atan2(sin, cos);
 	}
 
+	//TODO: make it work
 	@Override
 	public Rotation interpolate(Rotation other, double percentage) {
 		Rotation diff = inverse().rotateBy(other);
@@ -96,14 +97,14 @@ public class Rotation implements Interpolable<Rotation> {
 	/**
 	 * 
 	 * @return
-	 * 			The Rotation that is flipped on the unit circle
+	 * 			The Rotation that is flipped about the x and y axis
 	 */
 	public Rotation flip() {
 		return new Rotation(-cos, -sin);
 	}
 	
 	/**
-	 * Makes it so that cos^2 + sin^2 = 1
+	 * Makes magnitude 1
 	 */
 	public void normalize() {
 		double magnitude = Math.hypot(cos, sin);

@@ -37,7 +37,10 @@ public class RateLimiter {
 	 */
 	public double update(double setpoint, double dt) {
 		double diff = setpoint - latestValue;
-		double area = (Math.pow(accValue, 2) / maxJerk);
+		double area = (Math.pow(accValue, 2) / maxJerk);// Trapezoidal
+														// acceleration area at
+														// decrease in jerk ->
+														// total velocity
 		/*
 		 * Check if we need to start decelerating
 		 */
@@ -46,9 +49,7 @@ public class RateLimiter {
 			/*
 			 * Limit accValue to the maximum acceleration
 			 */
-			if (Math.abs(accValue) > maxAccel) {
-				accValue = Math.copySign(maxAccel, accValue);
-			}
+			OrangeUtility.coerce(accValue, maxAccel, -maxAccel);
 			latestValue += accValue * dt;
 		} else {
 			accValue = accValue - Math.copySign(maxJerk * dt, diff);
@@ -113,5 +114,32 @@ public class RateLimiter {
 	public void reset() {
 		latestValue = 0;
 		accValue = 0;
+	}
+
+	/**
+	 * 
+	 * @param maxAccel
+	 *            Wanted max acceleration
+	 */
+	public void setMaxAccel(double maxAccel) {
+		this.maxAccel = maxAccel;
+	}
+
+	/**
+	 * 
+	 * @param maxJerk
+	 *            Wanted max Jerk
+	 */
+	public void setMaxJerk(double maxJerk) {
+		this.maxJerk = maxJerk;
+	}
+
+	/**
+	 * 
+	 * @param accValue
+	 *            Wanted acceleration value
+	 */
+	public void setAccValue(double accValue) {
+		this.accValue = accValue;
 	}
 }

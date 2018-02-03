@@ -57,8 +57,8 @@ public class RobotTracker extends Threaded {
 		deltaDistance = currentDistance - oldDistance;		
 		Translation2d deltaPosition = new Translation2d(deltaRotation.cos() * deltaDistance, deltaRotation.sin() * deltaDistance);
 		synchronized(this){
-			//currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition, deltaRotation));
-			currentOdometry = new RigidTransform(currentOdometry.translationMat.translateBy(deltaPosition), deltaRotation);
+			currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition, deltaRotation));
+			//currentOdometry = new RigidTransform(currentOdometry.translationMat.translateBy(deltaPosition), deltaRotation);
 			oldDistance = currentDistance;
 			//vehicleHistory.add(new InterpolableValue<>(System.nanoTime(), currentOdometry));
 			//gyroHistory.add(new InterpolableValue<>(System.nanoTime(), driveBase.getGyroAngle()));

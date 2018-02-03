@@ -1,12 +1,10 @@
 package org.usfirst.frc.team3476.utility;
 
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.locks.LockSupport;
 
-import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * Keeps track of scheduled tasks and checks every 1ms to execute the task with
@@ -16,18 +14,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 //TODO: Add remove function
 public class ThreadScheduler implements Runnable {
 
-	private ArrayList<Threaded> scheduledTasks;
-	private ArrayList<Long> taskPeriods, taskTimes;
-	private ArrayList<Future<?>> scheduledFutures;
-	private ArrayList<ExecutorService> threadPools;
+	private Vector<Schedule> schedules;
+	private long msToNs = 1000000;
 	private volatile boolean isRunning;
 
 	public ThreadScheduler() {
-		scheduledTasks = new ArrayList<>();
-		taskPeriods = new ArrayList<>();
-		taskTimes = new ArrayList<>();
-		scheduledFutures = new ArrayList<>();
-		threadPools = new ArrayList<>();
+		schedules = new Vector<Schedule>();
 		isRunning = true;
 
 		ExecutorService schedulingThread = Executors.newSingleThreadExecutor();
@@ -35,42 +27,58 @@ public class ThreadScheduler implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public void run() {		
 		while (isRunning) {
-			long waitTime = 1000000;
+			long waitTime = 1 * msToNs;
 			synchronized (this) {
-				for (int task = 0; task < scheduledTasks.size(); task++) {
-					long duration = System.nanoTime() - taskTimes.get(task);
-					long timeUntilCalled = taskPeriods.get(task) - duration;
-					if (timeUntilCalled <= 0) {
-						if (scheduledFutures.get(task).isDone()) {
-							scheduledFutures.set(task, threadPools.get(task).submit(scheduledTasks.get(task)));
-							taskTimes.set(task, System.nanoTime());
-						} else {
-							// TODO: log error
-						}
-					} else {
-						if (timeUntilCalled < waitTime) {
-							waitTime = timeUntilCalled;
-						}
-					}
-				}
+				for(Schedule schedule : schedules) {
+					schedule.executeIfReady();
+				}				
 			}
 			LockSupport.parkNanos(waitTime);
 		}
 	}
 
-	public void schedule(Threaded task, long period, ExecutorService threadPool) {
-		synchronized (this) {
-			scheduledTasks.add(task);
-			scheduledFutures.add(threadPool.submit(task));
-			taskPeriods.add(period);
-			taskTimes.add(System.nanoTime());
-			threadPools.add(threadPool);
-		}
+	public void schedule(Threaded task, long period, ExecutorService thread) {
+		schedules.add(new Schedule(task, period, System.nanoTime(), thread));
 	}
 
 	public void shutdown() {
 		isRunning = false;
+	}
+	
+	public void remove (Threaded task){
+		for(Schedule schedule : schedules){
+			if(task == schedule.getTask()){
+				schedules.remove(schedule);
+				return;
+			}
+		}
+		System.out.println("Task not found");
+	}
+	
+	private static class Schedule {
+		Threaded task;
+		public long taskPeriod, taskTime;
+		ExecutorService thread;
+		private Schedule (Threaded task, long taskPeriod, long taskTime, ExecutorService thread) {
+			this.task = task;
+			this.taskPeriod = taskPeriod;
+			this.taskTime = taskTime;
+			this.thread = thread;
+		}
+		
+		public void executeIfReady() {
+			if(task.isDone()) {
+				if(System.nanoTime() - taskTime > taskPeriod){
+					thread.submit(task);				
+					taskTime = System.nanoTime();
+				}
+			}
+		}
+		
+		public Threaded getTask() {
+			return task;
+		}
 	}
 }

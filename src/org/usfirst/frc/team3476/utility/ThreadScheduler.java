@@ -1,5 +1,6 @@
 package org.usfirst.frc.team3476.utility;
 
+import java.time.Duration;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,7 +16,6 @@ import java.util.concurrent.locks.LockSupport;
 public class ThreadScheduler implements Runnable {
 
 	private Vector<Schedule> schedules;
-	private long msToNs = 1000000;
 	private volatile boolean isRunning;
 
 	public ThreadScheduler() {
@@ -29,7 +29,7 @@ public class ThreadScheduler implements Runnable {
 	@Override
 	public void run() {		
 		while (isRunning) {
-			long waitTime = 1 * msToNs;
+			long waitTime = Duration.ofMillis(1).toNanos();
 			synchronized (this) {
 				for(Schedule schedule : schedules) {
 					schedule.executeIfReady();
@@ -38,9 +38,9 @@ public class ThreadScheduler implements Runnable {
 			LockSupport.parkNanos(waitTime);
 		}
 	}
-
-	public void schedule(Threaded task, long period, ExecutorService thread) {
-		schedules.add(new Schedule(task, period, System.nanoTime(), thread));
+	
+	public void schedule(Threaded task, Duration period, ExecutorService thread){
+		schedules.add(new Schedule(task, period.toNanos(), System.nanoTime(), thread));
 	}
 
 	public void shutdown() {

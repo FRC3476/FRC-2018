@@ -1,5 +1,6 @@
 package org.usfirst.frc.team3476.robot;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,8 +38,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		scheduler.schedule(drive, 500000, mainExecutor);
-		scheduler.schedule(tracker, 500000, mainExecutor);
+		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
+		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
 
 	/**

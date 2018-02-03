@@ -39,7 +39,7 @@ public class ThreadScheduler implements Runnable {
 		}
 	}
 	
-	public void schedule(Threaded task, Duration period, ExecutorService thread){
+	public void schedule(Threaded task, Duration period, ExecutorService thread) {
 		schedules.add(new Schedule(task, period.toNanos(), System.nanoTime(), thread));
 	}
 
@@ -47,7 +47,7 @@ public class ThreadScheduler implements Runnable {
 		isRunning = false;
 	}
 	
-	public void remove (Threaded task){
+	public void remove(Threaded task) {
 		for(Schedule schedule : schedules){
 			if(task == schedule.getTask()){
 				schedules.remove(schedule);
@@ -61,6 +61,7 @@ public class ThreadScheduler implements Runnable {
 		Threaded task;
 		public long taskPeriod, taskTime;
 		ExecutorService thread;
+		
 		private Schedule (Threaded task, long taskPeriod, long taskTime, ExecutorService thread) {
 			this.task = task;
 			this.taskPeriod = taskPeriod;

@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public abstract class Threaded implements Runnable {
 
-	private volatile boolean isDone = false;
+	private volatile boolean isDone = true;
 	private volatile double lastRuntime = 0;
 	
 	@Override

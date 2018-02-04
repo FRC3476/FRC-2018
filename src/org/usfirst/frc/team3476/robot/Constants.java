@@ -32,7 +32,7 @@ public final class Constants {
 	public static int RightMasterDriveId = 4;
 	public static int RightSlaveDriveId = 5;
 
-	public static int TurretTicksPerRotations = 10;
+	public static int SensorTicksPerRev = 1024;
 	private Constants() {
 	}
 }

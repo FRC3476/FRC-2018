@@ -101,9 +101,9 @@ public class OrangeDrive extends Threaded {
 		
 		// Get highest correct speed for left/right wheels
 		// Positive rotateValue turns right
-		leftMotorSpeed = OrangeUtility.coerce(moveValue + rotateValue, 1, -1);
-		rightMotorSpeed = OrangeUtility.coerce(moveValue - rotateValue, 1, -1);
 		if (drivePercentVbus) {
+			leftMotorSpeed = OrangeUtility.coerce(moveValue + rotateValue, 1, -1);
+			rightMotorSpeed = OrangeUtility.coerce(moveValue - rotateValue, 1, -1);
 			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 		} else {
 			moveValue *= Constants.MaxDriveSpeed;
@@ -159,7 +159,7 @@ public class OrangeDrive extends Threaded {
 		rightMotorSpeed = moveValue + angularPower;
 
 		angularPower = Math.abs(moveValue) * rotateValue - quickStopAccumulator;
-
+		//TODO: make pretty - coerce
 		if (leftMotorSpeed > 1.0) {
 			rightMotorSpeed -= overPower * (leftMotorSpeed - 1.0);
 			leftMotorSpeed = 1.0;
@@ -184,6 +184,7 @@ public class OrangeDrive extends Threaded {
 		leftProfiler.reset();
 		rightProfiler.reset();
 	}
+	
 	public double getAngle() {
 		return gyroSensor.getAngle();
 	}
@@ -191,7 +192,7 @@ public class OrangeDrive extends Threaded {
 	public double getDistance() {
 		return (getLeftDistance() + getRightDistance()) / 2;
 	}
-
+	//TODO: rename
 	public Rotation getGyroAngle() {
 		// -180 through 180
 		return Rotation.fromDegrees(gyroSensor.getAngle());
@@ -207,7 +208,7 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public double getSpeed() {
-		return ((leftTalon.getSelectedSensorVelocity(0) + rightTalon.getSelectedSensorVelocity(0)) / Constants.SensorTicksPerRev) * Constants.WheelDiameter * Math.PI;
+		return ((leftTalon.getSelectedSensorVelocity(0) + rightTalon.getSelectedSensorVelocity(0)) / Constants.SensorTicksPerRev) / 60 / 2 * Constants.WheelDiameter * Math.PI;
 	}
 
 	public void resetGyro() {
@@ -241,7 +242,7 @@ public class OrangeDrive extends Threaded {
 		// inches per sec to rotations per min
 		if (Math.abs(setVelocity.leftWheelSpeed) > Constants.MaxDriveSpeed || Math.abs(setVelocity.rightWheelSpeed) > Constants.MaxDriveSpeed) {
 			DriverStation.getInstance();
-			DriverStation.reportError("Velocity set over 216!", false);
+			DriverStation.reportError("Velocity set over " + Constants.MaxDriveSpeed + " !", false);
 			return;
 		}
 		// in/s -> (in / pi) * 15

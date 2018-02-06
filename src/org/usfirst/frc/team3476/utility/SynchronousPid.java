@@ -1,10 +1,12 @@
 package org.usfirst.frc.team3476.utility;
 
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
+/**
+ * PID Controller that doesn't run its own thread. Update() has to be called by
+ * the user.
+ */
 
 public class SynchronousPid {
-	 
+
 	private double m_P; // factor for "proportional" control
 	private double m_I; // factor for "integral" control
 	private double m_D; // factor for "derivative" control
@@ -30,12 +32,10 @@ public class SynchronousPid {
 	private double m_error = 0.0;
 	private double m_result = 0.0;
 
-	// TODO: Polish, set functions, get functions
-	// Input/Output Range
-	// reset
-	// set deadband
-	// get
-
+	/*
+	 * TODO: Polish, set functions, get functions Input/Output Range Reset Set
+	 * deadband
+	 */
 	public SynchronousPid(double P, double I, double D, double F) {
 		m_P = P;
 		m_I = I;
@@ -66,7 +66,7 @@ public class SynchronousPid {
 	public synchronized void setI(double I) {
 		m_I = I;
 	}
-	
+
 	public synchronized void setIzone(double izone) {
 		m_izone = izone;
 	}
@@ -118,17 +118,17 @@ public class SynchronousPid {
 			}
 		}
 		if (m_I != 0) {
-			if(Math.abs(m_error) > m_izone) {
-			double potentialIGain = (m_totalError + m_error) * m_I;
-			if (potentialIGain < m_maximumOutput) {
-				if (potentialIGain > m_minimumOutput) {
-					m_totalError += m_error;
+			if (Math.abs(m_error) > m_izone) {
+				double potentialIGain = (m_totalError + m_error) * m_I;
+				if (potentialIGain < m_maximumOutput) {
+					if (potentialIGain > m_minimumOutput) {
+						m_totalError += m_error;
+					} else {
+						m_totalError = m_minimumOutput / m_I;
+					}
 				} else {
-					m_totalError = m_minimumOutput / m_I;
+					m_totalError = m_maximumOutput / m_I;
 				}
-			} else {
-				m_totalError = m_maximumOutput / m_I;
-			}
 			}
 		}
 

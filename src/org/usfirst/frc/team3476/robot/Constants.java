@@ -5,7 +5,7 @@ public final class Constants {
 	public static double MinimumControllerInput = 0.15;
 
 	// Driving
-	public static double MaxDriveSpeed = 216;
+	public static double MaxDriveSpeed = 170;
 	public static double TeleopAccLimit = 90;
 	public static double TeleopJerkLimit = 2000;
 	
@@ -32,7 +32,7 @@ public final class Constants {
 	public static int RightMasterDriveId = 4;
 	public static int RightSlaveDriveId = 5;
 
-	public static int TurretTicksPerRotations = 10;
+	public static int SensorTicksPerRev = 1024;
 	private Constants() {
 	}
 }

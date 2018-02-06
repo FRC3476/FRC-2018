@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.usfirst.frc.team3476.robot.Constants;
-import org.usfirst.frc.team3476.utility.Rotation;
 import org.usfirst.frc.team3476.utility.Threaded;
+import org.usfirst.frc.team3476.utility.math.Rotation;
 
 import edu.wpi.first.wpilibj.DriverStation;
 

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.control;
 
 /**
  * Controller that adds a specific amount of extra load for rising edges that

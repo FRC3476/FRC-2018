@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.control;
 
 /**
  * PID Controller that doesn't run its own thread. Update() has to be called by

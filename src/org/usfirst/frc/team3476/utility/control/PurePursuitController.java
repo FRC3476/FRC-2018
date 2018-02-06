@@ -1,10 +1,13 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.control;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
-import org.usfirst.frc.team3476.utility.Path.DrivingData;
+import org.usfirst.frc.team3476.utility.UDP;
+import org.usfirst.frc.team3476.utility.control.Path.DrivingData;
+import org.usfirst.frc.team3476.utility.math.RigidTransform;
+import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import edu.wpi.first.wpilibj.Timer;
 

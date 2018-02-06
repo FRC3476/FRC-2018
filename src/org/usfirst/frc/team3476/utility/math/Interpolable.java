@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.math;
 
 /**
  * Allows a class to be interpolated using a double from 0.0 to 1.0

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.math;
 
 /**
  * Stores an x and y value. Rotates and Translates of objects returns a new object.

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.math;
 
 /**
  * Class that implements Interpolable for use in InterpolableValue

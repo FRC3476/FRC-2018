@@ -7,10 +7,10 @@ import java.util.concurrent.Executors;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.utility.Controller;
-import org.usfirst.frc.team3476.utility.Path;
-import org.usfirst.frc.team3476.utility.Rotation;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
-import org.usfirst.frc.team3476.utility.Translation2d;
+import org.usfirst.frc.team3476.utility.control.Path;
+import org.usfirst.frc.team3476.utility.math.Rotation;
+import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;

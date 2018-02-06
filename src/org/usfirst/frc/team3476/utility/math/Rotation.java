@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.math;
 
 /**
  * Stores a cos and sin that is used like a rotation matrix

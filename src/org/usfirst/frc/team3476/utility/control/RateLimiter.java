@@ -1,4 +1,6 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.control;
+
+import org.usfirst.frc.team3476.utility.OrangeUtility;
 
 /**
  * Limits acceleration and optionally jerk

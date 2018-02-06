@@ -2,11 +2,11 @@ package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
-import org.usfirst.frc.team3476.utility.Path;
-import org.usfirst.frc.team3476.utility.PurePursuitController;
-import org.usfirst.frc.team3476.utility.RateLimiter;
-import org.usfirst.frc.team3476.utility.Rotation;
 import org.usfirst.frc.team3476.utility.Threaded;
+import org.usfirst.frc.team3476.utility.control.Path;
+import org.usfirst.frc.team3476.utility.control.PurePursuitController;
+import org.usfirst.frc.team3476.utility.control.RateLimiter;
+import org.usfirst.frc.team3476.utility.math.Rotation;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -61,7 +61,6 @@ public class OrangeDrive extends Threaded {
 		rightTalon = new TalonSRX(Constants.RightMasterDriveId);
 
 		leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		
 		leftTalon.setInverted(false);
@@ -75,6 +74,7 @@ public class OrangeDrive extends Threaded {
 
 		leftSlaveTalon.set(ControlMode.Follower, leftTalon.getDeviceID());
 		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());;
+		rightSlaveTalon.setInverted(true);
 		
 		//TODO: Find constants of new drivebase
 		drivePercentVbus = false;

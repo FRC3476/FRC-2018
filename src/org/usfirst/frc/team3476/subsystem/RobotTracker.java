@@ -2,11 +2,11 @@ package org.usfirst.frc.team3476.subsystem;
 
 import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.utility.CircularQueue;
-import org.usfirst.frc.team3476.utility.RigidTransform;
-import org.usfirst.frc.team3476.utility.Rotation;
 import org.usfirst.frc.team3476.utility.Threaded;
-import org.usfirst.frc.team3476.utility.Translation2d;
 import org.usfirst.frc.team3476.utility.UDP;
+import org.usfirst.frc.team3476.utility.math.RigidTransform;
+import org.usfirst.frc.team3476.utility.math.Rotation;
+import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 public class RobotTracker extends Threaded {
 

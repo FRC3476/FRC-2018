@@ -24,6 +24,7 @@ public class Elevator {
 	public static Elevator getInstance() {
 		return instance;
 	}
+	//22.2 to 1
 	
 	public void setElevatorHeight(double height) {	
 		elevatorTalon.set(ControlMode.Position, height * Constants.ElevatorHeightToMotorRotations * Constants.SensorTicksPerRev);

@@ -2,6 +2,7 @@ package org.usfirst.frc.team3476.robot;
 
 public final class Constants {
 
+
 	public static double MinimumControllerInput = 0.15;
 
 	// Driving
@@ -34,11 +35,13 @@ public final class Constants {
 	public static int LeftSlaveDriveId = 3;
 	public static int RightMasterDriveId = 4;
 	public static int RightSlaveDriveId = 5;
-	public static int ElevatorId = 1000; //change to actual value
+	public static int ElevatorMotorId = 1000; //change to actual value
+	public static int ElevatorSlaveMotorId = 1000;
 	public static int ArmId = 1001; //change to actual value
 
 	public static double ArmLength = 1000000;
-	public static double ElevatorHeightToEncoderTicks = 10000000000.0;
+	public static double ElevatorHeightToMotorRotations = 100.0;
+	public static final double ElevatorHeight = 100;
 	public static int SensorTicksPerRev = 1024;
 	
 	private Constants() {

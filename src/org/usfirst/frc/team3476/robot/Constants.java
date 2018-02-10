@@ -27,10 +27,12 @@ public final class Constants {
 	public static double MaxLookAheadDistance = 30;
 	
 	//CAN IDs
-	public static int LeftMasterDriveId = 2;
-	public static int LeftSlaveDriveId = 3;
-	public static int RightMasterDriveId = 4;
-	public static int RightSlaveDriveId = 5;
+	public static int LeftMasterDriveId = 11;
+	public static int LeftSlaveDriveId = 12;
+	public static int LeftSlave2DriveId = 13;
+	public static int RightMasterDriveId = 14;
+	public static int RightSlaveDriveId = 15;
+	public static int RightSlave2DriveId = 16;
 
 	public static int SensorTicksPerRev = 1024;
 	private Constants() {

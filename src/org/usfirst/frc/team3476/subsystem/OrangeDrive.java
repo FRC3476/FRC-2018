@@ -49,7 +49,7 @@ public class OrangeDrive extends Threaded {
 	private boolean drivePercentVbus;
 
 	private ADXRS450_Gyro gyroSensor = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-	private TalonSRX leftTalon, rightTalon, leftSlaveTalon, rightSlaveTalon;
+	private TalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
 	private PurePursuitController autonomousDriver;
 
 	private DriveVelocity autoDriveVelocity;
@@ -60,24 +60,33 @@ public class OrangeDrive extends Threaded {
 		leftTalon = new TalonSRX(Constants.LeftMasterDriveId);
 		rightTalon = new TalonSRX(Constants.RightMasterDriveId);
 
+		/*
 		leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		
-		leftTalon.setInverted(false);
-		leftTalon.setSensorPhase(true);
-		rightTalon.setInverted(true);
-		rightTalon.setSensorPhase(false);
+		*/
 		
 		
 		leftSlaveTalon = new TalonSRX(Constants.LeftSlaveDriveId);
+		leftSlave2Talon = new TalonSRX(Constants.LeftSlave2DriveId);
 		rightSlaveTalon = new TalonSRX(Constants.RightSlaveDriveId);
+		rightSlave2Talon = new TalonSRX(Constants.RightSlave2DriveId);
+		leftTalon.setInverted(false);
+		rightTalon.setInverted(false);
+		leftSlaveTalon.setInverted(true);
+		leftSlave2Talon.setInverted(true);
+		rightSlaveTalon.setInverted(true);
+		rightSlave2Talon.setInverted(true);
+
+		leftTalon.setSensorPhase(true);
+		rightTalon.setSensorPhase(false);
 
 		leftSlaveTalon.set(ControlMode.Follower, leftTalon.getDeviceID());
-		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());;
-		rightSlaveTalon.setInverted(true);
+		leftSlave2Talon.set(ControlMode.Follower, leftTalon.getDeviceID());
+		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());
+		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
 		
 		//TODO: Find constants of new drivebase
-		drivePercentVbus = false;
+		drivePercentVbus = true;
 		driveState = DriveState.TELEOP;
 
 		rightTalon.config_kP(0, 0.2, 10);

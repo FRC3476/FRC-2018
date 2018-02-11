@@ -13,7 +13,7 @@ public class Elevator {
 	public long homeStartTime;
 	
 	private static final Elevator instance = new Elevator();
-	protected final double DOWN = 0, UP = -0;
+	protected final double DOWN = 0, UP = -0, HOMING_HEIGHT = -0;
 	
 	private Elevator() {
 		elevatorTalon= new TalonSRX(Constants.ElevatorMotorId);

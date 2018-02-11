@@ -28,7 +28,7 @@ public class Elevarm extends Threaded {
 	
 	public void setElevatorHeight(double height)
 	{
-		if (isValidPosition(arm.getClosedLoopTarget(), elevator.getClosedLoopTarget())) //If no collisions with the final positions, move the elevator to the position
+		if (isValidPosition(arm.getClosedLoopTarget(), height)) //If no collisions with the final positions, move the elevator to the position
 		{
 			elevator.setHeight(height);
 		}
@@ -37,10 +37,10 @@ public class Elevarm extends Threaded {
 			System.out.println("Collision detected. Elevator not moving");
 		}
 	}
-	
+	 	
 	public void setArmAngle(double angle)
 	{
-		if (isValidPosition(arm.getClosedLoopTarget(), elevator.getClosedLoopTarget())) //If no collisions with the final positions, move the arm to the position
+		if (isValidPosition(angle, elevator.getClosedLoopTarget())) //If no collisions with the final positions, move the arm to the position
 		{
 			arm.setAngle(angle);
 		}
@@ -117,11 +117,14 @@ public class Elevarm extends Threaded {
 	
 	public static boolean isValidPosition(double armAngle, double elevatorHeight)
 	{
+		double x = Math.sin(armAngle) * Constants.ArmLength;
+		double y = elevatorHeight - Constants.ArmLength * Math.cos(armAngle);
+		
 		return !(armAngle < Constants.ArmLowerAngleLimit			//Checks if
 				|| armAngle > Constants.ArmUpperAngleLimit			//limits of
 				|| elevatorHeight < Constants.ElevatorMinPosition	//elevator or arm
 				|| elevatorHeight > Constants.ElevatorMaxPosition);	//are exceeded
-																	//Add more constraints if needed
+				//Add more constraints if needed
 	}
 
 	@Override
@@ -129,6 +132,11 @@ public class Elevarm extends Threaded {
 		switch (currentElevatorState)
 		{
 			case HOMING:
+				if (!isValidPosition(arm.getAngle(), 0))
+				{
+					setArmAngle(arm.HORIZONTAL);
+					break;
+				}
 				elevator.setPercentOutput(.1); //Some slow speed
 				if (elevator.getOutputCurrent() > Constants.ElevatorStallCurrent)
 					{
@@ -152,6 +160,11 @@ public class Elevarm extends Threaded {
 		switch (currentArmState)
 		{
 			case HOMING:
+				if (!isValidPosition(0, elevator.getHeight()))
+				{
+					setElevatorHeight(elevator.HOMING_HEIGHT);
+					break;
+				}
 				arm.setPercentOutput(0.3);
 				if (arm.getOutputCurrent() > Constants.ElevatorStallCurrent)
 				{

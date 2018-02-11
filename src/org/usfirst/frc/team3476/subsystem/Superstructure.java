@@ -33,12 +33,12 @@ public class Superstructure extends Threaded {
 
 	//TODO: change to using a setpoint and using ratelimiter
 	public void setElevatorHeight(double height) {
-		elevator.setElevatorHeight(height);
+		elevator.setHeight(height);
 	}
 	
 	//TODO: change to using a setpoint and using ratelimiter
 	public void setArmAngle(Rotation angle) {
-		arm.setArmAngle(angle);
+		arm.setAngle(angle);
 	}
 
 	public void setOverallPosition(double distance, double height)

@@ -43,6 +43,20 @@ public final class Constants {
 	public static double ElevatorHeightToMotorRotations = 100.0;
 	public static final double ElevatorHeight = 100;
 	public static int SensorTicksPerRev = 1024;
+
+	public static double ArmLowerAngleLimit;
+
+	public static double ArmUpperAngleLimit;
+
+	public static double ArmSpeed;
+
+	public static double ElevatorSpeed;
+
+	public static double ElevatorMinPosition;
+
+	public static double ElevatorMaxPosition;
+
+	public static final double ArmAngleToMotorRotations = 124203942035d;
 	
 	private Constants() {
 	}

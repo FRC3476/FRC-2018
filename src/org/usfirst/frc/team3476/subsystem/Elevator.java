@@ -10,9 +10,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public class Elevator {
 
 	private TalonSRX elevatorTalon, slaveTalon;
-	public final double HIGHEST = 1000000000, LOWEST = -1000000000; //Replace with actual values
+	public long homeStartTime;
 	
 	private static final Elevator instance = new Elevator();
+	protected final double DOWN = 0, UP = -0;
 	
 	private Elevator() {
 		elevatorTalon= new TalonSRX(Constants.ElevatorMotorId);
@@ -24,10 +25,34 @@ public class Elevator {
 	public static Elevator getInstance() {
 		return instance;
 	}
-	//22.2 to 1
 	
-	public void setElevatorHeight(double height) {	
+	public void setPercentOutput(double output)
+	{
+		elevatorTalon.set(ControlMode.PercentOutput, output);
+	}
+	
+	protected void setEncoderPosition(int position)
+	{
+		elevatorTalon.setSelectedSensorPosition(position, 0, 10);
+	}
+	
+	protected void setHeight(double height)
+	{	
 		elevatorTalon.set(ControlMode.Position, height * Constants.ElevatorHeightToMotorRotations * Constants.SensorTicksPerRev);
 	}
 	
+	public double getHeight()
+	{
+		return elevatorTalon.getSelectedSensorPosition(0) * Constants.ElevatorHeightToMotorRotations * Constants.SensorTicksPerRev;
+	}
+	
+	public double getOutputCurrent()
+	{
+		return elevatorTalon.getOutputCurrent();
+	}
+	
+	public double getClosedLoopTarget()
+	{
+		return elevatorTalon.getClosedLoopError(0);
+	}
 }

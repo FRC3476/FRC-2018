@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3476.utility;
 
+import org.usfirst.frc.team3476.utility.math.Interpolable;
+import org.usfirst.frc.team3476.utility.math.InterpolableValue;
+
 public class CircularQueue<T extends Interpolable<T>> {
 	/**
 	 * NOT thread safe. This class assumes the data added is sorted! It has

@@ -1,15 +1,16 @@
 package org.usfirst.frc.team3476.robot;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.utility.Controller;
-import org.usfirst.frc.team3476.utility.Path;
-import org.usfirst.frc.team3476.utility.Rotation;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
-import org.usfirst.frc.team3476.utility.Translation2d;
+import org.usfirst.frc.team3476.utility.control.Path;
+import org.usfirst.frc.team3476.utility.math.Rotation;
+import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -22,13 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot {
-	final String defaultAuto = "Default";
-	final String customAuto = "My Auto";
-	String autoSelected;
-	SendableChooser<String> chooser = new SendableChooser<>();
-
-	
+public class Robot extends IterativeRobot {	
 	Controller xbox = new Controller(0);
 	OrangeDrive drive = OrangeDrive.getInstance();
 	RobotTracker tracker = RobotTracker.getInstance();
@@ -43,11 +38,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		chooser.addDefault("Default Auto", defaultAuto);
-		chooser.addObject("My Auto", customAuto);
-		SmartDashboard.putData("Auto choices", chooser);
-		scheduler.schedule(drive, 500000, mainExecutor);
-		scheduler.schedule(tracker, 500000, mainExecutor);
+		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
+		//scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
 
 	/**
@@ -63,7 +55,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autoSelected = chooser.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		tracker.resetOdometry();
@@ -75,7 +66,6 @@ public class Robot extends IterativeRobot {
 		autoPath.setAngle(Rotation.fromDegrees(90));
 		autoPath.processPoints();
 		drive.setAutoPath(autoPath, false);
-		System.out.println("Auto selected: " + autoSelected);
 	}
 
 	/**
@@ -83,15 +73,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		switch (autoSelected) {
-		case customAuto:
-			// Put custom auto code here
-			break;
-		case defaultAuto:
-		default:
-			// Put default auto code here
-			break;
-		}
 	}
 
 	@Override 

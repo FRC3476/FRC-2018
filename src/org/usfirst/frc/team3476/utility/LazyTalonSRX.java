@@ -12,7 +12,7 @@ public class LazyTalonSRX extends TalonSRX {
 	@Override
 	public void set(ControlMode controlMode, double outputValue)
 	{
-		if (controlMode != super.getControlMode() || outputValue != super.getClosedLoopTarget(0))
+		if (controlMode != super.getControlMode() || outputValue != super.getClosedLoopTarget(0)) //Only deals with pid profile 0
 			super.set(controlMode, outputValue);
 	}
 

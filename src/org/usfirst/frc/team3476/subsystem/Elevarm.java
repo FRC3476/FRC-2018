@@ -1,7 +1,13 @@
 package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
+import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.Threaded;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Elevarm extends Threaded {
 
@@ -190,6 +196,37 @@ public class Elevarm extends Threaded {
 	public boolean checkSubsystem() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public boolean checkElevator()
+	{
+		setArmAngle(arm.HORIZONTAL); //Move arm out of the way before testing
+		boolean[][] succeeded = OrangeUtility.checkMotors(.25, .5, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevator, elevator.getTalons());
+		for (boolean successes[] : succeeded)
+		{
+			for (boolean success : successes)
+			{
+				if (!success)
+					return false;
+			}
+		}
+		return true;
+	}
+	public boolean checkArm()
+	{
+		setElevatorHeight((elevator.UP + elevator.DOWN) / 2); //Move elevator out of the way before testing
+		//First, check current output
+		arm.setPercentOutput(.25);
+		Timer.delay(.5);
+		double armCurrent = arm.getOutputCurrent();
+		if (armCurrent < Constants.ExpectedArmCurrent)
+		{
+			DriverStation.getInstance().reportError("Elevator current below threshold", false);
+			return false;
+		}
+		//Then check encoder functionality
+		
+		return true;
 	}
 
 }

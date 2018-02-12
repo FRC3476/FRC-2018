@@ -41,8 +41,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
-		//scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
 
 	/**
@@ -81,6 +79,8 @@ public class Robot extends IterativeRobot {
 	@Override 
 	public void teleopInit(){
 		drive.resetMotionProfile();
+		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
+		//scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
 	/**
 	 * This function is called periodically during operator control
@@ -88,7 +88,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		
+		if (xbox.getRisingEdge(1))
+			drive.checkSubsystem();
 		
 	}
 

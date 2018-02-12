@@ -283,9 +283,18 @@ public class OrangeDrive extends Threaded {
 		leftTalon.setSelectedSensorPosition(0, 0, 10);
 		rightTalon.setSelectedSensorPosition(0, 0, 10);
 	}
-
-	@Override
+	
 	public boolean checkSubsystem() { //to be implemented
-		return false;
+		//shift down first
+		boolean succeeded[][] = OrangeUtility.checkMotors(.25, .5, 15, 200, 50, rightTalon, rightSlaveTalon, rightSlave2Talon, leftTalon, leftSlaveTalon, leftSlave2Talon);
+		for (boolean[] successes : succeeded)
+		{
+			for (boolean success : successes)
+			{
+				if (!success)
+					return false;
+			}
+		}
+		return true;
 	}
 }

@@ -1,23 +1,30 @@
 package org.usfirst.frc.team3476.subsystem;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.Threaded;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+
+import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 
 public class Elevator {
 
-	private TalonSRX elevatorTalon, slaveTalon;
+	private LazyTalonSRX elevatorTalon, slaveTalon;
 	public long homeStartTime;
 	
 	private static final Elevator instance = new Elevator();
 	protected final double DOWN = 0, UP = -0, HOMING_HEIGHT = -0;
 	
 	private Elevator() {
-		elevatorTalon= new TalonSRX(Constants.ElevatorMotorId);
-		slaveTalon = new TalonSRX(Constants.ElevatorSlaveMotorId);
+		elevatorTalon= new LazyTalonSRX(Constants.ElevatorMotorId);
+		slaveTalon = new LazyTalonSRX(Constants.ElevatorSlaveMotorId);
 		elevatorTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());		
 	}
@@ -55,9 +62,9 @@ public class Elevator {
 	{
 		return elevatorTalon.getClosedLoopError(0);
 	}
-
-	public boolean checkSubsystem() {
-		// TODO Auto-generated method stub
-		return false;
+	
+	protected LazyTalonSRX[] getTalons()
+	{
+		return new LazyTalonSRX[] {elevatorTalon, slaveTalon};
 	}
 }

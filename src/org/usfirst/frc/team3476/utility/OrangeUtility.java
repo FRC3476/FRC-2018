@@ -5,9 +5,52 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.wpi.first.wpilibj.PIDController;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-public class OrangeUtility {
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Timer;
+
+public class OrangeUtility {	
+	
+	
+	
+	public static boolean[][] checkMotors(double percentOutput, double timeToRun, double expectedCurrent, double expectedRPM, double expectedEncoderPosition, LazyTalonSRX... motors)
+	{
+		boolean[][] succeeded = new boolean[motors.length][3];
+		Arrays.fill(succeeded, true);
+		for (int i = 0; i < motors.length; i++)
+		{
+			motors[i].set(ControlMode.PercentOutput, percentOutput);
+			Timer.delay(timeToRun);
+			if (Math.abs(motors[i].getOutputCurrent() - expectedCurrent) > .1) //Need to make accurate current threshold
+			{
+				DriverStation.getInstance().reportError("Motor " + i + " current outside expected range.", false);
+				succeeded[i][0] = false;
+			}
+			if (Math.abs(motors[i].getSelectedSensorVelocity(0) - expectedRPM) > 10) // need to make accurate rpm threshold
+			{
+				DriverStation.getInstance().reportError("Motor " + i + " current outside expected range.", false);
+				succeeded[i][1] = false;
+			}
+			if (Math.abs(motors[i].getSelectedSensorPosition(0) - expectedEncoderPosition) > 10) // need to make accurate encoder position threshold
+			{
+				DriverStation.getInstance().reportError("Motor " + i + " current outside expected range.", false);
+				succeeded[i][2] = false;
+			}
+			
+			System.out.println("Motor " + i + " Current: " + motors[i].getOutputCurrent());
+			System.out.println("Motor " + i + " RPM: " + motors[i].getSelectedSensorVelocity(0));
+			System.out.println("Motor " + i + " Position: " + motors[i].getSelectedSensorPosition(0));
+			
+			motors[i].set(ControlMode.PercentOutput, 0);
+			Timer.delay(.5);
+		}
+		return succeeded;
+	}
+	
+	
 	/**
 	 * Extracts the double value from a string.
 	 *

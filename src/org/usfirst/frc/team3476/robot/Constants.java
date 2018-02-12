@@ -51,6 +51,14 @@ public final class Constants {
 	public static double ElevatorMinPosition;
 	public static double ElevatorMaxPosition;
 	public static final double ArmAngleToMotorRotations = 124203942035d;
+
+	public static final double ExpectedElevatorCurrent = 0;
+
+	public static final double ExpectedArmCurrent = 0;
+
+	public static final double ExpectedElevatorRPM = 0;
+
+	public static final double ExpectedElevator = 0;
 	
 	private Constants() {
 	}

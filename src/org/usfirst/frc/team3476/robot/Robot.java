@@ -42,7 +42,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
-		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
+		//scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
 
 	/**

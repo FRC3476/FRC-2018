@@ -2,6 +2,7 @@ package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
+import org.usfirst.frc.team3476.utility.Testable;
 import org.usfirst.frc.team3476.utility.Threaded;
 import org.usfirst.frc.team3476.utility.control.Path;
 import org.usfirst.frc.team3476.utility.control.PurePursuitController;
@@ -18,7 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 
-public class OrangeDrive extends Threaded {	
+public class OrangeDrive extends Threaded  implements Testable{	
 	public enum DriveState {
 		TELEOP, AUTO
 	}
@@ -282,5 +283,10 @@ public class OrangeDrive extends Threaded {
 		gyroSensor.reset();
 		leftTalon.setSelectedSensorPosition(0, 0, 10);
 		rightTalon.setSelectedSensorPosition(0, 0, 10);
+	}
+
+	@Override
+	public boolean Test() { //to be implemented
+		return false;
 	}
 }

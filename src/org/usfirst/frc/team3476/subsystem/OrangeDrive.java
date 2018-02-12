@@ -11,7 +11,7 @@ import org.usfirst.frc.team3476.utility.math.Rotation;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -49,7 +49,7 @@ public class OrangeDrive extends Threaded {
 	private boolean drivePercentVbus;
 
 	private ADXRS450_Gyro gyroSensor = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-	private TalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
+	private LazyTalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
 	private PurePursuitController autonomousDriver;
 
 	private DriveVelocity autoDriveVelocity;
@@ -57,8 +57,8 @@ public class OrangeDrive extends Threaded {
 	private RateLimiter leftProfiler, rightProfiler;
 	
 	private OrangeDrive() {
-		leftTalon = new TalonSRX(Constants.LeftMasterDriveId);
-		rightTalon = new TalonSRX(Constants.RightMasterDriveId);
+		leftTalon = new LazyTalonSRX(Constants.LeftMasterDriveId);
+		rightTalon = new LazyTalonSRX(Constants.RightMasterDriveId);
 
 		/*
 		leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
@@ -66,10 +66,10 @@ public class OrangeDrive extends Threaded {
 		*/
 		
 		
-		leftSlaveTalon = new TalonSRX(Constants.LeftSlaveDriveId);
-		leftSlave2Talon = new TalonSRX(Constants.LeftSlave2DriveId);
-		rightSlaveTalon = new TalonSRX(Constants.RightSlaveDriveId);
-		rightSlave2Talon = new TalonSRX(Constants.RightSlave2DriveId);
+		leftSlaveTalon = new LazyTalonSRX(Constants.LeftSlaveDriveId);
+		leftSlave2Talon = new LazyTalonSRX(Constants.LeftSlave2DriveId);
+		rightSlaveTalon = new LazyTalonSRX(Constants.RightSlaveDriveId);
+		rightSlave2Talon = new LazyTalonSRX(Constants.RightSlave2DriveId);
 		leftTalon.setInverted(false);
 		rightTalon.setInverted(false);
 		leftSlaveTalon.setInverted(true);

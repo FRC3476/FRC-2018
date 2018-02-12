@@ -186,5 +186,10 @@ public class Elevarm extends Threaded {
 				break;
 		}
 	}
+	
+	public boolean checkSubsystem() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

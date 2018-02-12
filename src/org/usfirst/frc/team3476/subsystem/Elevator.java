@@ -55,4 +55,9 @@ public class Elevator {
 	{
 		return elevatorTalon.getClosedLoopError(0);
 	}
+
+	public boolean checkSubsystem() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

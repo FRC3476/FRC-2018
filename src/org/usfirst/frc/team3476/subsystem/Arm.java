@@ -52,4 +52,9 @@ public class Arm {
 	{
 		return armTalon.getClosedLoopTarget(0);
 	}
+
+	public boolean checkSubsystem() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

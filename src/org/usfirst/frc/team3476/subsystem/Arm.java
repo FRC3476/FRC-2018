@@ -2,6 +2,7 @@ package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
+import org.usfirst.frc.team3476.utility.OrangeUtility;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -45,5 +46,9 @@ public class Arm {
 
 	public double getClosedLoopTarget() {
 		return armTalon.getClosedLoopTarget(0);
+	}
+	
+	public boolean checkSubsytem() {
+		return OrangeUtility.checkMotor(armTalon, armTalon, 0.25);
 	}
 }

@@ -13,6 +13,26 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeUtility {
 
+	public static boolean checkMotor(LazyTalonSRX checkedTalon, LazyTalonSRX sensorTalon, double output) {
+		checkedTalon.set(ControlMode.PercentOutput, output);
+		Timer.delay(0.5);
+		boolean success = true;
+		if (Math.abs(checkedTalon.getOutputCurrent() - 0.1) > .1) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
+		} 
+		if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - 10) > 10) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
+		}
+		if (Math.abs(sensorTalon.getSelectedSensorPosition(0) - 10) > 10) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
+		}
+		checkedTalon.set(ControlMode.PercentOutput, 0);
+		return success;
+	}
+	
 	/**
 	 * Extracts the double value from a string.
 	 *

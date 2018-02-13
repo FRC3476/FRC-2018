@@ -171,38 +171,27 @@ public class Elevarm extends Threaded {
 		}
 	}
 
-	public boolean checkSubsystem() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean checkSubsystem() {	
+		boolean success = true;
+		if(!checkElevator()) {
+			success = false;
+		}
+		if(!checkArm()) {
+			success = false;
+		}
+		return success;
 	}
 
 	public boolean checkElevator() {
 		setArmAngle(arm.HORIZONTAL); // Move arm out of the way before testing
-		boolean[][] succeeded = OrangeUtility.checkMotors(.25, .5, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevator, elevator.getTalons());
-		for (boolean successes[] : succeeded) {
-			for (boolean success : successes) {
-				if (!success) {
-					return false;
-				}
-			}
-		}
-		return true;
+		Timer.delay(0.75);
+		return elevator.checkSubystem();
 	}
 
 	public boolean checkArm() {
 		setElevatorHeight((elevator.UP + elevator.DOWN) / 2); // Move elevator out of the way before testing
-		// First, check current output
-		arm.setPercentOutput(.25);
-		Timer.delay(.5);
-		double armCurrent = arm.getOutputCurrent();
-		if (armCurrent < Constants.ExpectedArmCurrent) {
-			DriverStation.getInstance();
-			DriverStation.reportError("Elevator current below threshold", false);
-			return false;
-		}
-		// Then check encoder functionality
-
-		return true;
+		Timer.delay(0.75);
+		return arm.checkSubsytem();
 	}
 
 }

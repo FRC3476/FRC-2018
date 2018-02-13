@@ -2,6 +2,7 @@ package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
+import org.usfirst.frc.team3476.utility.OrangeUtility;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -53,5 +54,16 @@ public class Elevator {
 
 	protected LazyTalonSRX[] getTalons() {
 		return new LazyTalonSRX[] { elevatorTalon, slaveTalon };
+	}
+	
+	public boolean checkSubystem() {
+		boolean success = true;
+		if(!OrangeUtility.checkMotor(elevatorTalon, elevatorTalon, 0.25)) {
+			success = false;
+		}
+		if(!OrangeUtility.checkMotor(slaveTalon, elevatorTalon, 0.25)) {
+			success = false;
+		}
+		return success;
 	}
 }

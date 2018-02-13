@@ -5,9 +5,34 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeUtility {
+
+	public static boolean checkMotor(LazyTalonSRX checkedTalon, LazyTalonSRX sensorTalon, double output) {
+		checkedTalon.set(ControlMode.PercentOutput, output);
+		Timer.delay(0.5);
+		boolean success = true;
+		if (Math.abs(checkedTalon.getOutputCurrent() - 0.1) > .1) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
+		} 
+		if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - 10) > 10) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
+		}
+		if (Math.abs(sensorTalon.getSelectedSensorPosition(0) - 10) > 10) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
+		}
+		checkedTalon.set(ControlMode.PercentOutput, 0);
+		return success;
+	}
+	
 	/**
 	 * Extracts the double value from a string.
 	 *
@@ -191,19 +216,17 @@ public class OrangeUtility {
 		double add = toLow - fromLow * factor;
 		return toNormalize * factor + add;
 	}
-	
 
 	public static double coercedNormalize(double rawValue, double minInput, double maxInput, double minOutput, double maxOutput) {
 		if (rawValue < minInput) {
 			return minOutput;
-		} else if(rawValue > maxInput) {
+		} else if (rawValue > maxInput) {
 			return maxOutput;
 		}
 		double norm = (Math.abs(rawValue) - minInput) / (maxInput - minInput);
 		norm = Math.copySign(norm * (maxOutput - minOutput), rawValue);
 		return norm;
 	}
-
 
 	/**
 	 * Returns a string with all the parameters of the passed PID.

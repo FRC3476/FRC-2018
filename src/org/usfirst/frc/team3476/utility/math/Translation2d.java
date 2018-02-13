@@ -28,7 +28,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	 * to the Y axis is found from this angle. The points are treated as a
 	 * vector and the direction is taken off from it. The coordinates of the
 	 * points correspond to the unit circle.
-	 * 
+	 *
 	 * @param offset
 	 *            Point that becomes the new origin for the other point
 	 * @return Angle to the Y axis from the angle from the offset to this point
@@ -42,7 +42,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	 * the offset the origin and finding the angle to this point. The points are
 	 * treated as a vector and the direction is taken off from it. The
 	 * coordinates of the points correspond to the unit circle.
-	 * 
+	 *
 	 * @param offset
 	 *            Point that becomes the origin for the other point
 	 * @return Angle from the offset to this point
@@ -56,7 +56,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	 * axis is found from this angle. The points are treated as a vector and the
 	 * direction is taken off from it. The coordinates of the points correspond
 	 * to the unit circle.
-	 * 
+	 *
 	 * @param nextPoint
 	 *            Point to find angle to from this point
 	 * @return Angle of the two points.
@@ -70,7 +70,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	 * Get the angle from this point to another point. The points are treated as
 	 * a vector and the direction is taken off from it. The coordinates of the
 	 * points correspond to the unit circle.
-	 * 
+	 *
 	 * @param nextPoint
 	 *            Point to find angle to from this point.
 	 * @return Angle of the two points.
@@ -83,7 +83,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	/**
 	 * Get the distance between the this point and the point specified in the
 	 * argument.
-	 * 
+	 *
 	 * @param nextPoint
 	 *            Point to find distance to.
 	 * @return Distance between this point and the specified point.
@@ -93,7 +93,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return X value of this object.
 	 */
 	public double getX() {
@@ -101,7 +101,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Y value of this object.
 	 */
 	public double getY() {
@@ -109,7 +109,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Returns a Translation2d that when translated with this
 	 *         Translation2d becomes 0, 0. Essentially the negative x and y of
 	 *         this Translation2d.
@@ -120,11 +120,11 @@ public class Translation2d implements Interpolable<Translation2d> {
 
 	/**
 	 * Multiplies this point with a specified rotation matrix
-	 * 
+	 *
 	 * @param rotationMat
-	 * 			Rotation matrix to multiply point with
+	 *            Rotation matrix to multiply point with
 	 * @return
-	 * 			Rotated point
+	 * 		Rotated point
 	 */
 	public Translation2d rotateBy(Rotation rotationMat) {
 		double x2 = x * rotationMat.cos() - y * rotationMat.sin();
@@ -134,18 +134,18 @@ public class Translation2d implements Interpolable<Translation2d> {
 
 	/**
 	 * Translation this point by another point.
-	 * 
+	 *
 	 * @param delta
-	 * 			Translation2d to change this point by
+	 *            Translation2d to change this point by
 	 * @return
-	 * 			Translated point
+	 * 		Translated point
 	 */
 	public Translation2d translateBy(Translation2d delta) {
 
 		return new Translation2d(x + delta.getX(), y + delta.getY());
 	}
 
-	//Doesn't work yet
+	// Doesn't work yet
 	@Override
 	public Translation2d interpolate(Translation2d other, double percentage) {
 		// TODO Auto-generated method stub

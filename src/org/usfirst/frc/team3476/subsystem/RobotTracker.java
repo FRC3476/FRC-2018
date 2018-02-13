@@ -1,9 +1,7 @@
 package org.usfirst.frc.team3476.subsystem;
 
-import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.utility.CircularQueue;
 import org.usfirst.frc.team3476.utility.Threaded;
-import org.usfirst.frc.team3476.utility.UDP;
 import org.usfirst.frc.team3476.utility.math.RigidTransform;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
@@ -54,22 +52,24 @@ public class RobotTracker extends Threaded {
 	public void update() {
 		currentDistance = (driveBase.getLeftDistance() + driveBase.getRightDistance()) / 2;
 		Rotation deltaRotation = driveBase.getGyroAngle().inverse().rotateBy(offset);
-		deltaDistance = currentDistance - oldDistance;		
-		Translation2d deltaPosition = new Translation2d(deltaRotation.cos() * deltaDistance, deltaRotation.sin() * deltaDistance);
-		synchronized(this){
+		deltaDistance = currentDistance - oldDistance;
+		Translation2d deltaPosition = new Translation2d(deltaRotation.cos() * deltaDistance, deltaRotation.sin()
+				* deltaDistance);
+		synchronized (this) {
 			currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition, deltaRotation));
-			//currentOdometry = new RigidTransform(currentOdometry.translationMat.translateBy(deltaPosition), deltaRotation);
+			// currentOdometry = new RigidTransform(currentOdometry.translationMat.translateBy(deltaPosition),
+			// deltaRotation);
 			oldDistance = currentDistance;
-			//vehicleHistory.add(new InterpolableValue<>(System.nanoTime(), currentOdometry));
-			//gyroHistory.add(new InterpolableValue<>(System.nanoTime(), driveBase.getGyroAngle()));
+			// vehicleHistory.add(new InterpolableValue<>(System.nanoTime(), currentOdometry));
+			// gyroHistory.add(new InterpolableValue<>(System.nanoTime(), driveBase.getGyroAngle()));
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param offset
 	 */
-	synchronized public void setRotationOffset(Rotation offset){
+	synchronized public void setRotationOffset(Rotation offset) {
 		this.offset = offset;
 	}
 }

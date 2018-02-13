@@ -9,7 +9,7 @@ public abstract class Threaded implements Runnable {
 
 	private volatile boolean isDone = true;
 	private volatile double lastRuntime = 0;
-	
+
 	@Override
 	public void run() {
 		isDone = false;
@@ -20,11 +20,11 @@ public abstract class Threaded implements Runnable {
 	}
 
 	public abstract void update();
-	
-	public boolean isDone(){
+
+	public boolean isDone() {
 		return isDone;
 	}
-	
+
 	public double getLastRuntime() {
 		return lastRuntime;
 	}

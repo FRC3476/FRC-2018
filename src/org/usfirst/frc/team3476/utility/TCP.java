@@ -15,8 +15,7 @@ import java.util.concurrent.Executors;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-public class TCP extends Threaded 
-{
+public class TCP extends Threaded {
 	private class ConnectionHandler extends Threaded {
 
 		Socket clientSocket;
@@ -33,7 +32,7 @@ public class TCP extends Threaded
 
 		@Override
 		public void update() {
-			while(clientSocket.isConnected()){
+			while (clientSocket.isConnected()) {
 				byte[] buffer = new byte[2048];
 				String rawMessage = "";
 				try {
@@ -45,7 +44,7 @@ public class TCP extends Threaded
 					e.printStackTrace();
 				}
 				JSONObject message = (JSONObject) JSONValue.parse(rawMessage);
-				//Do whatever with message
+				// Do whatever with message
 			}
 			try {
 				clientSocket.close();
@@ -64,12 +63,12 @@ public class TCP extends Threaded
 	}
 
 	private ExecutorService workers;
-	
+
 	private ServerSocket listener;
 	private HashMap<String, Socket> connections;
-	
+
 	private TCP() {
-		
+
 		try {
 			listener = new ServerSocket(5800);
 		} catch (SocketException e) {
@@ -90,15 +89,15 @@ public class TCP extends Threaded
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param addr
-	 * 			Address to send message to
+	 *            Address to send message to
 	 * @param message
-	 * 			Contents of TCP packets
+	 *            Contents of TCP packets
 	 * @param port
-	 * 			Port to send message over 
+	 *            Port to send message over
 	 */
 	public void send(String addr, String message, int port) {
 		if (!connections.containsKey(addr + port)) {

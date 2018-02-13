@@ -14,9 +14,6 @@ import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick.ButtonType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot {	
+public class Robot extends IterativeRobot {
 	Controller xbox = new Controller(0);
 	OrangeDrive drive = OrangeDrive.getInstance();
 	Elevator elevator = Elevator.getInstance();
@@ -34,7 +31,7 @@ public class Robot extends IterativeRobot {
 	ThreadScheduler scheduler = new ThreadScheduler();
 
 	Path autoPath = new Path(new Translation2d(0, 0));
-	
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -76,21 +73,23 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 	}
 
-	@Override 
-	public void teleopInit(){
+	@Override
+	public void teleopInit() {
 		drive.resetMotionProfile();
 		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
-		//scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
+		// scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
+
 	/**
 	 * This function is called periodically during operator control
 	 */
 	@Override
 	public void teleopPeriodic() {
-		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		if (xbox.getRisingEdge(1))
+		// drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		if (xbox.getRisingEdge(1)) {
 			drive.checkSubsystem();
-		
+		}
+
 	}
 
 	/**
@@ -100,4 +99,3 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 	}
 }
-

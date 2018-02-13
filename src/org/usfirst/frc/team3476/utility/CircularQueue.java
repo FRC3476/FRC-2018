@@ -21,7 +21,7 @@ public class CircularQueue<T extends Interpolable<T>> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param t
 	 *            Add new a new value to the end of the queue
 	 */
@@ -33,7 +33,7 @@ public class CircularQueue<T extends Interpolable<T>> {
 	/**
 	 * Get InterpolableValue<T> from the queue that is a specified distance from
 	 * the back
-	 * 
+	 *
 	 * @param position
 	 *            Distance from back of queue
 	 * @return InterpolableValue<T> from position in argument
@@ -47,7 +47,7 @@ public class CircularQueue<T extends Interpolable<T>> {
 	 * Get T with given key. If an exact match isn't found it will interpolate
 	 * the value always. Keys outside the range will return the front or end of
 	 * the queue.
-	 * 
+	 *
 	 * @param key
 	 *            Key of wanted T
 	 * @return Matching interpolated T from key in argument

@@ -15,7 +15,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param accel
 	 *            Maximum acceleration in units with an arbitrary time unit. The
 	 *            units match whatever you send in update()
@@ -30,7 +30,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param setpoint
 	 *            What value to accelerate towards
 	 * @param dt
@@ -70,7 +70,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Current acceleration value
 	 */
 	public double getAcc() {
@@ -78,7 +78,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Current maximum jerk value
 	 */
 	public double getMaxJerk() {
@@ -86,7 +86,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Current maximum acceleration value
 	 */
 	public double getMaxAccel() {
@@ -94,7 +94,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Latest value calculated
 	 */
 	public double getLatestValue() {
@@ -102,7 +102,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param val
 	 *            Value to set the latest value to
 	 */
@@ -119,7 +119,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param maxAccel
 	 *            Wanted max acceleration
 	 */
@@ -128,7 +128,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param maxJerk
 	 *            Wanted max Jerk
 	 */
@@ -137,7 +137,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param accValue
 	 *            Wanted acceleration value
 	 */

@@ -286,16 +286,36 @@ public class OrangeDrive extends Threaded {
 		rightTalon.setSelectedSensorPosition(0, 0, 10);
 	}
 
-	public boolean checkSubsystem() { // to be implemented
-		// shift down first
-		boolean succeeded[][] = OrangeUtility.checkMotors(.25, .5, 15, 200, 50, rightTalon, rightSlaveTalon, rightSlave2Talon, leftTalon, leftSlaveTalon, leftSlave2Talon);
-		for (boolean[] successes : succeeded) {
-			for (boolean success : successes) {
-				if (!success) {
-					return false;
-				}
-			}
+	public boolean checkSubsystem() { 
+		// TODO: Get accurate thresholds
+		// TODO: Use PDP to get current
+		boolean success = true;
+		success = checkMotor(leftTalon, leftTalon, 0.25);
+		success = checkMotor(leftSlaveTalon, leftTalon, 0.25);
+		success = checkMotor(leftSlave2Talon, leftTalon, 0.25);
+		success = checkMotor(rightTalon, rightTalon, 0.25);
+		success = checkMotor(rightSlaveTalon, rightTalon, 0.25);
+		success = checkMotor(rightSlave2Talon, rightTalon, 0.25);
+		return success;
+	}
+	
+	public boolean checkMotor(LazyTalonSRX checkedTalon, LazyTalonSRX sensorTalon, double output) {
+		checkedTalon.set(ControlMode.PercentOutput, output);
+		Timer.delay(0.5);
+		boolean success = true;
+		if (Math.abs(checkedTalon.getOutputCurrent() - 0.1) > .1) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
+		} 
+		if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - 10) > 10) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
 		}
-		return true;
+		if (Math.abs(sensorTalon.getSelectedSensorPosition(0) - 10) > 10) {
+			DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+			success = false;
+		}
+		checkedTalon.set(ControlMode.PercentOutput, 0);
+		return success;
 	}
 }

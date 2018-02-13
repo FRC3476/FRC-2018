@@ -13,39 +13,6 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeUtility {
 
-	public static boolean[][] checkMotors(double percentOutput, double timeToRun, double expectedCurrent, double expectedRPM, double expectedEncoderPosition, LazyTalonSRX... motors) {
-		boolean[][] succeeded = new boolean[motors.length][3];
-		for(boolean[] array : succeeded) {
-			Arrays.fill(array, true);
-		}
-		for (int i = 0; i < motors.length; i++) {
-			motors[i].set(ControlMode.PercentOutput, percentOutput);
-			Timer.delay(timeToRun);
-			// TODO: Get accurate thresholds
-			// TODO: Use PDP to get current
-			if (Math.abs(motors[i].getOutputCurrent() - expectedCurrent) > .1) {
-				DriverStation.reportError("Motor " + i + " current outside expected range.", false);
-				succeeded[i][0] = false;
-			} 
-			if (Math.abs(motors[i].getSelectedSensorVelocity(0) - expectedRPM) > 10) {
-				DriverStation.reportError("Motor " + i + " current outside expected range.", false);
-				succeeded[i][1] = false;
-			}
-			if (Math.abs(motors[i].getSelectedSensorPosition(0) - expectedEncoderPosition) > 10) {
-				DriverStation.reportError("Motor " + i + " current outside expected range.", false);
-				succeeded[i][2] = false;
-			}
-
-			System.out.println("Motor " + i + " Current: " + motors[i].getOutputCurrent());
-			System.out.println("Motor " + i + " RPM: " + motors[i].getSelectedSensorVelocity(0));
-			System.out.println("Motor " + i + " Position: " + motors[i].getSelectedSensorPosition(0));
-
-			motors[i].set(ControlMode.PercentOutput, 0);
-			Timer.delay(.5);
-		}
-		return succeeded;
-	}
-
 	/**
 	 * Extracts the double value from a string.
 	 *

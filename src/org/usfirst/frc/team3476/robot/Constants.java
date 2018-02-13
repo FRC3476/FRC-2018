@@ -26,7 +26,7 @@ public final class Constants {
 	public static double MinLookAheadDistance = 14;
 	public static double MaxLookAheadDistance = 30;
 
-	public static double ElevatorTicksPerInc = 100000000000000000000000000000.0; // change to actual value
+	public static double ElevatorTicksPerInc = 100000000000.0; // change to actual value
 	public static double ElevatorStallCurrent = 100000000000.0;
 
 	// CAN IDs

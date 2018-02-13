@@ -38,6 +38,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
+		// scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
 
 	/**
@@ -53,6 +55,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		scheduler.resume();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		tracker.resetOdometry();
@@ -75,27 +78,33 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
+		scheduler.resume();
 		drive.resetMotionProfile();
-		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
-		// scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
 
+	@Override
+	public void disabledInit() {
+		scheduler.pause();
+	}
+	
 	/**
 	 * This function is called periodically during operator control
 	 */
 	@Override
 	public void teleopPeriodic() {
-		// drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		if (xbox.getRisingEdge(1)) {
-			drive.checkSubsystem();
-		}
+		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 
 	}
 
+	@Override
+	public void testInit() {
+		drive.checkSubsystem();
+	}
 	/**
 	 * This function is called periodically during test mode
 	 */
 	@Override
 	public void testPeriodic() {
+		
 	}
 }

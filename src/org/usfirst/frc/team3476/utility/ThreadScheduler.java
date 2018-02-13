@@ -16,25 +16,28 @@ public class ThreadScheduler implements Runnable {
 
 	private Vector<Schedule> schedules;
 	private volatile boolean isRunning;
+	private volatile boolean paused;
 
 	public ThreadScheduler() {
 		schedules = new Vector<Schedule>();
 		isRunning = true;
-
+		paused = false;
 		ExecutorService schedulingThread = Executors.newSingleThreadExecutor();
 		schedulingThread.execute(this);
 	}
 
 	@Override
 	public void run() {
-		while (isRunning) {
-			long waitTime = Duration.ofMillis(1).toNanos();
-			synchronized (this) {
-				for (Schedule schedule : schedules) {
-					schedule.executeIfReady();
+		while(isRunning) {
+			while (!paused) {
+				long waitTime = Duration.ofMillis(1).toNanos();
+				synchronized (this) {
+					for (Schedule schedule : schedules) {
+						schedule.executeIfReady();
+					}
 				}
+				LockSupport.parkNanos(waitTime);
 			}
-			LockSupport.parkNanos(waitTime);
 		}
 	}
 
@@ -42,6 +45,14 @@ public class ThreadScheduler implements Runnable {
 		schedules.add(new Schedule(task, period.toNanos(), System.nanoTime(), thread));
 	}
 
+	public void pause() {
+		paused = true;
+	}
+	
+	public void resume() {
+		paused = false;
+	}
+	
 	public void shutdown() {
 		isRunning = false;
 	}

@@ -193,5 +193,4 @@ public class Elevarm extends Threaded {
 		Timer.delay(0.75);
 		return arm.checkSubsytem();
 	}
-
 }

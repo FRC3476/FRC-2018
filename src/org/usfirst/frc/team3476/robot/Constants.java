@@ -31,10 +31,12 @@ public final class Constants {
 	public static double ElevatorStallCurrent = 100000000000.0;
 	
 	//CAN IDs
-	public static int LeftMasterDriveId = 2;
-	public static int LeftSlaveDriveId = 3;
-	public static int RightMasterDriveId = 4;
-	public static int RightSlaveDriveId = 5;
+	public static int LeftMasterDriveId = 11;
+	public static int LeftSlaveDriveId = 12;
+	public static int LeftSlave2DriveId = 13;
+	public static int RightMasterDriveId = 14;
+	public static int RightSlaveDriveId = 15;
+	public static int RightSlave2DriveId = 16;
 	public static int ElevatorMotorId = 1000; //change to actual value
 	public static int ElevatorSlaveMotorId = 1000;
 	public static int ArmId = 1001; //change to actual value

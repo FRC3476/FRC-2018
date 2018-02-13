@@ -38,7 +38,7 @@ public class Superstructure extends Threaded {
 	
 	//TODO: change to using a setpoint and using ratelimiter
 	public void setArmAngle(Rotation angle) {
-		arm.setAngle(angle);
+		//arm.setAngle(angle);
 	}
 
 	public void setOverallPosition(double distance, double height)

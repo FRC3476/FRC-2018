@@ -2,6 +2,8 @@ package org.usfirst.frc.team3476.utility.control;
 
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 
+import edu.wpi.first.wpilibj.Timer;
+
 /**
  * Limits acceleration and optionally jerk
  */
@@ -67,6 +69,19 @@ public class RateLimiter {
 			accValue = 0;
 		}
 		return latestValue;
+	}
+	
+	public double update(double setpoint, double dt, double remainingDist) {
+		double timeToSwitchAcc = (getAcc() / getMaxJerk())
+				+ (getMaxAccel() / getMaxJerk());
+		double timeToDecel = getLatestValue() / getMaxAccel();
+		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * getLatestValue();
+		dt = Math.min(20, dt);
+		if (distanceTillStop > remainingDist) {
+			return update(0, dt);
+		} else {
+			return update(setpoint, dt);
+		}
 	}
 
 	/**

@@ -71,10 +71,10 @@ public class UDP extends Threaded {
 		DatagramPacket msg = new DatagramPacket(buffer, buffer.length);
 		try {
 			listener.receive(msg);
+			workers.execute(new MessageHandler(msg));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		workers.execute(new MessageHandler(msg));
 	}
 
 	/**

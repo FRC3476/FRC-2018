@@ -1,10 +1,10 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.math;
 
 /**
  * This class uses a double to interpolate between Interpolable<T>
- * 
+ *
  * @param <T>
- * 			Class that implements Interpolable<T>
+ *            Class that implements Interpolable<T>
  */
 
 public class InterpolableValue<T extends Interpolable<T>> {

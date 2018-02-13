@@ -1,19 +1,19 @@
 package org.usfirst.frc.team3476.robot;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.usfirst.frc.team3476.subsystem.Elevator;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.utility.Controller;
-import org.usfirst.frc.team3476.utility.Path;
-import org.usfirst.frc.team3476.utility.Rotation;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
-import org.usfirst.frc.team3476.utility.Translation2d;
+import org.usfirst.frc.team3476.utility.control.Path;
+import org.usfirst.frc.team3476.utility.math.Rotation;
+import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,31 +23,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	final String defaultAuto = "Default";
-	final String customAuto = "My Auto";
-	String autoSelected;
-	SendableChooser<String> chooser = new SendableChooser<>();
-
-	
 	Controller xbox = new Controller(0);
 	OrangeDrive drive = OrangeDrive.getInstance();
+	Elevator elevator = Elevator.getInstance();
 	RobotTracker tracker = RobotTracker.getInstance();
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
 
 	Path autoPath = new Path(new Translation2d(0, 0));
-	
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
-		chooser.addDefault("Default Auto", defaultAuto);
-		chooser.addObject("My Auto", customAuto);
-		SmartDashboard.putData("Auto choices", chooser);
-		scheduler.schedule(drive, 500000, mainExecutor);
-		scheduler.schedule(tracker, 500000, mainExecutor);
+		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
+		// scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 	}
 
 	/**
@@ -63,7 +55,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autoSelected = chooser.getSelected();
+		scheduler.resume();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		tracker.resetOdometry();
@@ -75,7 +67,6 @@ public class Robot extends IterativeRobot {
 		autoPath.setAngle(Rotation.fromDegrees(90));
 		autoPath.processPoints();
 		drive.setAutoPath(autoPath, false);
-		System.out.println("Auto selected: " + autoSelected);
 	}
 
 	/**
@@ -83,34 +74,37 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		switch (autoSelected) {
-		case customAuto:
-			// Put custom auto code here
-			break;
-		case defaultAuto:
-		default:
-			// Put default auto code here
-			break;
-		}
 	}
 
-	@Override 
-	public void teleopInit(){
+	@Override
+	public void teleopInit() {
+		scheduler.resume();
 		drive.resetMotionProfile();
 	}
+
+	@Override
+	public void disabledInit() {
+		scheduler.pause();
+	}
+	
 	/**
 	 * This function is called periodically during operator control
 	 */
 	@Override
 	public void teleopPeriodic() {
 		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+
 	}
 
+	@Override
+	public void testInit() {
+		drive.checkSubsystem();
+	}
 	/**
 	 * This function is called periodically during test mode
 	 */
 	@Override
 	public void testPeriodic() {
+		
 	}
 }
-

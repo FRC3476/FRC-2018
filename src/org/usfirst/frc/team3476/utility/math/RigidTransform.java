@@ -1,7 +1,7 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.math;
 
 /**
- * Stores a Translation2d and a Rotation 
+ * Stores a Translation2d and a Rotation
  */
 public class RigidTransform implements Interpolable<RigidTransform> {
 
@@ -18,13 +18,22 @@ public class RigidTransform implements Interpolable<RigidTransform> {
 		translationMat = translation;
 	}
 
+	/*
+	 * Doesn't work yet
+	 */
 	@Override
 	public RigidTransform interpolate(RigidTransform other, double percentage) {
 		return null;
 	}
 
+	/**
+	 * Translates delta rotated by our rotation matrix and rotates our rotation matrix by the other rotation matrix
+	 *
+	 * @param delta
+	 * 
+	 * @return
+	 */
 	public RigidTransform transform(RigidTransform delta) {
-		return new RigidTransform(translationMat.translateBy(delta.translationMat.rotateBy(rotationMat)),
-				rotationMat.rotateBy(delta.rotationMat));
+		return new RigidTransform(translationMat.translateBy(delta.translationMat.rotateBy(rotationMat)), rotationMat.rotateBy(delta.rotationMat));
 	}
 }

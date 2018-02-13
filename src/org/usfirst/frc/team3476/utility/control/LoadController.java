@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3476.utility;
+package org.usfirst.frc.team3476.utility.control;
 
 /**
  * Controller that adds a specific amount of extra load for rising edges that
@@ -16,7 +16,7 @@ public class LoadController {
 	private boolean lastShoot = false;
 
 	/**
-	 * 
+	 *
 	 * @param baseF
 	 *            Feed forward
 	 * @param loadIncrease
@@ -31,11 +31,11 @@ public class LoadController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param input
-	 * 			True if adding load and false if not 
+	 *            True if adding load and false if not
 	 * @param setpoint
-	 * 			Setpoint that feed forward uses to calculate output
+	 *            Setpoint that feed forward uses to calculate output
 	 * @return
 	 */
 	public double calculate(boolean input, double setpoint) {
@@ -59,54 +59,54 @@ public class LoadController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			Current feed forward coefficient
+	 * 		Current feed forward coefficient
 	 */
 	public double getBaseF() {
 		return baseF;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param baseF
-	 * 			Feed forward coefficient to set controller to
+	 *            Feed forward coefficient to set controller to
 	 */
 	public void setBaseF(double baseF) {
 		this.baseF = baseF;
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			Current decay rate
+	 * 		Current decay rate
 	 */
 	public double getDecayRate() {
 		return decayRate;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param decayRate
-	 * 			Decay rate to set controller to
+	 *            Decay rate to set controller to
 	 */
 	public void setDecayRate(double decayRate) {
 		this.decayRate = decayRate;
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			Current load increase 
+	 * 		Current load increase
 	 */
 	public double getLoadIncrease() {
 		return loadIncrease;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param loadIncrease
-	 * 			Load increase to set controller to
+	 *            Load increase to set controller to
 	 */
 	public void setLoadIncrease(double loadIncrease) {
 		this.loadIncrease = loadIncrease;

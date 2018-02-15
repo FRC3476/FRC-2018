@@ -289,15 +289,10 @@ public class OrangeDrive extends Threaded {
 	public boolean checkSubsystem() { 
 		// TODO: Get accurate thresholds
 		// TODO: Use PDP to get current
-		boolean success = true;
-		success = leftTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
-		success = rightTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
-		success = OrangeUtility.checkMotor(leftTalon, leftTalon, 0.25);
-		success = OrangeUtility.checkMotor(leftSlaveTalon, leftTalon, 0.25);
-		success = OrangeUtility.checkMotor(leftSlave2Talon, leftTalon, 0.25);
-		success = OrangeUtility.checkMotor(rightTalon, rightTalon, 0.25);
-		success = OrangeUtility.checkMotor(rightSlaveTalon, rightTalon, 0.25);
-		success = OrangeUtility.checkMotor(rightSlave2Talon, rightTalon, 0.25);
+		boolean success = leftTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
+		success = success && rightTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
+		success = success && OrangeUtility.checkMotors(.25, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
+		success = success && OrangeUtility.checkMotors(.25, leftTalon, leftTalon, leftSlaveTalon, leftSlave2Talon);
 		return success;
 	}
 	

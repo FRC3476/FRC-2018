@@ -172,14 +172,7 @@ public class Elevarm extends Threaded {
 	}
 
 	public boolean checkSubsystem() {	
-		boolean success = true;
-		if(!checkElevator()) {
-			success = false;
-		}
-		if(!checkArm()) {
-			success = false;
-		}
-		return success;
+		return checkElevator() && checkArm();
 	}
 
 	public boolean checkElevator() {

@@ -7,12 +7,12 @@ package org.usfirst.frc.team3476.utility.math;
  *            Class that implements Interpolable<T>
  */
 
-public class InterpolableValue<T extends Interpolable<T>> {
+public class InterpolablePair<T extends Interpolable<T>> {
 
 	private T value;
 	private double key;
 
-	public InterpolableValue(double key, T value) {
+	public InterpolablePair(double key, T value) {
 		this.key = key;
 		this.value = value;
 	}

@@ -71,6 +71,16 @@ public class RateLimiter {
 		return latestValue;
 	}
 	
+	/**
+	 *
+	 * @param setpoint
+	 *            What value to accelerate towards
+	 * @param dt
+	 *            How much time has past between iterations
+	 * @param remainingDist
+	 * 			  Distance remaining before complete stop
+	 * @return Calculated latest value
+	 */
 	public double update(double setpoint, double dt, double remainingDist) {
 		double timeToSwitchAcc = (getAcc() / getMaxJerk())
 				+ (getMaxAccel() / getMaxJerk());

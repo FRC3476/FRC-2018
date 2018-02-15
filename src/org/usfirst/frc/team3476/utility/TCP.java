@@ -102,7 +102,9 @@ public class TCP extends Threaded {
 	public void send(String addr, String message, int port) {
 		if (!connections.containsKey(addr + port)) {
 			try {
-				connections.put(addr + port, new Socket(addr, port));
+				Socket conn = new Socket(addr, port);
+				connections.put(addr + port, conn);
+				workers.execute(new ConnectionHandler(conn));
 			} catch (SocketException e) {
 				e.printStackTrace();
 			} catch (UnknownHostException e) {

@@ -2,6 +2,7 @@ package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.utility.CircularQueue;
 import org.usfirst.frc.team3476.utility.Threaded;
+import org.usfirst.frc.team3476.utility.math.InterpolablePair;
 import org.usfirst.frc.team3476.utility.math.RigidTransform;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
@@ -26,7 +27,6 @@ public class RobotTracker extends Threaded {
 		vehicleHistory = new CircularQueue<>(100);
 		gyroHistory = new CircularQueue<>(200);
 		driveBase = OrangeDrive.getInstance();
-		driveBase.zeroSensors();
 		currentOdometry = new RigidTransform(new Translation2d(), driveBase.getGyroAngle());
 		offset = Rotation.fromDegrees(0);
 	}
@@ -57,11 +57,9 @@ public class RobotTracker extends Threaded {
 				* deltaDistance);
 		synchronized (this) {
 			currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition, deltaRotation));
-			// currentOdometry = new RigidTransform(currentOdometry.translationMat.translateBy(deltaPosition),
-			// deltaRotation);
 			oldDistance = currentDistance;
-			// vehicleHistory.add(new InterpolableValue<>(System.nanoTime(), currentOdometry));
-			// gyroHistory.add(new InterpolableValue<>(System.nanoTime(), driveBase.getGyroAngle()));
+			vehicleHistory.add(new InterpolablePair<>(System.nanoTime(), currentOdometry));
+			gyroHistory.add(new InterpolablePair<>(System.nanoTime(), driveBase.getGyroAngle()));
 		}
 	}
 

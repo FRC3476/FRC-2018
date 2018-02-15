@@ -57,13 +57,6 @@ public class Elevator {
 	}
 	
 	public boolean checkSubystem() {
-		boolean success = true;
-		if(!OrangeUtility.checkMotor(elevatorTalon, elevatorTalon, 0.25)) {
-			success = false;
-		}
-		if(!OrangeUtility.checkMotor(slaveTalon, elevatorTalon, 0.25)) {
-			success = false;
-		}
-		return success;
+		return OrangeUtility.checkMotors(.25, elevatorTalon, elevatorTalon, slaveTalon);
 	}
 }

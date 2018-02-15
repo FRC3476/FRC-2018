@@ -49,6 +49,6 @@ public class Arm {
 	}
 	
 	public boolean checkSubsytem() {
-		return OrangeUtility.checkMotor(armTalon, armTalon, 0.25);
+		return OrangeUtility.checkMotors(0.25, armTalon, armTalon);
 	}
 }

@@ -10,10 +10,10 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 public class Elevator {
 
 	private LazyTalonSRX elevatorTalon, slaveTalon;
-	public long homeStartTime;
+	protected long homeStartTime;
 
 	private static final Elevator instance = new Elevator();
-	protected final double DOWN = 0, UP = -0, HOMING_HEIGHT = -0;
+	public final double DOWN = 0, UP = -0, HOMING_HEIGHT = -0;
 
 	private Elevator() {
 		elevatorTalon = new LazyTalonSRX(Constants.ElevatorMotorId);

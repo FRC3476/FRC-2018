@@ -35,21 +35,20 @@ public class Elevator {
 	}
 
 	protected void setHeight(double height) {
-		elevatorTalon.set(ControlMode.Position, height * Constants.ElevatorHeightToMotorRotations
-				* Constants.SensorTicksPerRev);
+		elevatorTalon.set(ControlMode.Position, height * (1 / Constants.ElevatorInchesPerMotorRotation)
+				* Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getHeight() {
-		return elevatorTalon.getSelectedSensorPosition(0) * Constants.ElevatorHeightToMotorRotations
-				* Constants.SensorTicksPerRev;
+		return elevatorTalon.getSelectedSensorPosition(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ElevatorInchesPerMotorRotation;
+	}
+	
+	public double getTargetHeight() {
+		return elevatorTalon.getClosedLoopTarget(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ElevatorInchesPerMotorRotation;
 	}
 
 	public double getOutputCurrent() {
 		return elevatorTalon.getOutputCurrent();
-	}
-
-	public double getClosedLoopTarget() {
-		return elevatorTalon.getClosedLoopError(0);
 	}
 
 	protected LazyTalonSRX[] getTalons() {

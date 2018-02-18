@@ -33,19 +33,19 @@ public class Arm {
 	}
 
 	protected void setAngle(double angle) {
-		armTalon.set(ControlMode.Position, angle * Constants.ArmAngleToMotorRotations * Constants.SensorTicksPerRev);
+		armTalon.set(ControlMode.Position, angle * (1 / Constants.ArmRotationsPerMotorRotation) * Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getAngle() {
-		return armTalon.getSelectedSensorPosition(0);
+		return armTalon.getSelectedSensorPosition(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ArmRotationsPerMotorRotation;
+	}
+	
+	public double getTargetAngle() {
+		return armTalon.getClosedLoopTarget(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ArmRotationsPerMotorRotation;
 	}
 
 	public double getOutputCurrent() {
 		return armTalon.getOutputCurrent();
-	}
-
-	public double getClosedLoopTarget() {
-		return armTalon.getClosedLoopTarget(0);
 	}
 	
 	public boolean checkSubsytem() {

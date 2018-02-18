@@ -209,17 +209,17 @@ public class OrangeDrive extends Threaded {
 
 	// TODO: Constant for 1024
 	public double getLeftDistance() {
-		return leftTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerRev * Constants.WheelDiameter * Math.PI;
+		return leftTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter * Math.PI;
 	}
 
 	public double getRightDistance() {
-		return rightTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerRev * Constants.WheelDiameter
+		return rightTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
 				* Math.PI;
 	}
 
 	public double getSpeed() {
 		return ((leftTalon.getSelectedSensorVelocity(0) + rightTalon.getSelectedSensorVelocity(0))
-				/ Constants.SensorTicksPerRev) / 60 / 2 * Constants.WheelDiameter * Math.PI;
+				/ Constants.SensorTicksPerMotorRotation) / 60 / 2 * Constants.WheelDiameter * Math.PI;
 	}
 
 	public void resetGyro() {

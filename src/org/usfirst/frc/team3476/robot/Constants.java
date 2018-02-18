@@ -46,6 +46,7 @@ public final class Constants {
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
+	public static final int ElevatorSolenoidId = 0;
 
 	//Arm
 	public static final double ArmLowerAngleLimit = 55;

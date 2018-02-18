@@ -7,9 +7,12 @@ import org.usfirst.frc.team3476.utility.OrangeUtility;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
+import edu.wpi.first.wpilibj.Solenoid;
+
 public class Elevator {
 
 	private LazyTalonSRX elevatorTalon, slaveTalon;
+	private Solenoid gearboxSolenoid;
 	protected long homeStartTime;
 
 	private static final Elevator instance = new Elevator();
@@ -20,6 +23,8 @@ public class Elevator {
 		slaveTalon = new LazyTalonSRX(Constants.ElevatorSlaveMotorId);
 		elevatorTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
+		
+		gearboxSolenoid = new Solenoid(Constants.ElevatorSolenoidId);
 	}
 
 	public static Elevator getInstance() {
@@ -37,6 +42,11 @@ public class Elevator {
 	protected void setHeight(double height) {
 		elevatorTalon.set(ControlMode.Position, height * (1 / Constants.ElevatorInchesPerMotorRotation)
 				* Constants.SensorTicksPerMotorRotation);
+	}
+	
+	public void shiftElevatorGearbox(boolean engaged)
+	{
+		gearboxSolenoid.set(engaged);
 	}
 
 	public double getHeight() {

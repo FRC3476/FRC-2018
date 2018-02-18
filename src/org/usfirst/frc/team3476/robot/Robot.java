@@ -33,6 +33,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
 		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
+		scheduler.schedule(elevarm, Duration.ofMillis(10), mainExecutor);
 	}
 
 	@Override
@@ -98,6 +99,7 @@ public class Robot extends IterativeRobot {
 				elevarm.setElevatorHeight(5);
 			}
 		}
+		
 		if (arm.getOutputCurrent() < armMaxCurrent) //Prevent arm from kiling itself
 		{
 			//Manual Arm Control
@@ -121,9 +123,10 @@ public class Robot extends IterativeRobot {
 			}
 			if (xbox.getRisingEdge(8))
 			{
-				elevarm.setArmAngle(45);
+				elevarm.setArmAngle(55);
 			}
 		}
+		
 		if (elevator.getOutputCurrent() < elevatorMaxCurrent && arm.getOutputCurrent() < armMaxCurrent)
 		{
 			if (xbox.getRisingEdge(9))
@@ -135,6 +138,17 @@ public class Robot extends IterativeRobot {
 				elevarm.setOverallPosition(10, 72);
 			}
 		}
+		
+		if (xbox.getRisingEdge(11))
+		{
+			elevator.shiftElevatorGearbox(false);
+		}
+		if (xbox.getRisingEdge(12))
+		{
+			elevator.shiftElevatorGearbox(true);
+		}
+		
+		
 		
 	}
 

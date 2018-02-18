@@ -10,10 +10,10 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 public class Elevator {
 
 	private LazyTalonSRX elevatorTalon, slaveTalon;
-	public long homeStartTime;
+	protected long homeStartTime;
 
 	private static final Elevator instance = new Elevator();
-	protected final double DOWN = 0, UP = -0, HOMING_HEIGHT = -0;
+	public static final double DOWN = 0, UP = -0, ARM_HOMING_HEIGHT = -0;
 
 	private Elevator() {
 		elevatorTalon = new LazyTalonSRX(Constants.ElevatorMotorId);
@@ -35,21 +35,20 @@ public class Elevator {
 	}
 
 	protected void setHeight(double height) {
-		elevatorTalon.set(ControlMode.Position, height * Constants.ElevatorHeightToMotorRotations
-				* Constants.SensorTicksPerRev);
+		elevatorTalon.set(ControlMode.Position, height * (1 / Constants.ElevatorInchesPerMotorRotation)
+				* Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getHeight() {
-		return elevatorTalon.getSelectedSensorPosition(0) * Constants.ElevatorHeightToMotorRotations
-				* Constants.SensorTicksPerRev;
+		return elevatorTalon.getSelectedSensorPosition(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ElevatorInchesPerMotorRotation;
+	}
+	
+	public double getTargetHeight() {
+		return elevatorTalon.getClosedLoopTarget(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ElevatorInchesPerMotorRotation;
 	}
 
 	public double getOutputCurrent() {
 		return elevatorTalon.getOutputCurrent();
-	}
-
-	public double getClosedLoopTarget() {
-		return elevatorTalon.getClosedLoopError(0);
 	}
 
 	protected LazyTalonSRX[] getTalons() {

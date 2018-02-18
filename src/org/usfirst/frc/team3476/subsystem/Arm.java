@@ -10,8 +10,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 public class Arm {
 
 	private LazyTalonSRX armTalon;
-	protected final double HORIZONTAL = 100000000, DOWN = 0; // Update with real values
-	public long homeStartTime;
+	public static final double HORIZONTAL = 100000000, DOWN = 0; // Update with real values
+	protected long homeStartTime;
 
 	private static final Arm instance = new Arm();
 
@@ -33,19 +33,19 @@ public class Arm {
 	}
 
 	protected void setAngle(double angle) {
-		armTalon.set(ControlMode.Position, angle * Constants.ArmAngleToMotorRotations * Constants.SensorTicksPerRev);
+		armTalon.set(ControlMode.Position, angle * (1 / Constants.ArmRotationsPerMotorRotation) * Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getAngle() {
-		return armTalon.getSelectedSensorPosition(0);
+		return armTalon.getSelectedSensorPosition(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ArmRotationsPerMotorRotation;
+	}
+	
+	public double getTargetAngle() {
+		return armTalon.getClosedLoopTarget(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ArmRotationsPerMotorRotation;
 	}
 
 	public double getOutputCurrent() {
 		return armTalon.getOutputCurrent();
-	}
-
-	public double getClosedLoopTarget() {
-		return armTalon.getClosedLoopTarget(0);
 	}
 	
 	public boolean checkSubsytem() {

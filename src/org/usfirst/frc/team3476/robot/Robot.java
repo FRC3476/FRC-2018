@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.usfirst.frc.team3476.subsystem.Arm;
+import org.usfirst.frc.team3476.subsystem.Elevarm;
 import org.usfirst.frc.team3476.subsystem.Elevator;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
@@ -19,6 +21,8 @@ public class Robot extends IterativeRobot {
 	Controller xbox = new Controller(0);
 	OrangeDrive drive = OrangeDrive.getInstance();
 	Elevator elevator = Elevator.getInstance();
+	Arm arm = Arm.getInstance();
+	Elevarm elevarm = Elevarm.getInstance();
 	RobotTracker tracker = RobotTracker.getInstance();
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
@@ -65,7 +69,57 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+
+		if (xbox.getRawButton(1))
+		{
+			elevator.setPercentOutput(.5);
+		}
+		else if (xbox.getRawButton(2))
+		{
+			elevator.setPercentOutput(-.5);
+		}
+		else
+		{
+			elevator.setPercentOutput(0);
+		}
 		
+		if (xbox.getRawButton(3))
+		{
+			arm.setPercentOutput(.5);
+		}
+		else if (xbox.getRawButton(4))
+		{
+			arm.setPercentOutput(-.5);
+		}
+		else
+		{
+			arm.setPercentOutput(0);
+		}
+		
+		if (xbox.getRisingEdge(5))
+		{
+			elevarm.setElevatorHeight(50);
+		}
+		if (xbox.getRisingEdge(6))
+		{
+			elevarm.setElevatorHeight(5);
+		}
+		if (xbox.getRisingEdge(7))
+		{
+			elevarm.setArmAngle(arm.HORIZONTAL);
+		}
+		if (xbox.getRisingEdge(8))
+		{
+			elevarm.setArmAngle(45);
+		}
+		if (xbox.getRisingEdge(9))
+		{
+			elevarm.setOverallPosition(20, 36);
+		}
+		if (xbox.getRisingEdge(10))
+		{
+			elevarm.setOverallPosition(10, 72);
+		}
 		
 	}
 

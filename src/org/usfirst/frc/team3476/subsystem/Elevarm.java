@@ -99,6 +99,13 @@ public class Elevarm extends Threaded {
 		arm.homeStartTime = System.currentTimeMillis();
 		currentArmState = ArmState.HOMING;
 	}
+	
+	public void prepClimb()
+	{
+		elevator.setHeight(elevator.UP);
+		arm.setAngle(arm.DOWN);
+		elevator.shiftElevatorGearbox(false);
+	}
 
 	public static boolean isValidPosition(double armAngle, double elevatorHeight) {
 		double x = Math.sin(Math.toRadians(armAngle)) * Constants.ArmLength;

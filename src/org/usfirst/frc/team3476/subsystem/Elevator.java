@@ -57,6 +57,6 @@ public class Elevator {
 	}
 	
 	public boolean checkSubystem() {
-		return OrangeUtility.checkMotors(.25, elevatorTalon, elevatorTalon, slaveTalon);
+		return OrangeUtility.checkMotors(.25, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon, slaveTalon);
 	}
 }

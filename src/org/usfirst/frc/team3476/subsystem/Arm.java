@@ -49,6 +49,6 @@ public class Arm {
 	}
 	
 	public boolean checkSubsytem() {
-		return OrangeUtility.checkMotors(0.25, armTalon, armTalon);
+		return OrangeUtility.checkMotors(0.25, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM, Constants.ExpectedArmPosition, armTalon, armTalon);
 	}
 }

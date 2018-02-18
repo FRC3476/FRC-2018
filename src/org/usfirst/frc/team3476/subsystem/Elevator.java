@@ -13,7 +13,7 @@ public class Elevator {
 	protected long homeStartTime;
 
 	private static final Elevator instance = new Elevator();
-	public final double DOWN = 0, UP = -0, HOMING_HEIGHT = -0;
+	public static final double DOWN = 0, UP = -0, ARM_HOMING_HEIGHT = -0;
 
 	private Elevator() {
 		elevatorTalon = new LazyTalonSRX(Constants.ElevatorMotorId);

@@ -54,19 +54,15 @@ public class Elevarm extends Threaded {
 		}
 	}
 
-	public void setOverallPosition(double distance, double height) {
-		if (distance > Constants.ArmLength || height > Constants.ElevatorHeight) {
-			System.out.println("Position not reachable by elevator.");
-			return;
-		}
-
+	public void setOverallPosition(double distance, double height)
+	{
 		double armAngle = arm.getAngle();
 		double elevatorHeight = elevator.getHeight();
 
-		double armAngle1 = 180 - Math.asin(distance / Constants.ArmLength);
+		double armAngle1 = 180 - Math.toDegrees(Math.asin(distance / Constants.ArmLength));
 		double elevatorHeight1 = height - Math.sqrt(Constants.ArmLength * Constants.ArmLength - distance * distance);
 
-		double armAngle2 = Math.asin(distance / Constants.ArmLength);
+		double armAngle2 = Math.toDegrees(Math.asin(distance / Constants.ArmLength));
 		double elevatorHeight2 = height + Math.sqrt(Constants.ArmLength * Constants.ArmLength - distance * distance);
 
 		boolean position1Valid = isValidPosition(armAngle1, elevatorHeight1);
@@ -109,8 +105,8 @@ public class Elevarm extends Threaded {
 	}
 
 	public static boolean isValidPosition(double armAngle, double elevatorHeight) {
-		double x = Math.sin(armAngle) * Constants.ArmLength;
-		double y = elevatorHeight - Constants.ArmLength * Math.cos(armAngle);
+		double x = Math.sin(Math.toRadians(armAngle)) * Constants.ArmLength;
+		double y = elevatorHeight - Math.cos(Math.toRadians(armAngle)) * Constants.ArmLength;
 
 		return !(armAngle < Constants.ArmLowerAngleLimit // Checks if
 				|| armAngle > Constants.ArmUpperAngleLimit // limits of
@@ -149,7 +145,7 @@ public class Elevarm extends Threaded {
 		switch (currentArmState) {
 		case HOMING:
 			if (!isValidPosition(0, elevator.getHeight())) {
-				setElevatorHeight(elevator.HOMING_HEIGHT);
+				setElevatorHeight(elevator.ARM_HOMING_HEIGHT);
 				break;
 			}
 			arm.setPercentOutput(0.3);

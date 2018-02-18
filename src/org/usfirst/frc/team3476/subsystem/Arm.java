@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 public class Arm {
 
 	private LazyTalonSRX armTalon;
-	public final double HORIZONTAL = 100000000, DOWN = 0; // Update with real values
+	public static final double HORIZONTAL = 100000000, DOWN = 0; // Update with real values
 	protected long homeStartTime;
 
 	private static final Arm instance = new Arm();

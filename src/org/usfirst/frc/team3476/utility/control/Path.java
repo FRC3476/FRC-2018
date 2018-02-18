@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.usfirst.frc.team3476.robot.Constants;
+import org.usfirst.frc.team3476.utility.auto.AutoCommand;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
@@ -20,17 +21,29 @@ public class Path {
 
 		private Translation2d start, end, delta;
 		private double maxSpeed, deltaDist, deltaDistSquared;
+		private ArrayList<AutoCommand> commands;
 
+		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed,  ArrayList<AutoCommand> commands) {
+			start = new Translation2d(xStart, yStart);
+			end = new Translation2d(xEnd, yEnd);
+			setup(start, end, maxSpeed, commands);
+		}
+		
 		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed) {
 			start = new Translation2d(xStart, yStart);
 			end = new Translation2d(xEnd, yEnd);
-			this.maxSpeed = maxSpeed;
-			delta = start.inverse().translateBy(end);
-			deltaDist = Math.hypot(delta.getX(), delta.getY());
-			deltaDistSquared = Math.pow(deltaDist, 2);
+			setup(start, end, maxSpeed, new ArrayList<AutoCommand>());
 		}
 
+		private PathSegment(Translation2d start, Translation2d end, double maxSpeed, ArrayList<AutoCommand> commands) {
+			setup(start, end, maxSpeed, commands);
+		}
+		
 		private PathSegment(Translation2d start, Translation2d end, double maxSpeed) {
+			setup(start, end, maxSpeed, new ArrayList<AutoCommand>());
+		}
+		
+		private void setup(Translation2d start, Translation2d end, double maxSpeed, ArrayList<AutoCommand> commands) {
 			this.start = start;
 			this.end = end;
 			this.maxSpeed = maxSpeed;
@@ -150,6 +163,11 @@ public class Path {
 		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed));
 		lastPoint = new Translation2d(x, y);
 	}
+	
+	public void addPoint(double x, double y, double speed, ArrayList<AutoCommand> commands) {
+		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed, commands));
+		lastPoint = new Translation2d(x, y);
+	}
 
 	/**
 	 * Sets the desired angle for the robot to end in. It does this by placing
@@ -225,6 +243,9 @@ public class Path {
 				segments.remove(0);
 				closestPoint = closestNextPoint;
 				closestToRobot = closestNextToRobot;
+				for(AutoCommand command : segments.get(0).commands){
+					command.run();
+				}
 			} else {
 				break;
 			}

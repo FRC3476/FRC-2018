@@ -15,13 +15,13 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeUtility {
 
-	public static boolean checkMotors(double output, double expectedCurrent, double expectedRPM, double expectedPosition, LazyTalonSRX sensorTalon, LazyTalonSRX... checkedTalons) {
+	public static boolean checkMotors(double output, double expectedCurrent, double expectedRPM, double expectedPosition, LazyTalonSRX sensorTalon, LazyTalonSRX... talons) {
 		boolean success = true;
-		for (LazyTalonSRX checkedTalon : checkedTalons)
+		for (LazyTalonSRX talon : talons)
 		{
-			checkedTalon.set(ControlMode.PercentOutput, output);
-			Timer.delay(0.5);
-			if (Math.abs(checkedTalon.getOutputCurrent() - expectedCurrent) > Constants.ExpectedCurrentTolerance) {
+			talon.set(ControlMode.PercentOutput, output);
+			Timer.delay(1);
+			if (Math.abs(talon.getOutputCurrent() - expectedCurrent) > Constants.ExpectedCurrentTolerance) {
 				DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
 				success = false;
 			} 
@@ -33,7 +33,10 @@ public class OrangeUtility {
 				DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
 				success = false;
 			}
-			checkedTalon.set(ControlMode.PercentOutput, 0);
+			talon.set(ControlMode.PercentOutput, 0);
+			
+			System.out.println("Motor ID: " + talon.getDeviceID());
+			System.out.println("Current: " + talon.getOutputCurrent());
 		}
 		return success;
 	}

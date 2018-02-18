@@ -8,6 +8,9 @@ public final class Constants {
 	public static final double MaxDriveSpeed = 170;
 	public static final double TeleopAccLimit = 90;
 	public static final double TeleopJerkLimit = 2000;
+	public static final double ExpectedDriveCurrent = 0;
+	public static final double ExpectedDriveRPM = 0;
+	public static final double ExpectedDrivePosition = 0;
 
 	// Controller
 	public static final double MaximumControllerInput = 1;

@@ -291,7 +291,7 @@ public class OrangeDrive extends Threaded {
 		// TODO: Use PDP to get current
 		boolean success = leftTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
 		success = success && rightTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
-		success = success && OrangeUtility.checkMotors(.25, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
+		success = success && OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM, Constants.ExpectedDrivePosition, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
 		success = success && OrangeUtility.checkMotors(.25, leftTalon, leftTalon, leftSlaveTalon, leftSlave2Talon);
 		return success;
 	}

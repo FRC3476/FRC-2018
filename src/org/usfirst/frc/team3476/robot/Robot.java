@@ -66,59 +66,74 @@ public class Robot extends IterativeRobot {
 		scheduler.pause();
 	}
 	
+	double elevatorMaxCurrent = 2, armMaxCurrent = 2; //TEMP for testing
+	
 	@Override
 	public void teleopPeriodic() {
 		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 
-		if (xbox.getRawButton(1))
+		if (elevator.getOutputCurrent() < elevatorMaxCurrent) //Prevent elevator from killing itself
 		{
-			elevator.setPercentOutput(.5);
+			//Manual Elevator Control
+			if (xbox.getRawButton(1))
+			{
+				elevator.setPercentOutput(.5);
+			}
+			else if (xbox.getRawButton(2))
+			{
+				elevator.setPercentOutput(-.5);
+			}
+			else
+			{
+				elevator.setPercentOutput(0);
+			}
+			
+			//Elevator Position Control
+			if (xbox.getRisingEdge(5))
+			{
+				elevarm.setElevatorHeight(50);
+			}
+			if (xbox.getRisingEdge(6))
+			{
+				elevarm.setElevatorHeight(5);
+			}
 		}
-		else if (xbox.getRawButton(2))
+		if (arm.getOutputCurrent() < armMaxCurrent) //Prevent arm from kiling itself
 		{
-			elevator.setPercentOutput(-.5);
+			//Manual Arm Control
+			if (xbox.getRawButton(3))
+			{
+				arm.setPercentOutput(.5);
+			}
+			else if (xbox.getRawButton(4))
+			{
+				arm.setPercentOutput(-.5);
+			}
+			else
+			{
+				arm.setPercentOutput(0);
+			}
+			
+			//Arm Position Control
+			if (xbox.getRisingEdge(7))
+			{
+				elevarm.setArmAngle(arm.HORIZONTAL);
+			}
+			if (xbox.getRisingEdge(8))
+			{
+				elevarm.setArmAngle(45);
+			}
 		}
-		else
+		if (elevator.getOutputCurrent() < elevatorMaxCurrent && arm.getOutputCurrent() < armMaxCurrent)
 		{
-			elevator.setPercentOutput(0);
-		}
-		
-		if (xbox.getRawButton(3))
-		{
-			arm.setPercentOutput(.5);
-		}
-		else if (xbox.getRawButton(4))
-		{
-			arm.setPercentOutput(-.5);
-		}
-		else
-		{
-			arm.setPercentOutput(0);
-		}
-		
-		if (xbox.getRisingEdge(5))
-		{
-			elevarm.setElevatorHeight(50);
-		}
-		if (xbox.getRisingEdge(6))
-		{
-			elevarm.setElevatorHeight(5);
-		}
-		if (xbox.getRisingEdge(7))
-		{
-			elevarm.setArmAngle(arm.HORIZONTAL);
-		}
-		if (xbox.getRisingEdge(8))
-		{
-			elevarm.setArmAngle(45);
-		}
-		if (xbox.getRisingEdge(9))
-		{
-			elevarm.setOverallPosition(20, 36);
-		}
-		if (xbox.getRisingEdge(10))
-		{
-			elevarm.setOverallPosition(10, 72);
+			if (xbox.getRisingEdge(9))
+			{
+				elevarm.setOverallPosition(20, 36);
+			}
+			if (xbox.getRisingEdge(10))
+			{
+				elevarm.setOverallPosition(10, 72);
+			}
 		}
 		
 	}

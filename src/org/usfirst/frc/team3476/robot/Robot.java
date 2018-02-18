@@ -146,15 +146,13 @@ public class Robot extends IterativeRobot {
 		if (xbox.getRisingEdge(12))
 		{
 			elevator.shiftElevatorGearbox(true);
-		}
-		
-		
-		
+		}	
 	}
 
 	@Override
 	public void testInit() {
 		drive.checkSubsystem();
+		elevarm.checkSubsystem();
 	}
 	
 	@Override

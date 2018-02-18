@@ -33,8 +33,7 @@ public class Elevarm extends Threaded {
 	}
 
 	public void setElevatorHeight(double height) {
-		if (isValidPosition(arm.getTargetAngle(), height)) // If no collisions with the final positions, move the
-																// elevator to the position
+		if (isValidPosition(arm.getTargetAngle(), height)) // If no collisions with the final positions, move the elevator to the position
 		{
 			elevator.setHeight(height);
 		} else {
@@ -43,8 +42,7 @@ public class Elevarm extends Threaded {
 	}
 
 	public void setArmAngle(double angle) {
-		if (isValidPosition(angle, elevator.getTargetHeight())) // If no collisions with the final positions, move
-																	// the arm to the position
+		if (isValidPosition(angle, elevator.getTargetHeight())) // If no collisions with the final positions, move the arm to the position
 		{
 			arm.setAngle(angle);
 		} else {
@@ -108,8 +106,8 @@ public class Elevarm extends Threaded {
 
 		return !(armAngle < Constants.ArmLowerAngleLimit // Checks if
 				|| armAngle > Constants.ArmUpperAngleLimit // limits of
-				|| elevatorHeight < Constants.ElevatorMinPosition // elevator or arm
-				|| elevatorHeight > Constants.ElevatorMaxPosition); // are exceeded
+				|| elevatorHeight < Constants.ElevatorMinHeight // elevator or arm
+				|| elevatorHeight > Constants.ElevatorMaxHeight); // are exceeded
 		// Add more constraints if needed
 	}
 
@@ -131,7 +129,7 @@ public class Elevarm extends Threaded {
 			} else if (System.currentTimeMillis() - elevator.homeStartTime > 1000) {
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
 				elevator.setPercentOutput(0);
-				elevator.setEncoderPosition((int)(Constants.ElevatorMinPosition * (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
+				elevator.setEncoderPosition((int)(Constants.ElevatorMinHeight * (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
 				// elevator.setHeight(elevator.DOWN); Add this back in if we need to go to a certain position after
 				// homing
 				currentElevatorState = ElevatorState.MANUAL;

@@ -61,6 +61,12 @@ public final class Constants {
 
 	public static final double ExpectedElevator = 0;
 
+	public static final double ExpectedCurrentTolerance = 0;
+
+	public static final double ExpectedRPMTolerance = 0;
+
+	public static final double ExpectedPositionTolerance = 0;
+
 	private Constants() {
 	}
 }

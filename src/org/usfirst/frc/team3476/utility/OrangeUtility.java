@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.usfirst.frc.team3476.robot.Constants;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -13,21 +15,21 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeUtility {
 
-	public static boolean checkMotors(double output, LazyTalonSRX sensorTalon, LazyTalonSRX... checkedTalons) {
+	public static boolean checkMotors(double output, double expectedCurrent, double expectedRPM, double expectedPosition, LazyTalonSRX sensorTalon, LazyTalonSRX... checkedTalons) {
 		boolean success = true;
 		for (LazyTalonSRX checkedTalon : checkedTalons)
 		{
 			checkedTalon.set(ControlMode.PercentOutput, output);
 			Timer.delay(0.5);
-			if (Math.abs(checkedTalon.getOutputCurrent() - 0.1) > .1) {
+			if (Math.abs(checkedTalon.getOutputCurrent() - expectedCurrent) > Constants.ExpectedCurrentTolerance) {
 				DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
 				success = false;
 			} 
-			if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - 10) > 10) {
+			if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - expectedRPM) > Constants.ExpectedRPMTolerance) {
 				DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
 				success = false;
 			}
-			if (Math.abs(sensorTalon.getSelectedSensorPosition(0) - 10) > 10) {
+			if (Math.abs(sensorTalon.getSelectedSensorPosition(0) - expectedPosition) > Constants.ExpectedPositionTolerance) {
 				DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
 				success = false;
 			}

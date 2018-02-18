@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public class LazyTalonSRX extends TalonSRX {
 
 	private double prevValue = 0;
+	private ControlMode prevControlMode = ControlMode.Disabled;
 
 	public LazyTalonSRX(int deviceNumber) {
 		super(deviceNumber);
@@ -15,10 +16,14 @@ public class LazyTalonSRX extends TalonSRX {
 
 	@Override
 	public void set(ControlMode controlMode, double outputValue) {
-		if (outputValue != prevValue) {
-			set(controlMode, outputValue);
+		if (outputValue != prevValue || controlMode != prevControlMode) {
+			super.set(controlMode, outputValue);
 			prevValue = outputValue;
 		}
+	}
+	
+	public double getSetpoint() {
+		return prevValue;
 	}
 
 }

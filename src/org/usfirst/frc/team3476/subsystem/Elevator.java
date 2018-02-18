@@ -16,18 +16,18 @@ public class Elevator {
 	protected long homeStartTime;
 
 	private static final Elevator instance = new Elevator();
-	public final double DOWN = 0, UP = -0, ARM_HOMING_HEIGHT = -0;
 
 	private Elevator() {
 		elevatorTalon = new LazyTalonSRX(Constants.ElevatorMotorId);
 		slaveTalon = new LazyTalonSRX(Constants.ElevatorSlaveMotorId);
 		elevatorTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
+		slaveTalon.setInverted(false);
 		
 		gearboxSolenoid = new Solenoid(Constants.ElevatorSolenoidId);
 	}
 
-	public static Elevator getInstance() {
+	protected static Elevator getInstance() {
 		return instance;
 	}
 
@@ -54,11 +54,16 @@ public class Elevator {
 	}
 	
 	public double getTargetHeight() {
-		return elevatorTalon.getClosedLoopTarget(0) * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ElevatorInchesPerMotorRotation;
+		return elevatorTalon.getSetpoint() * (1 / Constants.SensorTicksPerMotorRotation) * Constants.ElevatorInchesPerMotorRotation;
 	}
 
 	public double getOutputCurrent() {
-		return elevatorTalon.getOutputCurrent();
+		return (elevatorTalon.getOutputCurrent() + slaveTalon.getOutputCurrent()) / 2;
+	}
+	
+	public void configMotors()
+	{
+		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
 	}
 
 	protected LazyTalonSRX[] getTalons() {
@@ -66,6 +71,8 @@ public class Elevator {
 	}
 	
 	public boolean checkSubystem() {
-		return OrangeUtility.checkMotors(.25, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon, slaveTalon);
+		boolean success = OrangeUtility.checkMotors(.05, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon, slaveTalon);
+		configMotors();
+		return success;
 	}
 }

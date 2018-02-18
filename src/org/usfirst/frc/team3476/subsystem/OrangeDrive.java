@@ -10,6 +10,7 @@ import org.usfirst.frc.team3476.utility.control.RateLimiter;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -61,30 +62,14 @@ public class OrangeDrive extends Threaded {
 		leftTalon = new LazyTalonSRX(Constants.LeftMasterDriveId);
 		rightTalon = new LazyTalonSRX(Constants.RightMasterDriveId);
 
-		/*
-		 * leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		 * rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		 */
+		leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+		rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 
 		leftSlaveTalon = new LazyTalonSRX(Constants.LeftSlaveDriveId);
 		leftSlave2Talon = new LazyTalonSRX(Constants.LeftSlave2DriveId);
 		rightSlaveTalon = new LazyTalonSRX(Constants.RightSlaveDriveId);
 		rightSlave2Talon = new LazyTalonSRX(Constants.RightSlave2DriveId);
-		leftTalon.setInverted(false);
-		rightTalon.setInverted(false);
-		leftSlaveTalon.setInverted(true);
-		leftSlave2Talon.setInverted(true);
-		rightSlaveTalon.setInverted(true);
-		rightSlave2Talon.setInverted(true);
-
-		leftTalon.setSensorPhase(true);
-		rightTalon.setSensorPhase(false);
-
-		leftSlaveTalon.set(ControlMode.Follower, leftTalon.getDeviceID());
-		leftSlave2Talon.set(ControlMode.Follower, leftTalon.getDeviceID());
-		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());
-		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
-
+		configMotors();
 		// TODO: Find constants of new drivebase
 		drivePercentVbus = true;
 		driveState = DriveState.TELEOP;
@@ -118,10 +103,10 @@ public class OrangeDrive extends Threaded {
 			moveValue *= Constants.MaxDriveSpeed;
 			rotateValue *= Constants.MaxDriveSpeed;
 
-			leftMotorSpeed = OrangeUtility.coerce(moveValue
-					+ rotateValue, Constants.MaxDriveSpeed, -Constants.MaxDriveSpeed);
-			rightMotorSpeed = OrangeUtility.coerce(moveValue
-					- rotateValue, Constants.MaxDriveSpeed, -Constants.MaxDriveSpeed);
+			leftMotorSpeed = OrangeUtility.coerce(moveValue + rotateValue, Constants.MaxDriveSpeed,
+					-Constants.MaxDriveSpeed);
+			rightMotorSpeed = OrangeUtility.coerce(moveValue - rotateValue, Constants.MaxDriveSpeed,
+					-Constants.MaxDriveSpeed);
 
 			double now = Timer.getFPGATimestamp();
 			double dt = (now - lastTime);
@@ -190,6 +175,24 @@ public class OrangeDrive extends Threaded {
 		setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 	}
 
+	private void configMotors() {
+		leftSlaveTalon.set(ControlMode.Follower, leftTalon.getDeviceID());
+		leftSlave2Talon.set(ControlMode.Follower, leftTalon.getDeviceID());
+		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());
+		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
+
+		leftTalon.setInverted(true);
+		rightTalon.setInverted(true);
+		leftSlaveTalon.setInverted(true);
+		leftSlave2Talon.setInverted(true);
+		rightSlaveTalon.setInverted(true);
+		rightSlave2Talon.setInverted(true);
+
+		leftTalon.setSensorPhase(true);
+		rightTalon.setSensorPhase(false);
+
+	}
+
 	public void resetMotionProfile() {
 		lastTime = Timer.getFPGATimestamp();
 		leftProfiler.reset();
@@ -212,7 +215,8 @@ public class OrangeDrive extends Threaded {
 
 	// TODO: Constant for 1024
 	public double getLeftDistance() {
-		return leftTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter * Math.PI;
+		return leftTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
+				* Math.PI;
 	}
 
 	public double getRightDistance() {
@@ -230,7 +234,9 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public double scaleJoystickValues(double rawValue) {
-		return Math.copySign(OrangeUtility.coercedNormalize(Math.abs(rawValue), Constants.MinimumControllerInput, Constants.MaximumControllerInput, Constants.MinimumControllerOutput, Constants.MaximumControllerOutput), rawValue);
+		return Math.copySign(OrangeUtility.coercedNormalize(Math.abs(rawValue), Constants.MinimumControllerInput,
+				Constants.MaximumControllerInput, Constants.MinimumControllerOutput, Constants.MaximumControllerOutput),
+				rawValue);
 	}
 
 	public synchronized void setAutoPath(Path autoPath, boolean isReversed) {
@@ -260,7 +266,8 @@ public class OrangeDrive extends Threaded {
 			return;
 		}
 		// in/s -> (in / pi) * 15
-		// positive deltaSpeed turns right by making left wheels faster than right
+		// positive deltaSpeed turns right by making left wheels faster than
+		// right
 		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) / Math.PI * 15);
 		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) / Math.PI * 15);
 	}
@@ -281,7 +288,7 @@ public class OrangeDrive extends Threaded {
 	public void setShiftState(boolean state) {
 		shifter.set(state);
 	}
-	
+
 	private synchronized void updateAutoPath() {
 		autoDriveVelocity = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
 		setWheelVelocity(autoDriveVelocity);
@@ -293,15 +300,19 @@ public class OrangeDrive extends Threaded {
 		rightTalon.setSelectedSensorPosition(0, 0, 10);
 	}
 
-	public boolean checkSubsystem() { 
+	public boolean checkSubsystem() {
+
 		// TODO: Get accurate thresholds
 		// TODO: Use PDP to get current
+		// boolean success =
 		boolean success = leftTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
-		success = success && rightTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
-		success = success && OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM, Constants.ExpectedDrivePosition, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
-		success = success && OrangeUtility.checkMotors(.25, leftTalon, leftTalon, leftSlaveTalon, leftSlave2Talon);
+		success = rightTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0 && success;
+		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM,
+				Constants.ExpectedDrivePosition, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
+		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM,
+				Constants.ExpectedDrivePosition, leftTalon, leftTalon, leftSlaveTalon, leftSlave2Talon) && success;
+		configMotors();
 		return success;
 	}
-	
-	
+
 }

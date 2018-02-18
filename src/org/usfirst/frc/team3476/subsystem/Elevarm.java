@@ -3,6 +3,8 @@ package org.usfirst.frc.team3476.subsystem;
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.Threaded;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.Timer;
 
 public class Elevarm extends Threaded {
@@ -15,13 +17,10 @@ public class Elevarm extends Threaded {
 	public enum ElevatorState {
 		MANUAL, HOMING
 	}
-
-	public enum ArmState {
-		MANUAL, HOMING
-	}
+	
 
 	private ElevatorState currentElevatorState = ElevatorState.MANUAL;
-	private ArmState currentArmState = ArmState.MANUAL;
+	private double elevatorSetpoint, armSetpoint;
 
 	private Elevarm() {
 		elevator = Elevator.getInstance();
@@ -40,14 +39,47 @@ public class Elevarm extends Threaded {
 			System.out.println("Collision detected. Elevator not moving");
 		}
 	}
+	
+	public void setArmPercentOutput(double output) {
+		arm.setPercentOutput(output);
+	}
+
+	public void setArmEncoderPosition(int position) {
+		arm.setEncoderPosition(position);
+	}
+	
+	public void setElevatorPercentOutput(double output) {
+		elevator.setPercentOutput( output);
+	}	
+
+	public void setElevatorEncoderPosition(int position) {
+		elevator.setEncoderPosition(position);
+	}
+	
+	public double getElevatorHeight()
+	{
+		return elevator.getHeight();
+	}
+	
+	public double getTargetElevatorHeight()
+	{
+		return elevator.getTargetHeight();
+	}
 
 	public void setArmAngle(double angle) {
 		if (isValidPosition(angle, elevator.getTargetHeight())) // If no collisions with the final positions, move the arm to the position
 		{
 			arm.setAngle(angle);
-		} else {
+		}
+		else
+		{
 			System.out.println("Collision detected. Arm not moving");
 		}
+	}
+	
+	public double getTargetArmAngle()
+	{
+		return arm.getTargetAngle();
 	}
 
 	public void setOverallPosition(double distance, double height)
@@ -89,21 +121,21 @@ public class Elevarm extends Threaded {
 		setElevatorHeight(elevatorHeight);
 		setArmAngle(armAngle);
 	}
+	
+	public void shiftElevatorGearbox(boolean engaged)
+	{
+		elevator.shiftElevatorGearbox(engaged);
+	}
 
 	public void homeElevator() {
 		elevator.homeStartTime = System.currentTimeMillis();
 		currentElevatorState = ElevatorState.HOMING;
 	}
-
-	public void homeArm() {
-		arm.homeStartTime = System.currentTimeMillis();
-		currentArmState = ArmState.HOMING;
-	}
 	
 	public void prepClimb()
 	{
-		elevator.setHeight(elevator.UP);
-		arm.setAngle(arm.DOWN);
+		elevator.setHeight(Constants.ElevatorUp);
+		arm.setAngle(Constants.ArmDown);
 		elevator.shiftElevatorGearbox(false);
 	}
 
@@ -117,13 +149,23 @@ public class Elevarm extends Threaded {
 				|| elevatorHeight > Constants.ElevatorMaxHeight); // are exceeded
 		// Add more constraints if needed
 	}
+	
+	public double getElevatorOutputCurrent()
+	{
+		return elevator.getOutputCurrent();
+	}
+	
+	public double getArmOutputCurrent()
+	{
+		return arm.getOutputCurrent();
+	}
 
 	@Override
 	public void update() {
 		switch (currentElevatorState) {
 		case HOMING:
 			if (!isValidPosition(arm.getAngle(), 0)) {
-				setArmAngle(arm.HORIZONTAL);
+				setArmAngle(Constants.ArmHorizontal);
 				break;
 			}
 			elevator.setPercentOutput(.1); // Some slow speed
@@ -145,29 +187,6 @@ public class Elevarm extends Threaded {
 		case MANUAL:
 			break;
 		}
-		switch (currentArmState) {
-		case HOMING:
-			if (!isValidPosition(0, elevator.getHeight())) {
-				setElevatorHeight(elevator.ARM_HOMING_HEIGHT);
-				break;
-			}
-			arm.setPercentOutput(0.3);
-			if (arm.getOutputCurrent() > Constants.ElevatorStallCurrent) {
-				arm.setPercentOutput(0);
-				arm.setEncoderPosition((int)(Constants.ArmLowerAngleLimit * (1 / 360d) * (1 / Constants.ArmRotationsPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
-				// arm.setAngle(arm.DOWN); Add this back in if we need to go to a certain position after homing
-				currentArmState = ArmState.MANUAL;
-			} else if (System.currentTimeMillis() - arm.homeStartTime > 1000) {
-				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
-				arm.setPercentOutput(0);
-				arm.setEncoderPosition(0);
-				// arm.setAngle(arm.DOWN); Add this back in if we need to go to a certain position after homing
-				currentArmState = ArmState.MANUAL;
-			}
-			break;
-		case MANUAL:
-			break;
-		}
 	}
 
 	public boolean checkSubsystem() {	
@@ -175,13 +194,13 @@ public class Elevarm extends Threaded {
 	}
 
 	public boolean checkElevator() {
-		setArmAngle(arm.HORIZONTAL); // Move arm out of the way before testing
+		setArmAngle(Constants.ArmHorizontal); // Move arm out of the way before testing
 		Timer.delay(0.75);
 		return elevator.checkSubystem();
 	}
 
 	public boolean checkArm() {
-		setElevatorHeight((elevator.UP + elevator.DOWN) / 2); // Move elevator out of the way before testing
+		setElevatorHeight((Constants.ElevatorUp + Constants.ElevatorDown) / 2); // Move elevator out of the way before testing
 		Timer.delay(0.75);
 		return arm.checkSubsytem();
 	}

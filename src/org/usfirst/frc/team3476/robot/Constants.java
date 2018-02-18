@@ -34,23 +34,26 @@ public final class Constants {
 	public static final int LeftMasterDriveId = 11;
 	public static final int LeftSlaveDriveId = 12;
 	public static final int LeftSlave2DriveId = 13;
-	public static final int RightMasterDriveId = 14;
+	public static final int RightMasterDriveId = 16;
 	public static final int RightSlaveDriveId = 15;
-	public static final int RightSlave2DriveId = 16;
-	public static final int ElevatorMotorId = 21;
-	public static final int ElevatorSlaveMotorId = 22;
-	public static final int ArmId = 31;
+	public static final int RightSlave2DriveId = 14;
+	
+	public static final int ElevatorMotorId = 24;
+	public static final int ElevatorSlaveMotorId = 25;
+	public static final int ArmId = 23;
 
 	//Elevator
 	public static final double ElevatorMinHeight = 0;
 	public static final double ElevatorMaxHeight = 90; //
-	public static final double ElevatorInchesPerMotorRotation = 100000000; //
+	public static final double ElevatorInchesPerMotorRotation = 100000000; 
 	public static final double ElevatorSpeed = 0; //
 	public static final double ElevatorStallCurrent = 3; //
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
 	public static final int ElevatorSolenoidId = 0;
+	public static final double ElevatorDown = 0; //
+	public static final double ElevatorUp = 90; //
 
 	//Arm
 	public static final double ArmLowerAngleLimit = 55;
@@ -61,6 +64,8 @@ public final class Constants {
 	public static final double ExpectedArmCurrent = 0; //
 	public static final double ExpectedArmRPM = 0;
 	public static final double ExpectedArmPosition = 0;
+	public static final double ArmHorizontal = 1800; //
+	public static final double ArmDown = 600; //
 	
 	//Other
 	public static final int SensorTicksPerMotorRotation = 4096;

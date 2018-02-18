@@ -19,24 +19,31 @@ public class OrangeUtility {
 		boolean success = true;
 		for (LazyTalonSRX talon : talons)
 		{
+			talon.set(ControlMode.PercentOutput, 0);
+		}
+		
+		for (LazyTalonSRX talon : talons)
+		{
 			talon.set(ControlMode.PercentOutput, output);
 			Timer.delay(1);
 			if (Math.abs(talon.getOutputCurrent() - expectedCurrent) > Constants.ExpectedCurrentTolerance) {
-				DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+				DriverStation.reportError("Motor " + talon.getDeviceID() + "current outside expected range.", false);
 				success = false;
 			} 
 			if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - expectedRPM) > Constants.ExpectedRPMTolerance) {
-				DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+				DriverStation.reportError("Motor " + talon.getDeviceID() + " current outside expected range.", false);
 				success = false;
 			}
 			if (Math.abs(sensorTalon.getSelectedSensorPosition(0) - expectedPosition) > Constants.ExpectedPositionTolerance) {
-				DriverStation.reportError("Motor leftSlaveTalon current outside expected range.", false);
+				DriverStation.reportError("Motor " + talon.getDeviceID() + "current outside expected range.", false);
 				success = false;
 			}
-			talon.set(ControlMode.PercentOutput, 0);
 			
 			System.out.println("Motor ID: " + talon.getDeviceID());
 			System.out.println("Current: " + talon.getOutputCurrent());
+			
+			talon.set(ControlMode.PercentOutput, 0);
+			Timer.delay(0.5);
 		}
 		return success;
 	}

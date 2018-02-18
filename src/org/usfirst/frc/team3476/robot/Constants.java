@@ -30,6 +30,7 @@ public final class Constants {
 	public static final double MaxLookAheadDistance = 30;
 
 	// CAN IDs
+	public static final int DriveShifterId = 1;
 	public static final int LeftMasterDriveId = 11;
 	public static final int LeftSlaveDriveId = 12;
 	public static final int LeftSlave2DriveId = 13;

@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeDrive extends Threaded {
@@ -53,8 +54,10 @@ public class OrangeDrive extends Threaded {
 	private DriveVelocity autoDriveVelocity;
 	private DriveState driveState;
 	private RateLimiter leftProfiler, rightProfiler;
+	private Solenoid shifter;
 
 	private OrangeDrive() {
+		shifter = new Solenoid(Constants.DriveShifterId);
 		leftTalon = new LazyTalonSRX(Constants.LeftMasterDriveId);
 		rightTalon = new LazyTalonSRX(Constants.RightMasterDriveId);
 
@@ -275,6 +278,10 @@ public class OrangeDrive extends Threaded {
 		}
 	}
 
+	public void setShiftState(boolean state) {
+		shifter.set(state);
+	}
+	
 	private synchronized void updateAutoPath() {
 		autoDriveVelocity = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
 		setWheelVelocity(autoDriveVelocity);

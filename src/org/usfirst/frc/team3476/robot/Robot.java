@@ -103,11 +103,11 @@ public class Robot extends IterativeRobot {
 		if (arm.getOutputCurrent() < armMaxCurrent) //Prevent arm from kiling itself
 		{
 			//Manual Arm Control
-			if (xbox.getRawButton(3))
+			if (xbox.getPOV() == 0)
 			{
 				arm.setPercentOutput(.5);
 			}
-			else if (xbox.getRawButton(4))
+			else if (xbox.getPOV() == 4)
 			{
 				arm.setPercentOutput(-.5);
 			}
@@ -146,7 +146,16 @@ public class Robot extends IterativeRobot {
 		if (xbox.getRisingEdge(12))
 		{
 			elevator.shiftElevatorGearbox(true);
-		}	
+		}
+		
+		if (xbox.getRisingEdge(3))
+		{
+			drive.setShiftState(true);
+		}
+		if (xbox.getRisingEdge(4))
+		{
+			drive.setShiftState(false);
+		}
 	}
 
 	@Override

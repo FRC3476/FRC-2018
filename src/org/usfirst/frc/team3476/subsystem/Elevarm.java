@@ -222,7 +222,7 @@ public class Elevarm extends Threaded {
 			}
 			break;
 		case POSITION:
-			elevator.setHeight(elevatorLimiter.update(elevatorSetpoint, Math.min(dt, 0.022)));
+			elevator.setHeight(elevatorLimiter.update(elevatorSetpoint));
 			break;
 		case MANUAL:
 			break;

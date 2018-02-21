@@ -44,7 +44,6 @@ public class OrangeDrive extends Threaded {
 	}
 
 	private double quickStopAccumulator;
-	private double lastTime;
 
 	private boolean drivePercentVbus;
 
@@ -86,7 +85,7 @@ public class OrangeDrive extends Threaded {
 		driveState = DriveState.TELEOP;
 		moveValue = scaleJoystickValues(moveValue);
 		rotateValue = scaleJoystickValues(rotateValue);
-
+		
 		double leftMotorSpeed;
 		double rightMotorSpeed;
 		// Square values but keep sign
@@ -108,11 +107,8 @@ public class OrangeDrive extends Threaded {
 			rightMotorSpeed = OrangeUtility.coerce(moveValue - rotateValue, Constants.MaxDriveSpeed,
 					-Constants.MaxDriveSpeed);
 
-			double now = Timer.getFPGATimestamp();
-			double dt = (now - lastTime);
-			leftMotorSpeed = leftProfiler.update(leftMotorSpeed, dt);
-			rightMotorSpeed = rightProfiler.update(rightMotorSpeed, dt);
-			lastTime = now;
+			leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
+			rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
 
 			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 		}
@@ -194,7 +190,6 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public void resetMotionProfile() {
-		lastTime = Timer.getFPGATimestamp();
 		leftProfiler.reset();
 		rightProfiler.reset();
 	}

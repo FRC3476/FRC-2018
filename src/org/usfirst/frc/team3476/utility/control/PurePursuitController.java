@@ -19,7 +19,6 @@ public class PurePursuitController {
 	private boolean isReversed;
 	private SynchronousPid turnPID;
 	private RateLimiter speedProfiler;
-	private double lastTime;
 
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
@@ -29,7 +28,6 @@ public class PurePursuitController {
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
 		speedProfiler = new RateLimiter(40, 120);
-		lastTime = Timer.getFPGATimestamp();
 	}
 
 	/**
@@ -54,7 +52,7 @@ public class PurePursuitController {
 		 */
 		// Motion Profiling
 		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 20);
-		double robotSpeed = getProfiledSpeed(data.maxSpeed, data.remainingDist);
+		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);
 
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
@@ -94,39 +92,13 @@ public class PurePursuitController {
 		Translation2d lookAheadPointToRobot = robotPose.translationMat.inverse().translateBy(lookAheadPoint);
 		lookAheadPointToRobot = lookAheadPointToRobot.rotateBy(robotPose.rotationMat.inverse());
 		return lookAheadPointToRobot;
-	}
-
-	/**
-	 * Returns the speed after it's been passed through the motion profiler. It slows down the robot once decelerating
-	 * will make it stop approximately at the end.
-	 *
-	 * @param setpoint
-	 *            Maximum speed possible for the robot
-	 * @param remainingDist
-	 *            The distance on the path remaining for the robot.
-	 * @return
-	 * 		Profiled speed for the robot.
-	 */
-	private double getProfiledSpeed(double setpoint, double remainingDist) {
-		double timeToSwitchAcc = (speedProfiler.getAcc() / speedProfiler.getMaxJerk())
-				+ (speedProfiler.getMaxAccel() / speedProfiler.getMaxJerk());
-		double timeToDecel = speedProfiler.getLatestValue() / speedProfiler.getMaxAccel();
-		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * speedProfiler.getLatestValue();
-		double dt = Timer.getFPGATimestamp() - lastTime;
-		dt = Math.min(20, dt);
-		lastTime = System.currentTimeMillis();
-		if (distanceTillStop > remainingDist) {
-			return speedProfiler.update(0, dt);
-		} else {
-			return speedProfiler.update(setpoint, dt);
-		}
-	}
+	}	
 
 	/**
 	 * Resets the time for the speed profiler.
 	 */
 	public void resetTime() {
 		// TODO: Big Bang
-		lastTime = System.currentTimeMillis();
+		speedProfiler.reset();
 	}
 }

@@ -15,7 +15,8 @@ public class AutoPathGenerator {
 	}
 	
 	public Path generate() {
-		String colors = DriverStation.getInstance().getGameSpecificMessage();
-		return pathTable.get(colors.substring(0, 2));
+		//String colors = DriverStation.getInstance().getGameSpecificMessage();
+		//return pathTable.get(colors.substring(0, 2));
+		return null;
 	}
 }

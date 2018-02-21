@@ -17,6 +17,7 @@ public class Arm {
 	private Arm() {
 		armTalon = new LazyTalonSRX(Constants.ArmId);
 		armTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+		armTalon.setInverted(true);
 	}
 
 	protected static Arm getInstance() {
@@ -33,16 +34,16 @@ public class Arm {
 
 	protected void setAngle(double angle) {
 		armTalon.set(ControlMode.Position,
-				angle * (1 / Constants.ArmRotationsPerMotorRotation) * Constants.SensorTicksPerMotorRotation);
+				angle * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation) * Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getAngle() {
-		return armTalon.getSelectedSensorPosition(0) * (1 / Constants.SensorTicksPerMotorRotation)
+		return armTalon.getSelectedSensorPosition(0) * 360 * (1d / Constants.SensorTicksPerMotorRotation)
 				* Constants.ArmRotationsPerMotorRotation;
 	}
 
 	public double getTargetAngle() {
-		return armTalon.getSetpoint() * (1 / Constants.SensorTicksPerMotorRotation)
+		return armTalon.getSetpoint() * 360 * (1d / Constants.SensorTicksPerMotorRotation)
 				* Constants.ArmRotationsPerMotorRotation;
 	}
 
@@ -51,7 +52,7 @@ public class Arm {
 	}
 
 	public boolean checkSubsytem() {
-		return OrangeUtility.checkMotors(0.25, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM,
+		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM,
 				Constants.ExpectedArmPosition, armTalon, armTalon);
 	}
 }

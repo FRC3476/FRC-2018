@@ -199,10 +199,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void testInit() {
+		scheduler.pause();
+		drive.stopSubsystem();
+		elevarm.stopSubsystem();
 	}
 
 	@Override
 	public void testPeriodic() {
+		xbox.update();
 		if (xbox.getRisingEdge(1)) {
 			drive.checkSubsystem();
 		}
@@ -215,13 +219,5 @@ public class Robot extends IterativeRobot {
 		if (xbox.getRisingEdge(4)) {
 			elevarm.homeArm();
 		}
-
-		/*
-		 * if (xbox.getRawButton(1))
-		 * {
-		 * }
-		 */
-		xbox.update();
-
 	}
 }

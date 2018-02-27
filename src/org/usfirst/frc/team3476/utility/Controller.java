@@ -27,13 +27,13 @@ public class Controller extends Joystick {
 		public static int RightX = 4;
 		public static int RightY = 5;
 	}
-	
+
 	/*
 	 * The Driver Station sends back an int(32 bits) for buttons
 	 * Shifting 1 left (button - 1) times and ANDing it with
 	 * int sent from the Driver Station will either give you
 	 * 0 or a number not zero if it is true
-	 */	
+	 */
 	private int oldButtons;
 	private int currentButtons;
 
@@ -43,11 +43,11 @@ public class Controller extends Joystick {
 
 	/**
 	 * Only works if update() is called in each iteration
-	 * 
-	 * @param button 
-	 * 			Joystick button ID
-	 * @return 
-	 * 			Falling edge state of the button
+	 *
+	 * @param button
+	 *            Joystick button ID
+	 * @return
+	 * 		Falling edge state of the button
 	 */
 	public boolean getFallingEdge(int button) {
 		if (button <= DriverStation.getInstance().getStickButtonCount(getPort())) {
@@ -64,11 +64,11 @@ public class Controller extends Joystick {
 
 	/**
 	 * Only works if update() is called in each iteration
-	 * 
-	 * @param button 
-	 * 			Joystick button ID
-	 * @return 
-	 * 			Rising edge state of the button
+	 *
+	 * @param button
+	 *            Joystick button ID
+	 * @return
+	 * 		Rising edge state of the button
 	 */
 	public boolean getRisingEdge(int button) {
 		if (button <= DriverStation.getInstance().getStickButtonCount(getPort())) {
@@ -85,9 +85,24 @@ public class Controller extends Joystick {
 	}
 
 	/**
-	 * This method needs to be called for each iteration of the teleop loop 
+	 * This method needs to be called for each iteration of the teleop loop
 	 */
+	boolean next = false;
+
 	public void update() {
+		if (Math.random() > .999 || next) {
+			System.out.println("-----------------------------------------------------------------------------------");
+			this.setRumble(RumbleType.kLeftRumble, 1);
+			this.setRumble(RumbleType.kRightRumble, 1);
+			if (next = true) {
+				next = false;
+			} else {
+				next = true;
+			}
+		} else {
+			this.setRumble(RumbleType.kLeftRumble, 0);
+			this.setRumble(RumbleType.kRightRumble, 0);
+		}
 		oldButtons = currentButtons;
 		currentButtons = DriverStation.getInstance().getStickButtons(getPort());
 	}

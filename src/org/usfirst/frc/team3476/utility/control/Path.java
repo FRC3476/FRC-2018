@@ -2,7 +2,6 @@ package org.usfirst.frc.team3476.utility.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.math.Rotation;
@@ -51,7 +50,7 @@ public class Path {
 		/**
 		 * Gets the point on the line closest to the point defined in the
 		 * argument
-		 * 
+		 *
 		 * @param point
 		 *            Point to find the closest point to
 		 * @return The closest point on the line to the point specified
@@ -68,7 +67,7 @@ public class Path {
 		 * start. The point travels on the line towards the end. More efficient
 		 * than calling interpolate in Translation2d because delta is
 		 * pre-computed before.
-		 * 
+		 *
 		 * @param distance
 		 *            Distance from the start of the line.
 		 * @return Point on the line that is the distance away specified.
@@ -82,7 +81,7 @@ public class Path {
 		/**
 		 * Returns the point on the line which is some distance away from the
 		 * end. The point travels on the line towards the start.
-		 * 
+		 *
 		 * @param distance
 		 *            Distance from the end of the line.
 		 * @return Point on the line that is the distance away from the end
@@ -94,7 +93,7 @@ public class Path {
 		}
 
 		/**
-		 * 
+		 *
 		 * @return Maximum speed for the path segment.
 		 */
 		private double getMaxSpeed() {
@@ -102,7 +101,7 @@ public class Path {
 		}
 
 		/**
-		 * 
+		 *
 		 * @return Total distance from start of the segment to the end.
 		 */
 		private double getDistance() {
@@ -110,7 +109,7 @@ public class Path {
 		}
 
 		/**
-		 * 
+		 *
 		 * @return X and Y offset from the start to the end of the segment.
 		 */
 		private Translation2d getDelta() {
@@ -131,7 +130,7 @@ public class Path {
 	/**
 	 * Contains a list of points and can create path segments with them.
 	 * Lookahead is calculated with using this.
-	 * 
+	 *
 	 * @param start
 	 *            Initial point in path.
 	 */
@@ -142,7 +141,7 @@ public class Path {
 
 	/**
 	 * Add another point to the path.
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 * @param speed
@@ -156,7 +155,7 @@ public class Path {
 	 * Sets the desired angle for the robot to end in. It does this by placing
 	 * up to two points that have a 90 degree angle to allow the robot to
 	 * converge on the path.
-	 * 
+	 *
 	 * @param angle
 	 *            Angle for the robot to end in.
 	 */
@@ -165,7 +164,7 @@ public class Path {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void processPoints() {
 		if (endAngle != null) {
@@ -174,8 +173,7 @@ public class Path {
 			Rotation rotatedEndAngle = angleOfPath.inverse().rotateBy(endAngle);
 			boolean rotateLeft = rotatedEndAngle.sin() > 0;
 
-			Translation2d finalSegmentStart = new Translation2d(Constants.MinimumTurningRadius, 0)
-					.rotateBy(endAngle.flip());
+			Translation2d finalSegmentStart = new Translation2d(Constants.MinimumTurningRadius, 0).rotateBy(endAngle.flip());
 			Translation2d secondSegmentStart = finalSegmentStart.rotateBy(Rotation.fromDegrees(rotateLeft ? 90 : -90));
 			// The two points we potentially add
 			finalSegmentStart = finalSegmentStart.translateBy(lastSegment.getEnd());
@@ -201,13 +199,13 @@ public class Path {
 		for (PathSegment segment : segments) {
 			System.out.println(segment.getStart().getX() + "    " + segment.getStart().getY());
 		}
-		System.out.println(
-				segments.get(segments.size()).getEnd().getX() + "   " + segments.get(segments.size()).getEnd().getY());
+		System.out.println(segments.get(segments.size()).getEnd().getX() + "   "
+				+ segments.get(segments.size()).getEnd().getY());
 	}
 
 	/**
 	 * TODO: Explain what's goin on in this function. Review with uncool kids(mentor)
-	 * 
+	 *
 	 * @param pose
 	 *            Current robot position
 	 * @param lookAheadDistance

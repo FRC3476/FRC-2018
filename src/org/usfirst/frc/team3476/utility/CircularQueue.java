@@ -1,7 +1,7 @@
 package org.usfirst.frc.team3476.utility;
 
 import org.usfirst.frc.team3476.utility.math.Interpolable;
-import org.usfirst.frc.team3476.utility.math.InterpolableValue;
+import org.usfirst.frc.team3476.utility.math.InterpolablePair;
 
 public class CircularQueue<T extends Interpolable<T>> {
 	/**
@@ -9,23 +9,23 @@ public class CircularQueue<T extends Interpolable<T>> {
 	 * O(1)insertion (only able to insert at end) and O(n log n) search
 	 */
 
-	private InterpolableValue<T>[] queue;
+	private InterpolablePair<T>[] queue;
 	private long back;
 	public final int size;
 
 	@SuppressWarnings("unchecked")
 	public CircularQueue(int size) {
-		queue = new InterpolableValue[size];
+		queue = new InterpolablePair[size];
 		back = 0;
 		this.size = size;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param t
 	 *            Add new a new value to the end of the queue
 	 */
-	public void add(InterpolableValue<T> t) {
+	public void add(InterpolablePair<T> t) {
 		queue[(int) back % size] = t;
 		back++;
 	}
@@ -33,12 +33,12 @@ public class CircularQueue<T extends Interpolable<T>> {
 	/**
 	 * Get InterpolableValue<T> from the queue that is a specified distance from
 	 * the back
-	 * 
+	 *
 	 * @param position
 	 *            Distance from back of queue
 	 * @return InterpolableValue<T> from position in argument
 	 */
-	public InterpolableValue<T> getFromQueue(int position) {
+	public InterpolablePair<T> getFromQueue(int position) {
 		position %= size;
 		return queue[(int) (back - position - 1) % size];
 	}
@@ -47,7 +47,7 @@ public class CircularQueue<T extends Interpolable<T>> {
 	 * Get T with given key. If an exact match isn't found it will interpolate
 	 * the value always. Keys outside the range will return the front or end of
 	 * the queue.
-	 * 
+	 *
 	 * @param key
 	 *            Key of wanted T
 	 * @return Matching interpolated T from key in argument

@@ -2,6 +2,8 @@ package org.usfirst.frc.team3476.utility.control;
 
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 
+import edu.wpi.first.wpilibj.Timer;
+
 /**
  * Limits acceleration and optionally jerk
  */
@@ -9,13 +11,14 @@ public class RateLimiter {
 
 	private double maxAccel, maxJerk, latestValue;
 	private double accValue;
+	private double lastTime;
 
 	public RateLimiter(double accel) {
 		this(accel, Double.POSITIVE_INFINITY);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param accel
 	 *            Maximum acceleration in units with an arbitrary time unit. The
 	 *            units match whatever you send in update()
@@ -30,14 +33,16 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param setpoint
 	 *            What value to accelerate towards
 	 * @param dt
 	 *            How much time has past between iterations
 	 * @return Calculated latest value
 	 */
-	public double update(double setpoint, double dt) {
+	public double update(double setpoint) {
+		double dt = Timer.getFPGATimestamp() - lastTime;
+		lastTime = Timer.getFPGATimestamp();
 		double diff = setpoint - latestValue;
 		double area = (Math.pow(accValue, 2) / maxJerk);// Trapezoidal
 														// acceleration area at
@@ -70,7 +75,28 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
+	 * @param setpoint
+	 *            What value to accelerate towards
+	 * @param dt
+	 *            How much time has past between iterations
+	 * @param remainingDist
+	 *            Distance remaining before complete stop
+	 * @return Calculated latest value
+	 */
+	public double update(double setpoint, double remainingDist) {
+		double timeToSwitchAcc = (getAcc() / getMaxJerk()) + (getMaxAccel() / getMaxJerk());
+		double timeToDecel = getLatestValue() / getMaxAccel();
+		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * getLatestValue();
+		if (distanceTillStop > remainingDist) {
+			return update(0);
+		} else {
+			return update(setpoint);
+		}
+	}
+
+	/**
+	 *
 	 * @return Current acceleration value
 	 */
 	public double getAcc() {
@@ -78,7 +104,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Current maximum jerk value
 	 */
 	public double getMaxJerk() {
@@ -86,7 +112,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Current maximum acceleration value
 	 */
 	public double getMaxAccel() {
@@ -94,7 +120,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Latest value calculated
 	 */
 	public double getLatestValue() {
@@ -102,7 +128,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param val
 	 *            Value to set the latest value to
 	 */
@@ -116,10 +142,15 @@ public class RateLimiter {
 	public void reset() {
 		latestValue = 0;
 		accValue = 0;
+		lastTime = Timer.getFPGATimestamp();
+	}
+
+	public void resetTime() {
+		lastTime = Timer.getFPGATimestamp();
 	}
 
 	/**
-	 * 
+	 *
 	 * @param maxAccel
 	 *            Wanted max acceleration
 	 */
@@ -128,7 +159,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param maxJerk
 	 *            Wanted max Jerk
 	 */
@@ -137,7 +168,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param accValue
 	 *            Wanted acceleration value
 	 */

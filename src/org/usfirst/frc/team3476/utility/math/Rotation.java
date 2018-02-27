@@ -7,11 +7,11 @@ public class Rotation implements Interpolable<Rotation> {
 
 	/**
 	 * Gets a Rotation from a specified degree
-	 * 
+	 *
 	 * @param angle
-	 * 			Angle to turn into a rotation matrix
+	 *            Angle to turn into a rotation matrix
 	 * @return
-	 * 			Rotation from specified angle in argument
+	 * 		Rotation from specified angle in argument
 	 */
 	public static Rotation fromDegrees(double angle) {
 		return Rotation.fromRadians(Math.toRadians(angle));
@@ -19,11 +19,11 @@ public class Rotation implements Interpolable<Rotation> {
 
 	/**
 	 * Gets a Rotation matrix from a specified radian
-	 * 
+	 *
 	 * @param radians
-	 * 			Radian to turn into a rotation matrix
+	 *            Radian to turn into a rotation matrix
 	 * @return
-	 * 			Rotation from specified radian in argument 			
+	 * 		Rotation from specified radian in argument
 	 */
 	public static Rotation fromRadians(double radians) {
 		return new Rotation(Math.cos(radians), Math.sin(radians));
@@ -50,35 +50,35 @@ public class Rotation implements Interpolable<Rotation> {
 			normalize();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			The cosine of this Rotation
+	 * 		The cosine of this Rotation
 	 */
 	public double cos() {
 		return cos;
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			The rotation matrix in degrees
+	 * 		The rotation matrix in degrees
 	 */
 	public double getDegrees() {
 		return Math.toDegrees(getRadians());
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			The rotation matrix in radians
+	 * 		The rotation matrix in radians
 	 */
 	public double getRadians() {
 		return Math.atan2(sin, cos);
 	}
 
-	//TODO: make it work
+	// TODO: make it work
 	@Override
 	public Rotation interpolate(Rotation other, double percentage) {
 		Rotation diff = inverse().rotateBy(other);
@@ -86,23 +86,23 @@ public class Rotation implements Interpolable<Rotation> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			The Rotation that when rotated with this Rotation moves the cos to 1 and the sin to 0
+	 * 		The Rotation that when rotated with this Rotation moves the cos to 1 and the sin to 0
 	 */
 	public Rotation inverse() {
 		return new Rotation(cos, -sin);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			The Rotation that is flipped about the x and y axis
+	 * 		The Rotation that is flipped about the x and y axis
 	 */
 	public Rotation flip() {
 		return new Rotation(-cos, -sin);
 	}
-	
+
 	/**
 	 * Makes magnitude 1
 	 */
@@ -118,21 +118,21 @@ public class Rotation implements Interpolable<Rotation> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param rotationMat
-	 * 			Multiply this Rotation by this specified Rotation
+	 *            Multiply this Rotation by this specified Rotation
 	 * @return
-	 * 			The multiplied Rotation
+	 * 		The multiplied Rotation
 	 */
 	public Rotation rotateBy(Rotation rotationMat) {
-		return new Rotation(cos * rotationMat.cos() - sin * rotationMat.sin(),
-				sin * rotationMat.cos() + cos * rotationMat.sin(), true);
+		return new Rotation(cos * rotationMat.cos() - sin * rotationMat.sin(), sin * rotationMat.cos()
+				+ cos * rotationMat.sin(), true);
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
-	 * 			The sin of this Rotation
+	 * 		The sin of this Rotation
 	 */
 	public double sin() {
 		return sin;

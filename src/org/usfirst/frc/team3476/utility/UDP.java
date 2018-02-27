@@ -7,19 +7,11 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.usfirst.frc.team3476.robot.Constants;
-import org.usfirst.frc.team3476.utility.Threaded;
-import org.usfirst.frc.team3476.utility.math.Rotation;
-
-import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * Class that handles sockets for receiving and sending. It doesn't release
@@ -71,20 +63,20 @@ public class UDP extends Threaded {
 		DatagramPacket msg = new DatagramPacket(buffer, buffer.length);
 		try {
 			listener.receive(msg);
+			workers.execute(new MessageHandler(msg));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		workers.execute(new MessageHandler(msg));
 	}
 
 	/**
-	 * 
+	 *
 	 * @param addr
-	 * 			Address to send message to
+	 *            Address to send message to
 	 * @param message
-	 * 			Contents of UDP packets
+	 *            Contents of UDP packets
 	 * @param port
-	 * 			Port to send message over 
+	 *            Port to send message over
 	 */
 	public void send(String addr, String message, int port) {
 		if (!senders.containsKey(port)) {

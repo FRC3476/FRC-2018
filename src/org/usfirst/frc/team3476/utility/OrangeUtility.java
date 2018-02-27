@@ -5,9 +5,48 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.usfirst.frc.team3476.robot.Constants;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeUtility {
+
+	public static boolean checkMotors(double output, double expectedCurrent, double expectedRPM, double expectedPosition, LazyTalonSRX sensorTalon, LazyTalonSRX... talons) {
+		boolean success = true;
+		for (LazyTalonSRX talon : talons) {
+			talon.set(ControlMode.PercentOutput, 0);
+		}
+
+		for (LazyTalonSRX talon : talons) {
+			talon.set(ControlMode.PercentOutput, output);
+			Timer.delay(1);
+			if (Math.abs(talon.getOutputCurrent() - expectedCurrent) > Constants.ExpectedCurrentTolerance) {
+				DriverStation.reportError("Motor " + talon.getDeviceID() + "current outside expected range.", false);
+				success = false;
+			}
+			if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - expectedRPM) > Constants.ExpectedRPMTolerance) {
+				DriverStation.reportError("Motor " + talon.getDeviceID() + " current outside expected range.", false);
+				success = false;
+			}
+			if (Math.abs(sensorTalon.getSelectedSensorPosition(0)
+					- expectedPosition) > Constants.ExpectedPositionTolerance) {
+				DriverStation.reportError("Motor " + talon.getDeviceID() + "current outside expected range.", false);
+				success = false;
+			}
+
+			System.out.println("Motor ID: " + talon.getDeviceID());
+			System.out.println("Current: " + talon.getOutputCurrent());
+
+			talon.set(ControlMode.PercentOutput, 0);
+			Timer.delay(0.5);
+		}
+		return success;
+	}
+
 	/**
 	 * Extracts the double value from a string.
 	 *
@@ -191,19 +230,17 @@ public class OrangeUtility {
 		double add = toLow - fromLow * factor;
 		return toNormalize * factor + add;
 	}
-	
 
 	public static double coercedNormalize(double rawValue, double minInput, double maxInput, double minOutput, double maxOutput) {
 		if (rawValue < minInput) {
 			return minOutput;
-		} else if(rawValue > maxInput) {
+		} else if (rawValue > maxInput) {
 			return maxOutput;
 		}
 		double norm = (Math.abs(rawValue) - minInput) / (maxInput - minInput);
 		norm = Math.copySign(norm * (maxOutput - minOutput), rawValue);
 		return norm;
 	}
-
 
 	/**
 	 * Returns a string with all the parameters of the passed PID.

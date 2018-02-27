@@ -28,7 +28,7 @@ public class ThreadScheduler implements Runnable {
 
 	@Override
 	public void run() {
-		while(isRunning) {
+		while (isRunning) {
 			while (!paused) {
 				long waitTime = Duration.ofMillis(1).toNanos();
 				synchronized (this) {
@@ -48,11 +48,11 @@ public class ThreadScheduler implements Runnable {
 	public void pause() {
 		paused = true;
 	}
-	
+
 	public void resume() {
 		paused = false;
 	}
-	
+
 	public void shutdown() {
 		isRunning = false;
 	}

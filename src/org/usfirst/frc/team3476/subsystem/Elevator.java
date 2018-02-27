@@ -22,10 +22,10 @@ public class Elevator {
 		slaveTalon = new LazyTalonSRX(Constants.ElevatorSlaveMotorId);
 		elevatorTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		elevatorTalon.setInverted(true);
-		elevatorTalon.setSensorPhase(true); //flip encoder direction
+		elevatorTalon.setSensorPhase(true); // flip encoder direction
 		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
 		slaveTalon.setInverted(true);
-		
+
 		gearboxSolenoid = new Solenoid(Constants.ElevatorGearboxShifterId);
 	}
 
@@ -36,9 +36,8 @@ public class Elevator {
 	public void setPercentOutput(double output) {
 		elevatorTalon.set(ControlMode.PercentOutput, output);
 	}
-	
-	public int getEncoderTicks()
-	{
+
+	public int getEncoderTicks() {
 		return elevatorTalon.getSelectedSensorPosition(0);
 	}
 
@@ -50,33 +49,33 @@ public class Elevator {
 		elevatorTalon.set(ControlMode.Position, height * (1d / Constants.ElevatorInchesPerMotorRotation)
 				* Constants.SensorTicksPerMotorRotation);
 	}
-	
-	public void shiftElevatorGearbox(boolean engaged)
-	{
+
+	public void shiftElevatorGearbox(boolean engaged) {
 		gearboxSolenoid.set(engaged);
 	}
 
 	public double getHeight() {
-		return elevatorTalon.getSelectedSensorPosition(0) * (1d / Constants.SensorTicksPerMotorRotation) * Constants.ElevatorInchesPerMotorRotation;
+		return elevatorTalon.getSelectedSensorPosition(0) * (1d / Constants.SensorTicksPerMotorRotation)
+				* Constants.ElevatorInchesPerMotorRotation;
 	}
-	
+
 	public double getTargetHeight() {
-		return elevatorTalon.getSetpoint() * (1d / Constants.SensorTicksPerMotorRotation) * Constants.ElevatorInchesPerMotorRotation;
+		return elevatorTalon.getSetpoint() * (1d / Constants.SensorTicksPerMotorRotation)
+				* Constants.ElevatorInchesPerMotorRotation;
 	}
 
 	public double getOutputCurrent() {
 		return (elevatorTalon.getOutputCurrent() + slaveTalon.getOutputCurrent()) / 2d;
 	}
-	
-	public void configMotors()
-	{
+
+	public void configMotors() {
 		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
 	}
 
 	protected LazyTalonSRX[] getTalons() {
 		return new LazyTalonSRX[] { elevatorTalon, slaveTalon };
 	}
-	
+
 	public boolean checkSubystem() {
 		boolean success = OrangeUtility.checkMotors(.05, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon, slaveTalon);
 		configMotors();

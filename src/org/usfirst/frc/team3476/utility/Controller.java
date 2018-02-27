@@ -88,19 +88,18 @@ public class Controller extends Joystick {
 	 * This method needs to be called for each iteration of the teleop loop
 	 */
 	boolean next = false;
+
 	public void update() {
-		if (Math.random() > .999 || next)
-		{
+		if (Math.random() > .999 || next) {
 			System.out.println("-----------------------------------------------------------------------------------");
 			this.setRumble(RumbleType.kLeftRumble, 1);
 			this.setRumble(RumbleType.kRightRumble, 1);
-			if (next = true)
+			if (next = true) {
 				next = false;
-			else
+			} else {
 				next = true;
-		}
-		else
-		{
+			}
+		} else {
 			this.setRumble(RumbleType.kLeftRumble, 0);
 			this.setRumble(RumbleType.kRightRumble, 0);
 		}

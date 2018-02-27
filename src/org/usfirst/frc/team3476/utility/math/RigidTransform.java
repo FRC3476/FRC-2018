@@ -30,7 +30,7 @@ public class RigidTransform implements Interpolable<RigidTransform> {
 	 * Translates delta rotated by our rotation matrix and rotates our rotation matrix by the other rotation matrix
 	 *
 	 * @param delta
-	 * 
+	 *
 	 * @return
 	 */
 	public RigidTransform transform(RigidTransform delta) {

@@ -73,7 +73,7 @@ public class RateLimiter {
 		}
 		return latestValue;
 	}
-	
+
 	/**
 	 *
 	 * @param setpoint
@@ -81,12 +81,11 @@ public class RateLimiter {
 	 * @param dt
 	 *            How much time has past between iterations
 	 * @param remainingDist
-	 * 			  Distance remaining before complete stop
+	 *            Distance remaining before complete stop
 	 * @return Calculated latest value
 	 */
 	public double update(double setpoint, double remainingDist) {
-		double timeToSwitchAcc = (getAcc() / getMaxJerk())
-				+ (getMaxAccel() / getMaxJerk());
+		double timeToSwitchAcc = (getAcc() / getMaxJerk()) + (getMaxAccel() / getMaxJerk());
 		double timeToDecel = getLatestValue() / getMaxAccel();
 		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * getLatestValue();
 		if (distanceTillStop > remainingDist) {
@@ -149,7 +148,7 @@ public class RateLimiter {
 	public void resetTime() {
 		lastTime = Timer.getFPGATimestamp();
 	}
-	
+
 	/**
 	 *
 	 * @param maxAccel

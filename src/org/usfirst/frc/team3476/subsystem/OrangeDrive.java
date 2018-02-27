@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeDrive extends Threaded {
 	public enum DriveState {
@@ -85,7 +84,7 @@ public class OrangeDrive extends Threaded {
 		driveState = DriveState.TELEOP;
 		moveValue = scaleJoystickValues(moveValue);
 		rotateValue = scaleJoystickValues(rotateValue);
-		
+
 		double leftMotorSpeed;
 		double rightMotorSpeed;
 		// Square values but keep sign
@@ -102,10 +101,10 @@ public class OrangeDrive extends Threaded {
 			moveValue *= Constants.MaxDriveSpeed;
 			rotateValue *= Constants.MaxDriveSpeed;
 
-			leftMotorSpeed = OrangeUtility.coerce(moveValue + rotateValue, Constants.MaxDriveSpeed,
-					-Constants.MaxDriveSpeed);
-			rightMotorSpeed = OrangeUtility.coerce(moveValue - rotateValue, Constants.MaxDriveSpeed,
-					-Constants.MaxDriveSpeed);
+			leftMotorSpeed = OrangeUtility.coerce(moveValue
+					+ rotateValue, Constants.MaxDriveSpeed, -Constants.MaxDriveSpeed);
+			rightMotorSpeed = OrangeUtility.coerce(moveValue
+					- rotateValue, Constants.MaxDriveSpeed, -Constants.MaxDriveSpeed);
 
 			leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
 			rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
@@ -229,9 +228,7 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public double scaleJoystickValues(double rawValue) {
-		return Math.copySign(OrangeUtility.coercedNormalize(Math.abs(rawValue), Constants.MinimumControllerInput,
-				Constants.MaximumControllerInput, Constants.MinimumControllerOutput, Constants.MaximumControllerOutput),
-				rawValue);
+		return Math.copySign(OrangeUtility.coercedNormalize(Math.abs(rawValue), Constants.MinimumControllerInput, Constants.MaximumControllerInput, Constants.MinimumControllerOutput, Constants.MaximumControllerOutput), rawValue);
 	}
 
 	public synchronized void setAutoPath(Path autoPath, boolean isReversed) {
@@ -302,10 +299,9 @@ public class OrangeDrive extends Threaded {
 		// boolean success =
 		boolean success = leftTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
 		success = rightTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0 && success;
-		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM,
-				Constants.ExpectedDrivePosition, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
-		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM,
-				Constants.ExpectedDrivePosition, leftTalon, leftTalon, leftSlaveTalon, leftSlave2Talon) && success;
+		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM, Constants.ExpectedDrivePosition, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
+		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM, Constants.ExpectedDrivePosition, leftTalon, leftTalon, leftSlaveTalon, leftSlave2Talon)
+				&& success;
 		configMotors();
 		return success;
 	}

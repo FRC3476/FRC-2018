@@ -39,44 +39,43 @@ public final class Constants {
 	public static final int RightMasterDriveId = 16;
 	public static final int RightSlaveDriveId = 15;
 	public static final int RightSlave2DriveId = 14;
-	
+
 	public static final int Intake1Id = 22;
 	public static final int Intake2Id = 23;
-	
+
 	public static final int ElevatorMotorId = 24;
 	public static final int ElevatorSlaveMotorId = 25;
 	public static final int ArmId = 30;
 
-	//Elevator
+	// Elevator
 	public static final double ElevatorMinHeight = 0;
 	public static final double ElevatorMaxHeight = 70; //
-	public static final double ElevatorInchesPerMotorRotation = 8; 
-	public static final double ElevatorSpeed = 120; //Inches Per Second - need to double check value
+	public static final double ElevatorInchesPerMotorRotation = 8;
+	public static final double ElevatorSpeed = 120; // Inches Per Second - need to double check value
 	public static final double ElevatorStallCurrent = 1.25; //
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
-	public static final double ElevatorDownHeight = 0; //Should be the proper position for getting cubes
-	public static final double ElevatorUpHeight = 65; //Should be the standard position for placing cubes on the scale
+	public static final double ElevatorDownHeight = 0; // Should be the proper position for getting cubes
+	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
 
-	//Arm
+	// Arm
 	public static final double ArmLowerAngleLimit = 55;
 	public static final double ArmUpperAngleLimit = 180;
 	public static final double ArmRotationsPerMotorRotation = 1 / 1.5;
-	public static final double ArmSpeed = 0; //Degrees Per Second
-	public static final double ArmLength = 20; //Inches
+	public static final double ArmSpeed = 0; // Degrees Per Second
+	public static final double ArmLength = 20; // Inches
 	public static final double ExpectedArmCurrent = 0; //
 	public static final double ExpectedArmRPM = 0;
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
 	public static final double ArmDownDegrees = -55;
-	
-	//Other
+
+	// Other
 	public static final int SensorTicksPerMotorRotation = 4096;
 	public static final double ExpectedCurrentTolerance = 0;
 	public static final double ExpectedRPMTolerance = 0;
 	public static final double ExpectedPositionTolerance = 0;
-
 
 	private Constants() {
 	}

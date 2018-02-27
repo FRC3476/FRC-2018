@@ -8,8 +8,6 @@ import org.usfirst.frc.team3476.utility.control.Path.DrivingData;
 import org.usfirst.frc.team3476.utility.math.RigidTransform;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
-import edu.wpi.first.wpilibj.Timer;
-
 public class PurePursuitController {
 	/*
 	 * 1. Translation delta compared to robot 2. Find angle to path relative to robot 3. Drive towards point
@@ -37,7 +35,7 @@ public class PurePursuitController {
 	 *            Robot position and gyro angle.
 	 * @return
 	 * 		Speed for each side of the robot.
-	 * 
+	 *
 	 */
 	@SuppressWarnings("unchecked")
 	public DriveVelocity calculate(RigidTransform robotPose) {
@@ -92,7 +90,7 @@ public class PurePursuitController {
 		Translation2d lookAheadPointToRobot = robotPose.translationMat.inverse().translateBy(lookAheadPoint);
 		lookAheadPointToRobot = lookAheadPointToRobot.rotateBy(robotPose.rotationMat.inverse());
 		return lookAheadPointToRobot;
-	}	
+	}
 
 	/**
 	 * Resets the time for the speed profiler.

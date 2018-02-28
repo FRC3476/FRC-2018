@@ -144,8 +144,7 @@ public class Elevarm extends Threaded {
 	}
 
 	public void homeArm() {
-		arm.setEncoderPosition((int) (-55 * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
-				* Constants.SensorTicksPerMotorRotation));
+		arm.home();
 		System.out.println("Arm Position Recalibrated");
 
 	}

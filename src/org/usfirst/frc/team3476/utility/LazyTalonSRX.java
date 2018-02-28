@@ -12,7 +12,7 @@ public class LazyTalonSRX extends TalonSRX {
 		super(deviceNumber);
 		enableVoltageCompensation(true);
 		configVoltageCompSaturation(12, 10);
-	}	
+	}
 
 	@Override
 	public void set(ControlMode controlMode, double outputValue) {
@@ -21,7 +21,7 @@ public class LazyTalonSRX extends TalonSRX {
 			prevValue = outputValue;
 		}
 	}
-	
+
 	public double getSetpoint() {
 		return prevValue;
 	}

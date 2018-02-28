@@ -33,8 +33,8 @@ public class Arm {
 	}
 
 	protected void setAngle(double angle) {
-		armTalon.set(ControlMode.Position,
-				angle * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation) * Constants.SensorTicksPerMotorRotation);
+		armTalon.set(ControlMode.Position, angle * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
+				* Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getAngle() {
@@ -52,7 +52,6 @@ public class Arm {
 	}
 
 	public boolean checkSubsytem() {
-		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM,
-				Constants.ExpectedArmPosition, armTalon, armTalon);
+		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM, Constants.ExpectedArmPosition, armTalon, armTalon);
 	}
 }

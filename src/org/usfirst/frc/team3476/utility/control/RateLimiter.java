@@ -11,6 +11,7 @@ public class RateLimiter {
 
 	private double maxAccel, maxJerk, latestValue;
 	private double accValue;
+	private double lastTime;
 
 	public RateLimiter(double accel) {
 		this(accel, Double.POSITIVE_INFINITY);
@@ -39,7 +40,9 @@ public class RateLimiter {
 	 *            How much time has past between iterations
 	 * @return Calculated latest value
 	 */
-	public double update(double setpoint, double dt) {
+	public double update(double setpoint) {
+		double dt = Timer.getFPGATimestamp() - lastTime;
+		lastTime = Timer.getFPGATimestamp();
 		double diff = setpoint - latestValue;
 		double area = (Math.pow(accValue, 2) / maxJerk);// Trapezoidal
 														// acceleration area at
@@ -70,7 +73,7 @@ public class RateLimiter {
 		}
 		return latestValue;
 	}
-	
+
 	/**
 	 *
 	 * @param setpoint
@@ -78,19 +81,17 @@ public class RateLimiter {
 	 * @param dt
 	 *            How much time has past between iterations
 	 * @param remainingDist
-	 * 			  Distance remaining before complete stop
+	 *            Distance remaining before complete stop
 	 * @return Calculated latest value
 	 */
-	public double update(double setpoint, double dt, double remainingDist) {
-		double timeToSwitchAcc = (getAcc() / getMaxJerk())
-				+ (getMaxAccel() / getMaxJerk());
+	public double update(double setpoint, double remainingDist) {
+		double timeToSwitchAcc = (getAcc() / getMaxJerk()) + (getMaxAccel() / getMaxJerk());
 		double timeToDecel = getLatestValue() / getMaxAccel();
 		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * getLatestValue();
-		dt = Math.min(20, dt);
 		if (distanceTillStop > remainingDist) {
-			return update(0, dt);
+			return update(0);
 		} else {
-			return update(setpoint, dt);
+			return update(setpoint);
 		}
 	}
 
@@ -141,6 +142,11 @@ public class RateLimiter {
 	public void reset() {
 		latestValue = 0;
 		accValue = 0;
+		lastTime = Timer.getFPGATimestamp();
+	}
+
+	public void resetTime() {
+		lastTime = Timer.getFPGATimestamp();
 	}
 
 	/**

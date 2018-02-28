@@ -16,7 +16,6 @@ public class Elevarm extends Threaded {
 	public enum ElevatorState {
 		MANUAL, POSITION, HOMING
 	}
-<<<<<<< HEAD
 	//Elevator
 	//P .1
 	//I .0001
@@ -26,9 +25,6 @@ public class Elevarm extends Threaded {
 	//P .8
 	//I .0005
 	//D 0
-=======
-
->>>>>>> 037acdc234213220a2109dea77e9636768db630b
 	private ElevatorState currentElevatorState = ElevatorState.MANUAL;
 	private RateLimiter elevatorLimiter;
 	private volatile double elevatorSetpoint;
@@ -191,7 +187,6 @@ public class Elevarm extends Threaded {
 	public void update() {
 		switch (currentElevatorState) {
 		case HOMING:
-<<<<<<< HEAD
 			/*if (!isValidPosition(arm.getAngle(), 0)) {
 				setArmAngle(Constants.ArmHorizontalDegrees);
 				System.out.println("BREAK OUT OF HOMING");
@@ -199,17 +194,6 @@ public class Elevarm extends Threaded {
 				break;
 			}*/
 			elevator.setPercentOutput(-.2); // Some slow speed
-=======
-			/*
-			 * if (!isValidPosition(arm.getAngle(), 0)) {
-			 * setArmAngle(Constants.ArmHorizontalDegrees);
-			 * System.out.println("BREAK OUT OF HOMING");
-			 * currentElevatorState = ElevatorState.MANUAL;
-			 * break;
-			 * }
-			 */
-			elevator.setPercentOutput(-.1); // Some slow speed
->>>>>>> 037acdc234213220a2109dea77e9636768db630b
 			if (elevator.getOutputCurrent() > Constants.ElevatorStallCurrent) {
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition(0); // Sets encoder value to 0

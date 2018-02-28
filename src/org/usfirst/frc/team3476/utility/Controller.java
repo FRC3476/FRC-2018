@@ -91,7 +91,6 @@ public class Controller extends Joystick {
 	public void update() {
 		if (Math.random() > .999 || next)
 		{
-			System.out.println("-----------------------------------------------------------------------------------");
 			this.setRumble(RumbleType.kLeftRumble, 1);
 			this.setRumble(RumbleType.kRightRumble, 1);
 			if (next = true)

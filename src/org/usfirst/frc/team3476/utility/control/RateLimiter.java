@@ -44,6 +44,9 @@ public class RateLimiter {
 		double dt = Timer.getFPGATimestamp() - lastTime;
 		lastTime = Timer.getFPGATimestamp();
 		double diff = setpoint - latestValue;
+		if(diff == 0) {
+			return latestValue;
+		}
 		double area = (Math.pow(accValue, 2) / maxJerk);// Trapezoidal
 														// acceleration area at
 														// decrease in jerk ->

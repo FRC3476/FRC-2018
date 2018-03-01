@@ -58,5 +58,6 @@ public class Arm {
 
 	public void home() {
 		armTalon.getSensorCollection().setPulseWidthPosition(0, 0);
+		armTalon.getSensorCollection().setQuadraturePosition(armTalon.getSensorCollection().getPulseWidthPosition(), 10);
 	}
 }

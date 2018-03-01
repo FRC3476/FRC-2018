@@ -281,12 +281,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void testInit() {
-		elevarm.setArmPercentOutput(0);
-		elevarm.setElevatorPercentOutput(0);
+		scheduler.pause();
+		drive.stopSubsystem();
+		elevarm.stopSubsystem();
 	}
 
 	@Override
 	public void testPeriodic() {
+		xbox.update();
 		//Reset vbus of elevator to zero during test mode so homing can occur
 		if (xbox.getRisingEdge(1))
 		{
@@ -301,13 +303,5 @@ public class Robot extends IterativeRobot {
 		if (xbox.getRisingEdge(4)) {
 			elevarm.homeArm();
 		}
-
-		/*
-		 * if (xbox.getRawButton(1))
-		 * {
-		 * }
-		 */
-		xbox.update();
-
 	}
 }

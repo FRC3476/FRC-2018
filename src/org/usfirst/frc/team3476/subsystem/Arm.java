@@ -17,6 +17,7 @@ public class Arm {
 	private Arm() {
 		armTalon = new LazyTalonSRX(Constants.ArmId);
 		armTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+		armTalon.getSensorCollection().setQuadraturePosition(armTalon.getSensorCollection().getPulseWidthPosition(), 10);
 		armTalon.setInverted(true);
 	}
 
@@ -53,5 +54,13 @@ public class Arm {
 
 	public boolean checkSubsytem() {
 		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM, Constants.ExpectedArmPosition, armTalon, armTalon);
+	}
+	
+	public void stopSubsystem() {
+		armTalon.set(ControlMode.PercentOutput, 0);
+	}
+
+	public void home() {
+		armTalon.getSensorCollection().setPulseWidthPosition(0, 0);
 	}
 }

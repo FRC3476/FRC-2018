@@ -28,7 +28,6 @@ public class Elevarm extends Threaded {
 	private ElevatorState currentElevatorState = ElevatorState.MANUAL;
 	private RateLimiter elevatorLimiter;
 	private volatile double elevatorSetpoint;
-	private double lastTime;
 
 	private Elevarm() {
 		elevatorLimiter = new RateLimiter(1000, 1000);
@@ -152,8 +151,7 @@ public class Elevarm extends Threaded {
 	}
 
 	public void homeArm() {
-		arm.setEncoderPosition((int) (-55 * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
-				* Constants.SensorTicksPerMotorRotation));
+		arm.home();
 		System.out.println("Arm Position Recalibrated");
 
 	}
@@ -228,7 +226,20 @@ public class Elevarm extends Threaded {
 		Timer.delay(0.75);
 		return elevator.checkSubystem();
 	}
+	
+	public void stopSubsystem() {
+		elevator.stopSubsystem();
+		arm.stopSubsystem();
+	}
+	
+	public void stopElevator() {
+		elevator.stopSubsystem();
+	}
 
+	public void stopArm() {
+		arm.stopSubsystem();
+	}
+	
 	public boolean checkArm() {
 		setElevatorHeight((Constants.ElevatorUpHeight + Constants.ElevatorDownHeight) / 2); // Move elevator out of the
 																							// way before testing
@@ -237,7 +248,7 @@ public class Elevarm extends Threaded {
 	}
 
 	public void resetMotionProfile() {
-		lastTime = Timer.getFPGATimestamp();
+		elevatorLimiter.reset();
 		elevatorLimiter.setLatestValue(elevator.getHeight()); // reset elevator setpoint
 	}
 }

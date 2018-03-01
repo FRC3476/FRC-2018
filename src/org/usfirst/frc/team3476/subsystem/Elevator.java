@@ -81,4 +81,8 @@ public class Elevator {
 		configMotors();
 		return success;
 	}
+	
+	public void stopSubsystem() {
+		elevatorTalon.set(ControlMode.PercentOutput, 0);
+	}
 }

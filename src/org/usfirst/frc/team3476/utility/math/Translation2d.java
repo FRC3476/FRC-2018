@@ -145,10 +145,9 @@ public class Translation2d implements Interpolable<Translation2d> {
 		return new Translation2d(x + delta.getX(), y + delta.getY());
 	}
 
-	// Doesn't work yet
 	@Override
 	public Translation2d interpolate(Translation2d other, double percentage) {
-		// TODO Auto-generated method stub
-		return null;
+		Translation2d delta = new Translation2d(this.getX() - other.getX(), this.getY() - other.getY());
+		return new Translation2d(this.getX() + delta.getX() * percentage, this.getY() + delta.getY() * percentage);
 	}
 }

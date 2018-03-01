@@ -305,5 +305,10 @@ public class OrangeDrive extends Threaded {
 		configMotors();
 		return success;
 	}
+	
+	public void stopSubsystem() {
+		leftTalon.set(ControlMode.PercentOutput, 0);
+		rightTalon.set(ControlMode.PercentOutput, 0);
+	}
 
 }

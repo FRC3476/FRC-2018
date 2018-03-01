@@ -18,12 +18,9 @@ public class RigidTransform implements Interpolable<RigidTransform> {
 		translationMat = translation;
 	}
 
-	/*
-	 * Doesn't work yet
-	 */
 	@Override
 	public RigidTransform interpolate(RigidTransform other, double percentage) {
-		return null;
+		return new RigidTransform(this.translationMat.interpolate(other.translationMat, percentage), this.rotationMat.interpolate(other.rotationMat, percentage));
 	}
 
 	/**

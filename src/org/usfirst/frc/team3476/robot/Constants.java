@@ -6,7 +6,7 @@ public final class Constants {
 
 	// Driving
 	public static final double MaxDriveSpeed = 170;
-	public static final double TeleopAccLimit = 90;
+	public static final double TeleopAccLimit = 10;
 	public static final double TeleopJerkLimit = 2000;
 	public static final double ExpectedDriveCurrent = 0;
 	public static final double ExpectedDriveRPM = 0;
@@ -31,7 +31,8 @@ public final class Constants {
 
 	// CAN IDs
 	public static final int DriveShifterId = 0;
-	public static final int IntakeSolenoidId = 1;
+	public static final int IntakeSolenoid30PsiId = 4;
+	public static final int IntakeSolenoid60PsiId = 1;
 	public static final int ElevatorGearboxShifterId = 3; //
 	public static final int LeftMasterDriveId = 11;
 	public static final int LeftSlaveDriveId = 12;
@@ -44,7 +45,7 @@ public final class Constants {
 	public static final int Intake2Id = 23;
 
 	public static final int ElevatorMotorId = 24;
-	public static final int ElevatorSlaveMotorId = 25;
+	public static final int ElevatorSlaveMotorId = 26;
 	public static final int ArmId = 30;
 
 	// Elevator

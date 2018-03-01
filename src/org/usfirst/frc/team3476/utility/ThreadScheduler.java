@@ -30,7 +30,7 @@ public class ThreadScheduler implements Runnable {
 	public void run() {
 		while (isRunning) {
 			while (!paused) {
-				long waitTime = Duration.ofMillis(1).toNanos();
+				long waitTime = Duration.ofMillis(10).toNanos();
 				synchronized (this) {
 					for (Schedule schedule : schedules) {
 						schedule.executeIfReady();

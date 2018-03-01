@@ -90,8 +90,13 @@ public class Controller extends Joystick {
 	boolean next = false;
 
 	public void update() {
+<<<<<<< HEAD
+		if (Math.random() > .999 || next)
+		{
+=======
 		if (Math.random() > .999 || next) {
 			System.out.println("-----------------------------------------------------------------------------------");
+>>>>>>> 037acdc234213220a2109dea77e9636768db630b
 			this.setRumble(RumbleType.kLeftRumble, 1);
 			this.setRumble(RumbleType.kRightRumble, 1);
 			if (next = true) {

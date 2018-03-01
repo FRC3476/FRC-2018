@@ -55,10 +55,6 @@ public class Arm {
 	public boolean checkSubsytem() {
 		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM, Constants.ExpectedArmPosition, armTalon, armTalon);
 	}
-	
-	public void stopSubsystem() {
-		armTalon.set(ControlMode.PercentOutput, 0);
-	}
 
 	public void home() {
 		armTalon.getSensorCollection().setPulseWidthPosition(0, 0);

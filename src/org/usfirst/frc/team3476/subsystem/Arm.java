@@ -56,8 +56,17 @@ public class Arm {
 		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM, Constants.ExpectedArmPosition, armTalon, armTalon);
 	}
 
-	public void home() {
-		armTalon.getSensorCollection().setPulseWidthPosition(0, 0);
-		armTalon.getSensorCollection().setQuadraturePosition(armTalon.getSensorCollection().getPulseWidthPosition(), 10);
+	public void resetPWMZero() {
+		armTalon.getSensorCollection().setPulseWidthPosition(0, 10);
+	}
+	
+	public void setEncoderFromPWM()
+	{
+		armTalon.getSensorCollection().setQuadraturePosition(armTalon.getSensorCollection().getPulseWidthPosition() + Constants.PracticeBotArmAngleOffsetInTicks, 10);
+	}
+	
+	public int getPWMPosition()
+	{
+		return armTalon.getSensorCollection().getPulseWidthPosition();
 	}
 }

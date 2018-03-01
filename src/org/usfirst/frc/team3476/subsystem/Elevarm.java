@@ -16,7 +16,7 @@ public class Elevarm extends Threaded {
 	public enum ElevatorState {
 		MANUAL, POSITION, HOMING
 	}
-
+	//Practice Robot
 	//Elevator
 	//P .1
 	//I .0001
@@ -32,7 +32,7 @@ public class Elevarm extends Threaded {
 	private volatile double elevatorSetpoint;
 
 	private Elevarm() {
-		elevatorLimiter = new RateLimiter(1000, 1000);
+		elevatorLimiter = new RateLimiter(1000, 20);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}
@@ -43,8 +43,7 @@ public class Elevarm extends Threaded {
 
 	synchronized public void setElevatorHeight(double height) {
 		currentElevatorState = ElevatorState.POSITION;
-		if (true)// isValidPosition(arm.getTargetAngle(), height)) // If no collisions with the final positions, move
-					// the elevator to the position
+		if (isValidPosition(arm.getTargetAngle(), height))
 		{
 			elevatorSetpoint = height;
 		} else {
@@ -84,10 +83,8 @@ public class Elevarm extends Threaded {
 	}
 
 	public void setArmAngle(double angle) {
-		if (true)// isValidPosition(angle, elevator.getTargetHeight())) // If no collisions with the final positions,
-					// move the arm to the position
+		if (isValidPosition(angle, elevator.getTargetHeight()))
 		{
-
 			arm.setAngle(angle);
 		} else {
 			System.out.println("Collision detected. Arm not moving");
@@ -152,8 +149,8 @@ public class Elevarm extends Threaded {
 		currentElevatorState = ElevatorState.HOMING;
 	}
 
-	public void homeArm() {
-		arm.home();
+	public void resetPWMZero() {
+		arm.resetPWMZero();
 		System.out.println("Arm Position Recalibrated");
 
 	}
@@ -236,7 +233,18 @@ public class Elevarm extends Threaded {
 		Timer.delay(0.75);
 		return arm.checkSubsytem();
 	}
+	
+	public void configArmEncoder()
+	{
+		arm.setEncoderFromPWM();
+		System.out.println("Arm Encoder Set");
+	}
 
+	public int getArmPWMPosition()
+	{
+		return arm.getPWMPosition();
+	}
+	
 	public void resetMotionProfile() {
 		elevatorLimiter.reset();
 		elevatorLimiter.setLatestValue(elevator.getHeight()); // reset elevator setpoint

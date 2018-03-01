@@ -68,8 +68,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
-		elevarm.setArmPercentOutput(0);
-		elevarm.setElevatorPercentOutput(0);
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
@@ -103,8 +101,8 @@ public class Robot extends IterativeRobot {
 		{
 			intakeMotor1.set(ControlMode.PercentOutput, -.45); //Intake
 			intakeMotor2.set(ControlMode.PercentOutput, -.45);
-			intakeSolenoid30Psi.set(false);
-			intakeSolenoid60Psi.set(false);
+			intakeSolenoid30Psi.set(true);
+			intakeSolenoid60Psi.set(true);
 		}
 		else if (buttonBox.getRawButton(3))
 		{

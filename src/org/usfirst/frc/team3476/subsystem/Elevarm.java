@@ -16,6 +16,7 @@ public class Elevarm extends Threaded {
 	public enum ElevatorState {
 		MANUAL, POSITION, HOMING
 	}
+
 	//Elevator
 	//P .1
 	//I .0001
@@ -25,6 +26,7 @@ public class Elevarm extends Threaded {
 	//P .8
 	//I .0005
 	//D 0
+
 	private ElevatorState currentElevatorState = ElevatorState.MANUAL;
 	private RateLimiter elevatorLimiter;
 	private volatile double elevatorSetpoint;
@@ -198,16 +200,12 @@ public class Elevarm extends Threaded {
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition(0); // Sets encoder value to 0
 				System.out.println("ELEVATOR HOMED");
-				// elevator.setHeight(elevator.DOWN); Add this back in if we need to go to a certain position after
-				// homing
 				currentElevatorState = ElevatorState.MANUAL;
 			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
 						* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
-				// elevator.setHeight(elevator.DOWN); Add this back in if we need to go to a certain position after
-				// homing
 				currentElevatorState = ElevatorState.MANUAL;
 			}
 			break;
@@ -230,7 +228,7 @@ public class Elevarm extends Threaded {
 	}
 
 	public boolean checkArm() {
-		setElevatorHeight((Constants.ElevatorUpHeight + Constants.ElevatorDownHeight) / 2); // Move elevator out of the
+		setElevatorHeight((Constants.ElevatorUpHeight + Constants.ElevatorDownHeight) / 2d); // Move elevator out of the
 																							// way before testing
 		Timer.delay(0.75);
 		return arm.checkSubsytem();

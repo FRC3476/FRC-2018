@@ -68,6 +68,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
+		elevarm.setArmPercentOutput(0);
+		elevarm.setElevatorPercentOutput(0);
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
@@ -301,12 +303,7 @@ public class Robot extends IterativeRobot {
 		if (xbox.getRisingEdge(4)) {
 			elevarm.homeArm();
 		}
-
-		/*
-		 * if (xbox.getRawButton(1))
-		 * {
-		 * }
-		 */
+		buttonBox.update();
 		xbox.update();
 
 	}

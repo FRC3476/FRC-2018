@@ -226,11 +226,13 @@ public class Elevarm extends Threaded {
 	}
 	
 	public void stopSubsystem() {
+		currentElevatorState = ElevatorState.MANUAL;
 		elevator.stopSubsystem();
 		arm.stopSubsystem();
 	}
 	
 	public void stopElevator() {
+		currentElevatorState = ElevatorState.MANUAL;
 		elevator.stopSubsystem();
 	}
 

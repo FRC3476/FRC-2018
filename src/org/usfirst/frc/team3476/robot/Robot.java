@@ -68,6 +68,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
+		elevarm.setArmPercentOutput(0);
+		elevarm.setElevatorPercentOutput(0);
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
@@ -289,6 +291,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 		xbox.update();
+		buttonBox.update();
 		//Reset vbus of elevator to zero during test mode so homing can occur
 		if (xbox.getRisingEdge(1))
 		{

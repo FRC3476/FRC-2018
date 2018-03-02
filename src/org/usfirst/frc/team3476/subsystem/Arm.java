@@ -17,7 +17,7 @@ public class Arm {
 	private Arm() {
 		armTalon = new LazyTalonSRX(Constants.ArmId);
 		armTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		armTalon.getSensorCollection().setQuadraturePosition(armTalon.getSensorCollection().getPulseWidthPosition(), 10);
+		setEncoderFromPWM();
 		armTalon.setInverted(true);
 	}
 
@@ -31,6 +31,11 @@ public class Arm {
 
 	protected void setEncoderPosition(int position) {
 		armTalon.setSelectedSensorPosition(position, 0, 10);
+	}
+	
+	public int getEncoderPosition()
+	{
+		return armTalon.getSelectedSensorPosition(0);
 	}
 
 	protected void setAngle(double angle) {
@@ -55,18 +60,19 @@ public class Arm {
 	public boolean checkSubsytem() {
 		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM, Constants.ExpectedArmPosition, armTalon, armTalon);
 	}
-
-	public void resetPWMZero() {
-		armTalon.getSensorCollection().setPulseWidthPosition(0, 10);
-	}
 	
 	public void setEncoderFromPWM()
 	{
-		armTalon.getSensorCollection().setQuadraturePosition(armTalon.getSensorCollection().getPulseWidthPosition() + Constants.PracticeBotArmAngleOffsetInTicks, 10);
+		//Value becomes negative when we set it for some reason
+		armTalon.getSensorCollection().setQuadraturePosition(-(getPWMPosition() + Constants.PracticeBotArmAngleOffsetInTicks), 10);
 	}
 	
 	public int getPWMPosition()
 	{
-		return armTalon.getSensorCollection().getPulseWidthPosition();
+		int pwmValue = 4095 - armTalon.getSensorCollection().getPulseWidthPosition();
+		pwmValue -= Constants.PracticeBotArmTicksOffset;
+		pwmValue %= 4096;
+		pwmValue = (pwmValue < 0 ? pwmValue + 4096 : pwmValue);
+		return pwmValue;
 	}
 }

@@ -49,7 +49,7 @@ public class Intake {
 		{
 		case INTAKE:
 			intakeMotor1.set(ControlMode.PercentOutput, -.45);
-			intakeMotor2.set(ControlMode.PercentOutput, -.45);
+			intakeMotor2.set(ControlMode.PercentOutput, -.7);
 			setIntakeSolenoid(SolenoidState.INTAKING);
 			break;
 		case OUTTAKE:
@@ -58,9 +58,13 @@ public class Intake {
 			break;
 		case GRIP:
 			setIntakeSolenoid(SolenoidState.CLAMP);
+			intakeMotor1.set(ControlMode.PercentOutput, 0);
+			intakeMotor2.set(ControlMode.PercentOutput, 0);
 			break;
 		case OPEN:
 			setIntakeSolenoid(SolenoidState.OPEN);
+			intakeMotor1.set(ControlMode.PercentOutput, 0);
+			intakeMotor2.set(ControlMode.PercentOutput, 0);
 			break;
 		}
 	}
@@ -76,9 +80,11 @@ public class Intake {
 		case CLAMP:
 			intakeSolenoid30Psi.set(false);
 			intakeSolenoid60Psi.set(false);
+			break;
 		case INTAKING:
 			intakeSolenoid30Psi.set(true);
 			intakeSolenoid60Psi.set(false);
+			break;
 		}
 	}
 }

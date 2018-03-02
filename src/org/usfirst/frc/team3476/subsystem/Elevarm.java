@@ -32,7 +32,7 @@ public class Elevarm extends Threaded {
 	private volatile double elevatorSetpoint;
 
 	private Elevarm() {
-		elevatorLimiter = new RateLimiter(1000, 20);
+		elevatorLimiter = new RateLimiter(1000, 50);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}
@@ -42,12 +42,17 @@ public class Elevarm extends Threaded {
 	}
 
 	synchronized public void setElevatorHeight(double height) {
-		currentElevatorState = ElevatorState.POSITION;
-		if (isValidPosition(arm.getTargetAngle(), height))
+		if (currentElevatorState != ElevatorState.HOMING && isValidPosition(arm.getTargetAngle(), height))
 		{
+			if(currentElevatorState != ElevatorState.POSITION){
+				currentElevatorState = ElevatorState.POSITION;
+				resetMotionProfile();
+			}
 			elevatorSetpoint = height;
-		} else {
-			System.out.println("Collision detected. Elevator not moving");
+		}
+		else
+		{
+			System.out.println("Homing or Not Valid Position");
 		}
 	}
 
@@ -149,12 +154,6 @@ public class Elevarm extends Threaded {
 		currentElevatorState = ElevatorState.HOMING;
 	}
 
-	public void resetPWMZero() {
-		arm.resetPWMZero();
-		System.out.println("Arm Position Recalibrated");
-
-	}
-
 	public void prepClimb() {
 		setElevatorHeight(Constants.ElevatorUpHeight);
 		setArmAngle(Constants.ArmDownDegrees);
@@ -164,11 +163,12 @@ public class Elevarm extends Threaded {
 	public static boolean isValidPosition(double armAngle, double elevatorHeight) {
 		double x = Math.cos(Math.toRadians(armAngle)) * Constants.ArmLength;
 		double y = elevatorHeight + Math.sin(Math.toRadians(armAngle)) * Constants.ArmLength;
-
+		
 		return !(armAngle < Constants.ArmLowerAngleLimit // Checks if
 				|| armAngle > Constants.ArmUpperAngleLimit // limits of
 				|| elevatorHeight < Constants.ElevatorMinHeight // elevator or arm
-				|| elevatorHeight > Constants.ElevatorMaxHeight); // are exceeded
+				|| elevatorHeight > Constants.ElevatorMaxHeight)
+				|| !(x < 14 && y < -10); // are exceeded
 		// Add more constraints if needed
 	}
 
@@ -184,23 +184,25 @@ public class Elevarm extends Threaded {
 	public void update() {
 		switch (currentElevatorState) {
 		case HOMING:
-			/*if (!isValidPosition(arm.getAngle(), 0)) {
+			if (!isValidPosition(arm.getAngle(), 0)) {
 				setArmAngle(Constants.ArmHorizontalDegrees);
-				System.out.println("BREAK OUT OF HOMING");
+				System.out.println("CAN'T HOME. INVALID POSITION");
 				currentElevatorState = ElevatorState.MANUAL;
 				break;
-			}*/
+			}
 			elevator.setPercentOutput(-.2); // Some slow speed
 			if (elevator.getOutputCurrent() > Constants.ElevatorStallCurrent) {
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition(0); // Sets encoder value to 0
 				System.out.println("ELEVATOR HOMED");
+				setElevatorHeight(getElevatorHeight());
 				currentElevatorState = ElevatorState.MANUAL;
 			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
 						* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
+				setElevatorHeight(getElevatorHeight());
 				currentElevatorState = ElevatorState.MANUAL;
 			}
 			break;
@@ -243,6 +245,11 @@ public class Elevarm extends Threaded {
 	public int getArmPWMPosition()
 	{
 		return arm.getPWMPosition();
+	}
+	
+	public int getArmEncoderPosition()
+	{
+		return arm.getEncoderPosition();
 	}
 	
 	public void resetMotionProfile() {

@@ -61,11 +61,11 @@ public final class Constants {
 	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
 
 	// Arm
-	public static final double ArmLowerAngleLimit = 55;
-	public static final double ArmUpperAngleLimit = 180;
+	public static final double ArmLowerAngleLimit = -55;
+	public static final double ArmUpperAngleLimit = 85;
 	public static final double ArmRotationsPerMotorRotation = 1 / 1.5;
 	public static final double ArmSpeed = 0; // Degrees Per Second
-	public static final double ArmLength = 20; // Inches
+	public static final double ArmLength = 18.6; // Inches
 	public static final double ExpectedArmCurrent = 0; //
 	public static final double ExpectedArmRPM = 0;
 	public static final double ExpectedArmPosition = 0;
@@ -78,8 +78,8 @@ public final class Constants {
 	public static final double ExpectedRPMTolerance = 0;
 	public static final double ExpectedPositionTolerance = 0;
 
-	public static final int PracticeBotArmTicksOffset = 1837;
-	public static final int PracticeBotArmAngleOffsetInTicks = (int)(-PracticeBotArmTicksOffset - ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
+	public static final int PracticeBotArmTicksOffset = 2256;
+	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 	private Constants() {
 	}

@@ -31,10 +31,6 @@ public class Robot extends IterativeRobot {
 	Intake intake = Intake.getInstance();
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
-	LazyTalonSRX intakeMotor1 = new LazyTalonSRX(Constants.Intake1Id);
-	LazyTalonSRX intakeMotor2 = new LazyTalonSRX(Constants.Intake2Id);
-	Solenoid intakeSolenoid30Psi = new Solenoid(Constants.IntakeSolenoid30PsiId);
-	Solenoid intakeSolenoid60Psi = new Solenoid(Constants.IntakeSolenoid60PsiId);
 	CameraServer camServer = CameraServer.getInstance();
 	
 	boolean homed = false;
@@ -95,41 +91,24 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		
-		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-		//double current = elevarm.getElevatorOutputCurrent();
-		//if (current > 20)
-			//System.out.println("Current: " + current);
 		
 		if (buttonBox.getRawButton(4))
 		{
 			intake.setIntake(IntakeState.INTAKE);
-			/*intakeMotor1.set(ControlMode.PercentOutput, -1); //Intake
-			intakeMotor2.set(ControlMode.PercentOutput, -1);
-			intakeSolenoid30Psi.set(true);
-			intakeSolenoid60Psi.set(!true);*/
 		}
 		else if (buttonBox.getRawButton(3))
 		{
 			intake.setIntake(IntakeState.OUTTAKE);
-			/*intakeMotor1.set(ControlMode.PercentOutput, .5); //Outtake
-			intakeMotor2.set(ControlMode.PercentOutput, .5);*/
 		}
 		else if (buttonBox.getRawButton(2))
 		{
 			intake.setIntake(IntakeState.OPEN);
-			/*intakeMotor1.set(ControlMode.PercentOutput, 0);
-			intakeMotor2.set(ControlMode.PercentOutput, 0);
-			intakeSolenoid30Psi.set(true);
-			intakeSolenoid60Psi.set(!false);*/
 		}
 		else
 		{
 			intake.setIntake(IntakeState.GRIP);
-			/*intakeMotor1.set(ControlMode.PercentOutput, 0);
-			intakeMotor2.set(ControlMode.PercentOutput, 0);
-			intakeSolenoid30Psi.set(false);
-			intakeSolenoid60Psi.set(!true);*/
 		}
 		
 		if (buttonBox.getPOV() == 0)
@@ -154,7 +133,7 @@ public class Robot extends IterativeRobot {
 		
 		if (buttonBox.getRisingEdge(6))
 		{
-			elevarm.setArmAngle(-/*15*/50); //Intake Position
+			elevarm.setArmAngle(-20); //Intake Position
 			elevarm.setElevatorHeight(3);
 		}
 		else if (buttonBox.getRisingEdge(7))
@@ -310,7 +289,8 @@ public class Robot extends IterativeRobot {
 			elevarm.homeElevator();
 		}
 		if (xbox.getRisingEdge(4)) {
-			System.out.println("Arm Ticks: " + elevarm.getArmPWMPosition());
+			System.out.println("Arm PWM Ticks: " + elevarm.getArmPWMPosition());
+			System.out.println("Arm Encoder Ticks: " + elevarm.getArmEncoderPosition());
 		}
 	}
 }

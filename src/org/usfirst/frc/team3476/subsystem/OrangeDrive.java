@@ -131,7 +131,7 @@ public class OrangeDrive extends Threaded {
 		if (isQuickTurn) {
 			overPower = 1;
 			if (moveValue < 0.2) {
-				quickStopAccumulator = quickStopAccumulator + rotateValue * 2;
+				quickStopAccumulator = 0.9 * quickStopAccumulator + 0.1 * rotateValue * 2;
 			}
 			angularPower = rotateValue;
 		} else {
@@ -146,8 +146,8 @@ public class OrangeDrive extends Threaded {
 			}
 		}
 
-		leftMotorSpeed = moveValue - angularPower;
-		rightMotorSpeed = moveValue + angularPower;
+		leftMotorSpeed = moveValue + angularPower;
+		rightMotorSpeed = moveValue - angularPower;
 
 		angularPower = Math.abs(moveValue) * rotateValue - quickStopAccumulator;
 		// TODO: make pretty - coerce
@@ -164,10 +164,8 @@ public class OrangeDrive extends Threaded {
 			leftMotorSpeed += overPower * (-1.0 - rightMotorSpeed);
 			rightMotorSpeed = -1.0;
 		}
-		leftMotorSpeed *= Constants.MaxDriveSpeed;
-		rightMotorSpeed *= Constants.MaxDriveSpeed;
 
-		setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+		setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 	}
 
 	private void configMotors() {

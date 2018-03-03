@@ -89,10 +89,10 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		
+		drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		//drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		
 		if (buttonBox.getRawButton(4))
 		{
@@ -104,11 +104,24 @@ public class Robot extends IterativeRobot {
 		}
 		else if (buttonBox.getRawButton(2))
 		{
+			intake.setIntake(IntakeState.OUTTAKE_FAST);
+		}
+		else if (buttonBox.getRawButton(1))
+		{
 			intake.setIntake(IntakeState.OPEN);
 		}
 		else
 		{
 			intake.setIntake(IntakeState.GRIP);
+		}
+		
+		if (xbox.getRawAxis(3) > .3)
+		{
+			drive.setShiftState(true);
+		}
+		else
+		{
+			drive.setShiftState(false);
 		}
 		
 		if (buttonBox.getPOV() == 0)
@@ -129,22 +142,26 @@ public class Robot extends IterativeRobot {
 		{
 			elevarm.configArmEncoder();
 		}
-		
-		
-		if (buttonBox.getRisingEdge(6))
+
+		if (buttonBox.getRisingEdge(5))
 		{
 			elevarm.setArmAngle(-20); //Intake Position
-			elevarm.setElevatorHeight(3);
+			elevarm.setElevatorHeight(1);
+		}
+		else if (buttonBox.getRisingEdge(6))
+		{
+			elevarm.setArmAngle(80); //Switch Position - once PID is tuned better, make angle more vertical
+			elevarm.setElevatorHeight(10);
 		}
 		else if (buttonBox.getRisingEdge(7))
 		{
-			elevarm.setArmAngle(70); //Switch Position - once PID is tuned better, make angle more vertical
-			elevarm.setElevatorHeight(10);
+			elevarm.setArmAngle(80); //Scale Position
+			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		}
 		else if (buttonBox.getRisingEdge(8))
 		{
-			elevarm.setArmAngle(60); //Scale Position
-			elevarm.setElevatorHeight(63);
+			elevarm.setArmAngle(0);
+			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		}
 		
 		

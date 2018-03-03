@@ -168,7 +168,6 @@ public class Elevarm extends Threaded {
 		boolean elevatorLow = elevatorHeight < Constants.ElevatorMinHeight;
 		boolean elevatorHigh = elevatorHeight > Constants.ElevatorMaxHeight;
 		boolean hittingElevator = (x < 14 && y < -10);
-		System.out.println("Test Height: " + elevatorHeight);
 		if (armLow || armHigh || elevatorLow || elevatorHigh || hittingElevator)
 			return false;
 		return true;
@@ -187,7 +186,7 @@ public class Elevarm extends Threaded {
 		switch (currentElevatorState) {
 		case HOMING:
 			if (!isValidPosition(arm.getAngle(), 0)) {
-				setArmAngle(Constants.ArmHorizontalDegrees);
+				//setArmAngle(Constants.ArmHorizontalDegrees);
 				System.out.println("CAN'T HOME. INVALID POSITION");
 				currentElevatorState = ElevatorState.MANUAL;
 				break;

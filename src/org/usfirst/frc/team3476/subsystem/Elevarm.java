@@ -197,14 +197,12 @@ public class Elevarm extends Threaded {
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition(0); // Sets encoder value to 0
 				System.out.println("ELEVATOR HOMED");
-				setElevatorHeight(getElevatorHeight());
 				currentElevatorState = ElevatorState.MANUAL;
 			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
 						* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
-				setElevatorHeight(getElevatorHeight());
 				currentElevatorState = ElevatorState.MANUAL;
 			}
 			break;

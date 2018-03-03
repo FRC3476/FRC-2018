@@ -90,8 +90,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		
-		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		System.out.println("left: " + drive.getLeftDistance());
+		System.out.println("right: " + drive.getRightDistance());
+		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		
 		if (buttonBox.getRawButton(4))

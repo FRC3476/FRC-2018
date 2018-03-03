@@ -69,13 +69,13 @@ public class OrangeDrive extends Threaded {
 		rightSlave2Talon = new LazyTalonSRX(Constants.RightSlave2DriveId);
 		configMotors();
 		// TODO: Find constants of new drivebase
-		drivePercentVbus = true;
+		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
 
 		rightTalon.config_kP(0, 0.2, 10);
-		rightTalon.config_kF(0, 0.1453, 10);
+		rightTalon.config_kF(0, 0.2942366898763145583753006757594, 10);
 		leftTalon.config_kP(0, 0.2, 10);
-		leftTalon.config_kF(0, 0.1453, 10);
+		leftTalon.config_kF(0, 0.2942366898763145583753006757594, 10);
 		leftProfiler = new RateLimiter(Constants.TeleopAccLimit);
 		rightProfiler = new RateLimiter(Constants.TeleopAccLimit);
 	}
@@ -106,8 +106,8 @@ public class OrangeDrive extends Threaded {
 			rightMotorSpeed = OrangeUtility.coerce(moveValue
 					- rotateValue, Constants.MaxDriveSpeed, -Constants.MaxDriveSpeed);
 
-			leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
-			rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
+			//leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
+			//rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
 
 			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 		}
@@ -131,7 +131,7 @@ public class OrangeDrive extends Threaded {
 		if (isQuickTurn) {
 			overPower = 1;
 			if (moveValue < 0.2) {
-				quickStopAccumulator = quickStopAccumulator + rotateValue * 2;
+				quickStopAccumulator = (0.9) * quickStopAccumulator + 0.1 * rotateValue * 2;
 			}
 			angularPower = rotateValue;
 		} else {
@@ -164,10 +164,8 @@ public class OrangeDrive extends Threaded {
 			leftMotorSpeed += overPower * (-1.0 - rightMotorSpeed);
 			rightMotorSpeed = -1.0;
 		}
-		leftMotorSpeed *= Constants.MaxDriveSpeed;
-		rightMotorSpeed *= Constants.MaxDriveSpeed;
 
-		setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+		setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 	}
 
 	private void configMotors() {
@@ -183,8 +181,8 @@ public class OrangeDrive extends Threaded {
 		rightSlaveTalon.setInverted(true);
 		rightSlave2Talon.setInverted(true);
 
-		leftTalon.setSensorPhase(true);
-		rightTalon.setSensorPhase(false);
+		leftTalon.setSensorPhase(false);
+		rightTalon.setSensorPhase(true);
 
 	}
 
@@ -260,8 +258,8 @@ public class OrangeDrive extends Threaded {
 		// in/s -> (in / pi) * 15
 		// positive deltaSpeed turns right by making left wheels faster than
 		// right
-		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) / Math.PI * 15);
-		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) / Math.PI * 15);
+		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
+		rightTalon.set(ControlMode.Velocity, -(setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
 	}
 
 	public synchronized void setSimpleDrive(boolean setting) {

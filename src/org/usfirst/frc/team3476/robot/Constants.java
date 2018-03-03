@@ -21,7 +21,7 @@ public final class Constants {
 	// Autonomous Driving
 	public static final double LookAheadDistance = 20;
 	public static final double WheelScrub = 0.8;
-	public static final double WheelDiameter = 4;
+	public static final double WheelDiameter = 6;
 	public static final double ScrubFactor = 0.65;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 10;
@@ -78,8 +78,8 @@ public final class Constants {
 	public static final double ExpectedRPMTolerance = 0;
 	public static final double ExpectedPositionTolerance = 0;
 
-	public static final int PracticeBotArmTicksOffset = 2029;
-	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
+	public static final int PracticeBotArmTicksOffset = 192;
+	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1d / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 	private Constants() {
 	}

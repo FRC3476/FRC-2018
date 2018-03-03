@@ -32,7 +32,7 @@ public class Elevarm extends Threaded {
 	private volatile double elevatorSetpoint;
 
 	private Elevarm() {
-		elevatorLimiter = new RateLimiter(1000, 50);
+		elevatorLimiter = new RateLimiter(1000, 100);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}
@@ -163,13 +163,15 @@ public class Elevarm extends Threaded {
 	public static boolean isValidPosition(double armAngle, double elevatorHeight) {
 		double x = Math.cos(Math.toRadians(armAngle)) * Constants.ArmLength;
 		double y = elevatorHeight + Math.sin(Math.toRadians(armAngle)) * Constants.ArmLength;
-		
-		return !(armAngle < Constants.ArmLowerAngleLimit // Checks if
-				|| armAngle > Constants.ArmUpperAngleLimit // limits of
-				|| elevatorHeight < Constants.ElevatorMinHeight // elevator or arm
-				|| elevatorHeight > Constants.ElevatorMaxHeight)
-				|| !(x < 14 && y < -10); // are exceeded
-		// Add more constraints if needed
+		boolean armLow = armAngle < Constants.ArmLowerAngleLimit;
+		boolean armHigh = armAngle > Constants.ArmUpperAngleLimit;
+		boolean elevatorLow = elevatorHeight < Constants.ElevatorMinHeight;
+		boolean elevatorHigh = elevatorHeight > Constants.ElevatorMaxHeight;
+		boolean hittingElevator = (x < 14 && y < -10);
+		System.out.println("Test Height: " + elevatorHeight);
+		if (armLow || armHigh || elevatorLow || elevatorHigh || hittingElevator)
+			return false;
+		return true;
 	}
 
 	public double getElevatorOutputCurrent() {

@@ -71,8 +71,8 @@ public class Robot extends IterativeRobot {
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
 		elevarm.configArmEncoder();
-		elevarm.setArmPercentOutput(0);
-		elevarm.setElevatorPercentOutput(0);
+		drive.stopSubsystem();
+		elevarm.stopSubsystem();
 		if (!homed)
 		{
 			elevarm.homeElevator();
@@ -91,8 +91,8 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		
-		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		
 		if (buttonBox.getRawButton(4))
 		{

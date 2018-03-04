@@ -5,8 +5,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.usfirst.frc.team3476.subsystem.Elevarm;
+import org.usfirst.frc.team3476.subsystem.Intake;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
+import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 import org.usfirst.frc.team3476.utility.Controller;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
@@ -26,12 +28,9 @@ public class Robot extends IterativeRobot {
 	OrangeDrive drive = OrangeDrive.getInstance();
 	Elevarm elevarm = Elevarm.getInstance();
 	RobotTracker tracker = RobotTracker.getInstance();
+	Intake intake = Intake.getInstance();
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
-	LazyTalonSRX intakeMotor1 = new LazyTalonSRX(Constants.Intake1Id);
-	LazyTalonSRX intakeMotor2 = new LazyTalonSRX(Constants.Intake2Id);
-	Solenoid intakeSolenoid30Psi = new Solenoid(Constants.IntakeSolenoid30PsiId);
-	Solenoid intakeSolenoid60Psi = new Solenoid(Constants.IntakeSolenoid60PsiId);
 	CameraServer camServer = CameraServer.getInstance();
 	
 	boolean homed = false;
@@ -71,8 +70,9 @@ public class Robot extends IterativeRobot {
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
-		elevarm.setArmPercentOutput(0);
-		elevarm.setElevatorPercentOutput(0);
+		elevarm.configArmEncoder();
+		drive.stopSubsystem();
+		elevarm.stopSubsystem();
 		if (!homed)
 		{
 			elevarm.homeElevator();
@@ -89,39 +89,41 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		
-		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-		//double current = elevarm.getElevatorOutputCurrent();
-		//if (current > 20)
-			//System.out.println("Current: " + current);
+		drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+//		//drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
+//		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+//		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Left: " + drive.getLeftSpeed());
+		System.out.println("Right: " + drive.getRightSpeed());
 		
 		if (buttonBox.getRawButton(4))
 		{
-			intakeMotor1.set(ControlMode.PercentOutput, -.45); //Intake
-			intakeMotor2.set(ControlMode.PercentOutput, -.45);
-			intakeSolenoid30Psi.set(false);
-			intakeSolenoid60Psi.set(false);
+			intake.setIntake(IntakeState.INTAKE);
 		}
 		else if (buttonBox.getRawButton(3))
 		{
-			intakeMotor1.set(ControlMode.PercentOutput, .5); //Outtake
-			intakeMotor2.set(ControlMode.PercentOutput, .5);
+			intake.setIntake(IntakeState.OUTTAKE);
 		}
 		else if (buttonBox.getRawButton(2))
 		{
-			intakeMotor1.set(ControlMode.PercentOutput, 0);
-			intakeMotor2.set(ControlMode.PercentOutput, 0);
-			intakeSolenoid30Psi.set(true);
-			intakeSolenoid60Psi.set(false);
+			intake.setIntake(IntakeState.OUTTAKE_FAST);
+		}
+		else if (buttonBox.getRawButton(1))
+		{
+			intake.setIntake(IntakeState.OPEN);
 		}
 		else
 		{
-			intakeMotor1.set(ControlMode.PercentOutput, 0);
-			intakeMotor2.set(ControlMode.PercentOutput, 0);
-			intakeSolenoid30Psi.set(false);
-			intakeSolenoid60Psi.set(true);
+			intake.setIntake(IntakeState.GRIP);
+		}
+		
+		if (xbox.getRawAxis(3) > .3)
+		{
+			drive.setShiftState(true);
+		}
+		else
+		{
+			drive.setShiftState(false);
 		}
 		
 		if (buttonBox.getPOV() == 0)
@@ -140,24 +142,28 @@ public class Robot extends IterativeRobot {
 		}
 		if (buttonBox.getRisingEdge(10))
 		{
-			elevarm.homeArm();
+			elevarm.configArmEncoder();
 		}
-		
-		
-		if (buttonBox.getRisingEdge(6))
+
+		if (buttonBox.getRisingEdge(5))
 		{
-			elevarm.setArmAngle(-15); //Intake Position
-			elevarm.setElevatorHeight(3);
+			elevarm.setArmAngle(-20); //Intake Position
+			elevarm.setElevatorHeight(1);
+		}
+		else if (buttonBox.getRisingEdge(6))
+		{
+			elevarm.setArmAngle(80); //Switch Position - once PID is tuned better, make angle more vertical
+			elevarm.setElevatorHeight(10);
 		}
 		else if (buttonBox.getRisingEdge(7))
 		{
-			elevarm.setArmAngle(70); //Switch Position
-			elevarm.setElevatorHeight(10);
+			elevarm.setArmAngle(80); //Scale Position
+			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		}
 		else if (buttonBox.getRisingEdge(8))
 		{
-			elevarm.setArmAngle(60); //Scale Position
-			elevarm.setElevatorHeight(63);
+			elevarm.setArmAngle(0);
+			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		}
 		
 		
@@ -289,6 +295,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 		xbox.update();
+		buttonBox.update();
 		//Reset vbus of elevator to zero during test mode so homing can occur
 		if (xbox.getRisingEdge(1))
 		{
@@ -301,7 +308,8 @@ public class Robot extends IterativeRobot {
 			elevarm.homeElevator();
 		}
 		if (xbox.getRisingEdge(4)) {
-			elevarm.homeArm();
+			System.out.println("Arm PWM Ticks: " + elevarm.getArmPWMPosition());
+			System.out.println("Arm Encoder Ticks: " + elevarm.getArmEncoderPosition());
 		}
 	}
 }

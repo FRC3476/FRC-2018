@@ -8,22 +8,24 @@ import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class AutoPathGenerator {
+public class AutoRoutineGenerator {
 
-	private HashMap<String, Path> pathTable;
 	private Path robotPath;
 	private List<Translation2d> cubeLocations;
+	private PathOption wantedOption;
 	
 	public enum PathOption {
-		Scale, Switch, Optimal, Forward
+		SCALE, SWITCH, OPTIMAL, FORWARD, NONE
 	}
 
-	public AutoPathGenerator() {
+	public AutoRoutineGenerator() {
+		wantedOption = PathOption.SCALE;
 		// Add paths to table;
 	}
 
-	public Path generate(String gameMsg) {
+	public AutoRoutine generate(String gameMsg) {
 		Translation2d switchLocation, scaleLocation;
+		//Create switch and scale locations
 		if(gameMsg.charAt(0) == 'l') {
 			
 		} else {
@@ -35,8 +37,20 @@ public class AutoPathGenerator {
 		} else {
 			
 		}
-		
-		
-		return null;
+		//Create routine
+		AutoRoutine generatedRoutine = new AutoRoutine();
+		switch(wantedOption) {
+		case SCALE:
+			break;
+		case SWITCH:
+			break;
+		case OPTIMAL:
+			break;
+		case FORWARD:
+			break;
+		case NONE:
+			break;
+		}		
+		return generatedRoutine;
 	}
 }

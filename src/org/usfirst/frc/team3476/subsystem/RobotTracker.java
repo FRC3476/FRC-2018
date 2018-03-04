@@ -46,7 +46,7 @@ public class RobotTracker extends Threaded {
 	}
 
 	/**
-	 * Integrates the encoders and gyro to figure out robot position. We don't calculate a circular path.
+	 * Integrates the encoders and gyro to figure out robot position. A constant curvature is assumed.
 	 */
 	@Override
 	public void update() {

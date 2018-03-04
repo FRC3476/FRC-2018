@@ -5,12 +5,12 @@ public final class Constants {
 	public static final double MinimumControllerInput = 0.15;
 
 	// Driving
-	public static final double HighDriveSpeed = 170;
-	public static final double LowDriveSpeed = 0;
-	public static final double kHighP = 0.2;
-	public static final double kHighF = 0.2942366898763145583753006757594;
-	public static final double kLowP = 0;
-	public static final double kLowF = 0;
+	public static final double HighDriveSpeed = 185;
+	public static final double LowDriveSpeed = 95;
+	public static final double kHighP = 0.001;
+	public static final double kHighF = 0.25447497502816394237863842227842;
+	public static final double kLowP = 0.02;
+	public static final double kLowF = 0.52308744866900365933386786801674;
 	public static final double TeleopAccLimit = 10;
 	public static final double TeleopJerkLimit = 2000;
 	public static final double ExpectedDriveCurrent = 0;
@@ -78,7 +78,7 @@ public final class Constants {
 	public static final double ArmDownDegrees = -55;
 
 	// Other
-	public static final int SensorTicksPerMotorRotation = 4096;
+	public static final double SensorTicksPerMotorRotation = 4096;
 	public static final double ExpectedCurrentTolerance = 0;
 	public static final double ExpectedRPMTolerance = 0;
 	public static final double ExpectedPositionTolerance = 0;

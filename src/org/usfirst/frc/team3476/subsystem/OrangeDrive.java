@@ -288,8 +288,8 @@ public class OrangeDrive extends Threaded {
 		}
 		// positive deltaSpeed turns right by making left wheels faster than
 		// right
-		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
-		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
+		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d);
+		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d);
 	}
 
 	public synchronized void setSimpleDrive(boolean setting) {

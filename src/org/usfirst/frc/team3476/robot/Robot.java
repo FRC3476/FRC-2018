@@ -103,14 +103,14 @@ public class Robot extends IterativeRobot {
 		{
 			intake.setIntake(IntakeState.OUTTAKE);
 		}
-		/*else if (buttonBox.getRawButton(2))
+		else if (joystick.getRawButton(6))
 		{
 			intake.setIntake(IntakeState.OUTTAKE_FAST);
 		}
 		else if (buttonBox.getRawButton(1))
 		{
 			intake.setIntake(IntakeState.OPEN);
-		}*/
+		}
 		else
 		{
 			intake.setIntake(IntakeState.GRIP);
@@ -146,7 +146,7 @@ public class Robot extends IterativeRobot {
 
 		if (buttonBox.getRisingEdge(5))
 		{
-			elevarm.setArmAngle(-20); //Intake Position
+			elevarm.setArmAngle(-15); //Intake Position
 			elevarm.setElevatorHeight(1);
 		}
 		else if (buttonBox.getRisingEdge(6))

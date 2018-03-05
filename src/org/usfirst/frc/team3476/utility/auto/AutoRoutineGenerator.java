@@ -47,6 +47,7 @@ public class AutoRoutineGenerator {
 		case OPTIMAL:
 			break;
 		case FORWARD:
+			generatedRoutine.addCommand(new SetDrivePath(new Path(new Translation2d(100, 0)), false));
 			break;
 		case NONE:
 			break;

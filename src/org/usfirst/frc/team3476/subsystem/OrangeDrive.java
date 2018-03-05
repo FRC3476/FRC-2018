@@ -197,13 +197,14 @@ public class OrangeDrive extends Threaded {
 		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
 
 		leftTalon.setInverted(true);
-		rightTalon.setInverted(true);
 		leftSlaveTalon.setInverted(true);
 		leftSlave2Talon.setInverted(true);
-		rightSlaveTalon.setInverted(true);
-		rightSlave2Talon.setInverted(true);
 
-		leftTalon.setSensorPhase(true);
+		rightTalon.setInverted(false);
+		rightSlaveTalon.setInverted(false);
+		rightSlave2Talon.setInverted(false);
+
+		leftTalon.setSensorPhase(false);
 		rightTalon.setSensorPhase(false);
 
 	}
@@ -229,12 +230,12 @@ public class OrangeDrive extends Threaded {
 
 	public double getLeftDistance() {
 		return leftTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
-				* Math.PI;
+				* Math.PI * 22d/62d / 3d;
 	}
 
 	public double getRightDistance() {
 		return rightTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
-				* Math.PI;
+				* Math.PI * 22d/62d / 3d;
 	}
 
 	public double getSpeed() {
@@ -274,7 +275,7 @@ public class OrangeDrive extends Threaded {
 
 	private void setWheelPower(DriveVelocity setVelocity) {
 		leftTalon.set(ControlMode.PercentOutput, setVelocity.leftWheelSpeed);
-		rightTalon.set(ControlMode.PercentOutput, -(setVelocity.rightWheelSpeed));
+		rightTalon.set(ControlMode.PercentOutput, setVelocity.rightWheelSpeed);
 	}
 
 	private void setWheelVelocity(DriveVelocity setVelocity) {
@@ -288,7 +289,7 @@ public class OrangeDrive extends Threaded {
 		// positive deltaSpeed turns right by making left wheels faster than
 		// right
 		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
-		rightTalon.set(ControlMode.Velocity, -(setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
+		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
 	}
 
 	public synchronized void setSimpleDrive(boolean setting) {

@@ -7,13 +7,26 @@ public class SetDrivePath implements AutoCommand {
 
 	private Path robotPath;
 	private boolean isReversed;
+	private boolean isBlocking = false;
 	
 	public SetDrivePath (Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
 	}
 	
+	
+	
 	public void run() {
 		OrangeDrive.getInstance().setAutoPath(robotPath, isReversed);
+		if(isBlocking){
+			while(!OrangeDrive.getInstance().isDone()){
+				//Do nothing
+			}
+		}
+	}
+
+	@Override
+	public void setBlocking(boolean isBlocking) {
+		this.isBlocking = isBlocking;		
 	}
 }

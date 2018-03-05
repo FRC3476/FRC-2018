@@ -70,9 +70,10 @@ public class Robot extends IterativeRobot {
 		*/
 
 		autoPath = new Path(new Translation2d(0, 0));
-		autoPath.addPoint(50, 0, 30);
-		autoPath.addPoint(103, 0, 30);//, new SetIntakeState(IntakeState.INTAKE));
-		autoPath.addPoint(110, 36, 30); //, new SetIntakeState(IntakeState.GRIP));
+		autoPath.addPoint(172, 0, 30);
+		autoPath.addPoint(172, 50, 30);
+		//autoPath.addPoint(103, 0, 30);
+		//autoPath.addPoint(110, 36, 30); 
 		drive.setAutoPath(autoPath, false);
 	}
 
@@ -106,9 +107,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		//drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-		drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		System.out.println("Left: " + drive.getLeftDistance());
-		System.out.println("Right: " + drive.getRightDistance());
+		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		if (buttonBox.getRawButton(4))
 		{
 			intake.setIntake(IntakeState.INTAKE);

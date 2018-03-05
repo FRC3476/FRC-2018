@@ -54,7 +54,7 @@ public class RateLimiter {
 		/*
 		 * Check if we need to start decelerating
 		 */
-		if (Math.abs(diff) >= Math.abs(area)) {
+		if (Math.abs(diff) >= area || Math.signum(diff) != Math.signum(accValue)) {
 			accValue = accValue + Math.copySign(maxJerk * dt, diff);
 			/*
 			 * Limit accValue to the maximum acceleration
@@ -91,8 +91,8 @@ public class RateLimiter {
 		double timeToSwitchAcc = (getAcc() / getMaxJerk()) + (getMaxAccel() / getMaxJerk());
 		double timeToDecel = getLatestValue() / getMaxAccel();
 		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * getLatestValue();
-		if (distanceTillStop > remainingDist) {
-			return update(0);
+		if (Math.abs(distanceTillStop) >= remainingDist) {
+			return update(0.0);
 		} else {
 			return update(setpoint);
 		}

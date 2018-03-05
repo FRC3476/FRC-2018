@@ -5,7 +5,12 @@ public final class Constants {
 	public static final double MinimumControllerInput = 0.15;
 
 	// Driving
-	public static final double MaxDriveSpeed = 170;
+	public static final double HighDriveSpeed = 185;
+	public static final double LowDriveSpeed = 95;
+	public static final double kHighP = 0.01;
+	public static final double kHighF = 0.25447497502816394237863842227842;
+	public static final double kLowP = 0.02;
+	public static final double kLowF = 0.52308744866900365933386786801674;
 	public static final double TeleopAccLimit = 10;
 	public static final double TeleopJerkLimit = 2000;
 	public static final double ExpectedDriveCurrent = 0;
@@ -34,12 +39,12 @@ public final class Constants {
 	public static final int IntakeSolenoid30PsiId = 4;
 	public static final int IntakeSolenoid60PsiId = 1;
 	public static final int ElevatorGearboxShifterId = 3; //
-	public static final int LeftMasterDriveId = 11;
-	public static final int LeftSlaveDriveId = 12;
-	public static final int LeftSlave2DriveId = 13;
-	public static final int RightMasterDriveId = 16;
-	public static final int RightSlaveDriveId = 15;
-	public static final int RightSlave2DriveId = 14;
+	public static final int LeftMasterDriveId = 16;
+	public static final int LeftSlaveDriveId = 15;
+	public static final int LeftSlave2DriveId = 14;
+	public static final int RightMasterDriveId = 11;
+	public static final int RightSlaveDriveId = 12;
+	public static final int RightSlave2DriveId = 13;
 
 	public static final int Intake1Id = 22;
 	public static final int Intake2Id = 23;
@@ -73,7 +78,7 @@ public final class Constants {
 	public static final double ArmDownDegrees = -55;
 
 	// Other
-	public static final int SensorTicksPerMotorRotation = 4096;
+	public static final double SensorTicksPerMotorRotation = 4096;
 	public static final double ExpectedCurrentTolerance = 0;
 	public static final double ExpectedRPMTolerance = 0;
 	public static final double ExpectedPositionTolerance = 0;

@@ -46,21 +46,24 @@ public class RobotTracker extends Threaded {
 	}
 
 	/**
-	 * Integrates the encoders and gyro to figure out robot position. We don't calculate a circular path.
+	 * Integrates the encoders and gyro to figure out robot position. A constant curvature is assumed.
 	 */
 	@Override
 	public void update() {
-		currentDistance = (driveBase.getLeftDistance() + driveBase.getRightDistance()) / 2;
+		currentDistance = driveBase.getDistance();
 		Rotation deltaRotation = driveBase.getGyroAngle().inverse().rotateBy(offset);
 		deltaDistance = currentDistance - oldDistance;
-		Translation2d deltaPosition = new Translation2d(deltaRotation.cos() * deltaDistance, deltaRotation.sin()
-				* deltaDistance);
-		synchronized (this) {
-			currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition, deltaRotation));
+		Translation2d deltaPosition = new Translation2d(deltaDistance, 0);
+        Rotation positionAngle = Rotation.fromRadians(deltaRotation.getRadians() / 2.0);
+		synchronized (this) {			
+			deltaRotation = currentOdometry.rotationMat.inverse().rotateBy(deltaRotation);
+			currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition.rotateBy(positionAngle), deltaRotation));
 			oldDistance = currentDistance;
 			vehicleHistory.add(new InterpolablePair<>(System.nanoTime(), currentOdometry));
 			gyroHistory.add(new InterpolablePair<>(System.nanoTime(), driveBase.getGyroAngle()));
 		}
+		//System.out.println("Position: " + currentOdometry.translationMat.getX() + "   " + currentOdometry.translationMat.getY());
+		//System.out.println("Gyro: " + currentOdometry.rotationMat.getDegrees());
 	}
 
 	/**

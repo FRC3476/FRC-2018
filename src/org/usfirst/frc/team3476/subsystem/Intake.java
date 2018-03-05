@@ -91,4 +91,8 @@ public class Intake {
 			break;
 		}
 	}
+	
+	public boolean isDone() {
+		return true;
+	}
 }

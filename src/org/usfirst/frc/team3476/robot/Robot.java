@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class Robot extends IterativeRobot {
 	Controller xbox = new Controller(0);
 	Controller buttonBox = new Controller(1);
+	Controller joystick = new Controller(2);
 	OrangeDrive drive = OrangeDrive.getInstance();
 	Elevarm elevarm = Elevarm.getInstance();
 	RobotTracker tracker = RobotTracker.getInstance();
@@ -96,15 +97,15 @@ public class Robot extends IterativeRobot {
 		System.out.println("Left: " + drive.getLeftSpeed());
 		System.out.println("Right: " + drive.getRightSpeed());
 		
-		if (buttonBox.getRawButton(4))
+		if (joystick.getRawButton(3))
 		{
 			intake.setIntake(IntakeState.INTAKE);
 		}
-		else if (buttonBox.getRawButton(3))
+		else if (joystick.getRawButton(4))
 		{
 			intake.setIntake(IntakeState.OUTTAKE);
 		}
-		else if (buttonBox.getRawButton(2))
+		else if (joystick.getRawButton(6))
 		{
 			intake.setIntake(IntakeState.OUTTAKE_FAST);
 		}
@@ -147,7 +148,7 @@ public class Robot extends IterativeRobot {
 
 		if (buttonBox.getRisingEdge(5))
 		{
-			elevarm.setArmAngle(-20); //Intake Position
+			elevarm.setArmAngle(-15); //Intake Position
 			elevarm.setElevatorHeight(1);
 		}
 		else if (buttonBox.getRisingEdge(6))
@@ -158,14 +159,22 @@ public class Robot extends IterativeRobot {
 		else if (buttonBox.getRisingEdge(7))
 		{
 			elevarm.setArmAngle(80); //Scale Position
-			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
+			elevarm.setElevatorHeight(50);
 		}
 		else if (buttonBox.getRisingEdge(8))
 		{
-			elevarm.setArmAngle(0);
+			elevarm.setArmAngle(80); //Scale Horizontal Arm
 			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		}
 		
+		if (joystick.getRawAxis(1) > .3)
+		{
+			elevarm.setOverallPosition(elevarm.getX() + 1, elevarm.getTargetElevatorHeight());
+		}
+		else if (joystick.getRawAxis(1) < -.3)
+		{
+			elevarm.setOverallPosition(elevarm.getX() - 1, elevarm.getTargetElevatorHeight());
+		}
 		
 		//if (buttonBox.getRisingEdge(button))
 		/*

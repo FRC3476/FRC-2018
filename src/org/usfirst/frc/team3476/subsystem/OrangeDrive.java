@@ -45,6 +45,7 @@ public class OrangeDrive extends Threaded {
 	private double quickStopAccumulator;
 
 	private boolean drivePercentVbus;
+	private double driveMultiplier;
 
 	private ADXRS450_Gyro gyroSensor = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	private LazyTalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
@@ -165,6 +166,7 @@ public class OrangeDrive extends Threaded {
 			rightMotorSpeed = -1.0;
 		}
 
+		
 		setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 	}
 

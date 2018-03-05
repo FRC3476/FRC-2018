@@ -172,6 +172,15 @@ public class Elevarm extends Threaded {
 			return false;
 		return true;
 	}
+	
+	public double getX()
+	{
+		return Math.cos(Math.toRadians(getArmAngle())) * Constants.ArmLength;
+	}
+	public double getY()
+	{
+		return getElevatorHeight() + Math.sin(Math.toRadians(getArmAngle())) * Constants.ArmLength;
+	}
 
 	public double getElevatorOutputCurrent() {
 		return elevator.getOutputCurrent();

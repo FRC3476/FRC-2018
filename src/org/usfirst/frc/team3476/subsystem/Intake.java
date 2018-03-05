@@ -49,8 +49,8 @@ public class Intake {
 		switch(state)
 		{
 		case INTAKE:
-			intakeMotor1.set(ControlMode.PercentOutput, -.45);
-			intakeMotor2.set(ControlMode.PercentOutput, -.7);
+			intakeMotor1.set(ControlMode.PercentOutput, -.7);
+			intakeMotor2.set(ControlMode.PercentOutput, -1);
 			setIntakeSolenoid(SolenoidState.INTAKING);
 			break;
 		case OUTTAKE:
@@ -90,5 +90,9 @@ public class Intake {
 			intakeSolenoid60Psi.set(false);
 			break;
 		}
+	}
+	
+	public double getCurrent() {
+		return intakeMotor1.getOutputCurrent() + intakeMotor2.getOutputCurrent();
 	}
 }

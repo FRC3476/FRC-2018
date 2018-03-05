@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class Robot extends IterativeRobot {
 	Controller xbox = new Controller(0);
@@ -95,6 +96,13 @@ public class Robot extends IterativeRobot {
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		
+		if(intake.getCurrent() > 10) {
+			xbox.setRumble(RumbleType.kLeftRumble, 1);
+			xbox.setRumble(RumbleType.kRightRumble, 1);
+		} else {
+			xbox.setRumble(RumbleType.kLeftRumble, 0);
+			xbox.setRumble(RumbleType.kRightRumble, 0);
+		}
 		if (joystick.getRawButton(3))
 		{
 			intake.setIntake(IntakeState.INTAKE);
@@ -125,13 +133,15 @@ public class Robot extends IterativeRobot {
 			drive.setShiftState(false);
 		}
 		
-		if (buttonBox.getPOV() == 0)
+		double nudge = 0;//joystick.getRawAxis(1);
+		System.out.println(nudge);
+		if (nudge > .3)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() + 1);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() + (nudge - .3) * .5);
 		}
-		if (buttonBox.getPOV() == 180)
+		else if (nudge < -.3)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - 1);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - .3) * .5);
 		}
 		
 		
@@ -165,13 +175,13 @@ public class Robot extends IterativeRobot {
 			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		}
 		
-		if (joystick.getRawAxis(1) > .3)
+		if (buttonBox.getPOV() == 0)
 		{
-			elevarm.setOverallPosition(elevarm.getX() + 1, elevarm.getTargetElevatorHeight());
+			elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getTargetElevatorHeight());
 		}
-		else if (joystick.getRawAxis(1) < -.3)
+		else if (buttonBox.getPOV() == 180)
 		{
-			elevarm.setOverallPosition(elevarm.getX() - 1, elevarm.getTargetElevatorHeight());
+			elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getTargetElevatorHeight());
 		}
 		
 		//if (buttonBox.getRisingEdge(button))

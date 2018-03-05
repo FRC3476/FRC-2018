@@ -173,7 +173,7 @@ public class Elevarm extends Threaded {
 		return true;
 	}
 	
-	public double getX()
+	public double getDistance()
 	{
 		return Math.cos(Math.toRadians(getArmAngle())) * Constants.ArmLength;
 	}

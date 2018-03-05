@@ -21,11 +21,10 @@ public class PurePursuitController {
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
-		turnPID = new SynchronousPid(0.004, 0, 0, 0);
-		turnPID.setIzone(15);
+		turnPID = new SynchronousPid(0.01, 0, 0, 0);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
-		speedProfiler = new RateLimiter(30, 120);
+		speedProfiler = new RateLimiter(10, 100);
 	}
 
 	/**

@@ -45,7 +45,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
-		scheduler.schedule(tracker, Duration.ofMillis(20), mainExecutor);
+		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
 		camServer.startAutomaticCapture();
 	}
@@ -70,11 +70,18 @@ public class Robot extends IterativeRobot {
 		*/
 
 		autoPath = new Path(new Translation2d(0, 0));
-		autoPath.addPoint(172, 0, 30);
-		autoPath.addPoint(172, 50, 30);
-		//autoPath.addPoint(103, 0, 30);
-		//autoPath.addPoint(110, 36, 30); 
+		autoPath.addPoint(208, 0, 30);
+		autoPath.addPoint(228, -30, 30);
 		drive.setAutoPath(autoPath, false);
+		while(!drive.isFinished()){
+			
+		}
+		elevarm.setArmAngle(80); //Scale Position
+		elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
+		Timer.delay(1);
+		intake.setIntake(IntakeState.OUTTAKE_FAST);
+		
+		
 	}
 
 	@Override
@@ -107,6 +114,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		//drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		System.out.println(drive.getLeftDistance());
 		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		if (buttonBox.getRawButton(4))
 		{

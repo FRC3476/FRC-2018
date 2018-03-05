@@ -25,9 +25,7 @@ public final class Constants {
 
 	// Autonomous Driving
 	public static final double LookAheadDistance = 20;
-	public static final double WheelScrub = 0.8;
-	public static final double WheelDiameter = 6;
-	public static final double ScrubFactor = 0.65;
+	public static final double WheelDiameter = 5.9;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 10;
 	public static final double MaxPathSpeed = 100;

@@ -41,7 +41,7 @@ public class RobotTracker extends Threaded {
 
 	public synchronized void resetOdometry() {
 		driveBase.zeroSensors();
-		currentOdometry = new RigidTransform(new Translation2d(), driveBase.getGyroAngle());
+		currentOdometry = new RigidTransform(new Translation2d(), Rotation.fromDegrees(0));
 		oldDistance = 0;
 	}
 

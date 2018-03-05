@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class OrangeDrive extends Threaded {
 	public enum DriveState {
-		TELEOP, AUTO
+		TELEOP, AUTO, DONE
 	}
 
 	public static class DriveVelocity {
@@ -317,6 +317,9 @@ public class OrangeDrive extends Threaded {
 	private synchronized void updateAutoPath() {
 		autoDriveVelocity = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
 		setWheelVelocity(autoDriveVelocity);
+		if(autoDriveVelocity.leftWheelSpeed == 0 && autoDriveVelocity.rightWheelSpeed == 0) {
+			driveState = DriveState.DONE;
+		}
 	}
 
 	public void zeroSensors() {
@@ -344,4 +347,7 @@ public class OrangeDrive extends Threaded {
 		rightTalon.set(ControlMode.PercentOutput, 0);
 	}
 
+	synchronized public boolean isFinished() {
+		return driveState == DriveState.DONE;
+	}
 }

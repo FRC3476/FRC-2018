@@ -115,13 +115,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-//		//drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
-//		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-//		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-		System.out.println("Left: " + drive.getLeftSpeed());
-		System.out.println("Right: " + drive.getRightSpeed());
-		
+		buttonBox.update();
+		xbox.update();
+		//drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println(-xbox.getRawAxis(1));
+		System.out.println(-xbox.getRawAxis(4));
 		if(intake.getCurrent() > 10) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
 			xbox.setRumble(RumbleType.kRightRumble, 1);
@@ -167,7 +168,7 @@ public class Robot extends IterativeRobot {
 		}
 		else if (nudge < -.3)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - .3) * .5);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge + .3) * .5);
 		}
 		
 		
@@ -183,7 +184,7 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(5))
 		{
 			elevarm.setArmAngle(-15); //Intake Position
-			elevarm.setElevatorHeight(1);
+			elevarm.setElevatorHeight(4);
 		}
 		else if (buttonBox.getRisingEdge(6))
 		{
@@ -324,8 +325,6 @@ public class Robot extends IterativeRobot {
 		if (xbox.getRisingEdge(4)) {
 			drive.setShiftState(false);
 		}*/
-		buttonBox.update();
-		xbox.update();
 	}
 
 	@Override

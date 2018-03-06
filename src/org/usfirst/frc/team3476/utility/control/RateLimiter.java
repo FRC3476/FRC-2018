@@ -44,7 +44,7 @@ public class RateLimiter {
 		double dt = Timer.getFPGATimestamp() - lastTime;
 		lastTime = Timer.getFPGATimestamp();
 		double diff = setpoint - latestValue;
-		if(diff == 0) {
+		if (diff == 0) {
 			return latestValue;
 		}
 		double area = (Math.pow(accValue, 2) / maxJerk);// Trapezoidal
@@ -52,7 +52,9 @@ public class RateLimiter {
 														// decrease in jerk ->
 														// total velocity
 		/*
-		 * Check if we need to start decelerating
+		 * Check if we need to start decelerating. Area does not have a sign so
+		 * check sign if accValue is towards setpoint or away or else it will
+		 * keep "decelerating" away from the setpoint.
 		 */
 		if (Math.abs(diff) >= area || Math.signum(diff) != Math.signum(accValue)) {
 			accValue = accValue + Math.copySign(maxJerk * dt, diff);

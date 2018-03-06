@@ -2,14 +2,19 @@ package org.usfirst.frc.team3476.robot;
 
 public final class Constants {
 
-	public static final double MinimumControllerInput = 0.15;
 
+
+	// Other
+	public static final double SensorTicksPerMotorRotation = 4096;
+	public static final double ExpectedCurrentTolerance = 0;
+	public static final double ExpectedRPMTolerance = 0;
+	public static final double ExpectedPositionTolerance = 0;
 	// Driving
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
-	public static final double kHighP = 0.1;
+	public static final double kHighP = 0.005;
 	public static final double kHighF = 0.02959753741815024954619955622662;
-	public static final double kLowP = 0.2;
+	public static final double kLowP = 0.005;
 	public static final double kLowF = 0.05763730970902943999708309631717;
 	public static final double TeleopAccLimit = 10;
 	public static final double TeleopJerkLimit = 2000;
@@ -18,6 +23,7 @@ public final class Constants {
 	public static final double ExpectedDrivePosition = 0;
 
 	// Controller
+	public static final double MinimumControllerInput = 0.15;
 	public static final double MaximumControllerInput = 1;
 	public static final double MinimumControllerOutput = 0;
 	public static final double MaximumControllerOutput = 1;
@@ -74,15 +80,10 @@ public final class Constants {
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
 	public static final double ArmDownDegrees = -55;
-
-	// Other
-	public static final double SensorTicksPerMotorRotation = 4096;
-	public static final double ExpectedCurrentTolerance = 0;
-	public static final double ExpectedRPMTolerance = 0;
-	public static final double ExpectedPositionTolerance = 0;
-
-	public static final int PracticeBotArmTicksOffset = 526;
+	public static final int PracticeBotArmTicksOffset = 2546;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
+
+
 
 
 	private Constants() {

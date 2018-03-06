@@ -1,6 +1,7 @@
 package org.usfirst.frc.team3476.robot;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,7 +13,10 @@ import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 import org.usfirst.frc.team3476.utility.Controller;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
+import org.usfirst.frc.team3476.utility.auto.AutoCommand;
+import org.usfirst.frc.team3476.utility.auto.SetIntakeState;
 import org.usfirst.frc.team3476.utility.control.Path;
+import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -22,6 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends IterativeRobot {
 	Controller xbox = new Controller(0);
@@ -42,7 +47,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
-		//scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
+		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
 		camServer.startAutomaticCapture();
 	}
@@ -51,7 +56,11 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		scheduler.resume();
 		tracker.resetOdometry();
-		autoPath = new Path(new Translation2d(0, 0));
+		elevarm.homeElevator();
+		/*
+		Timer.delay(0.5);
+		elevarm.setElevatorHeight(1);
+		elevarm.setArmAngle(-20);
 		autoPath.addPoint(250, -10, 100);
 		autoPath.addPoint(300, 5, 100);
 		autoPath.addPoint(209, 0, 100);
@@ -60,7 +69,21 @@ public class Robot extends IterativeRobot {
 		autoPath.addPoint(209, 28.1, 100);
 		autoPath.addPoint(250, -5, 100);
 		autoPath.addPoint(300, 5, 100);
+		*/
+
+		autoPath = new Path(new Translation2d(0, 0));
+		autoPath.addPoint(208, 0, 30);
+		autoPath.addPoint(228, -30, 30);
 		drive.setAutoPath(autoPath, false);
+		while(!drive.isFinished()){
+			
+		}
+		elevarm.setArmAngle(80); //Scale Position
+		elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
+		Timer.delay(1);
+		intake.setIntake(IntakeState.OUTTAKE_FAST);
+		
+		
 	}
 
 	@Override
@@ -75,6 +98,7 @@ public class Robot extends IterativeRobot {
 		elevarm.configArmEncoder();
 		drive.stopSubsystem();
 		elevarm.stopSubsystem();
+		tracker.resetOdometry();
 		if (!homed)
 		{
 			elevarm.homeElevator();

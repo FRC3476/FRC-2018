@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class OrangeDrive extends Threaded {
 	public enum DriveState {
-		TELEOP, AUTO
+		TELEOP, AUTO, DONE
 	}
 
 	public static class DriveVelocity {
@@ -68,8 +68,8 @@ public class OrangeDrive extends Threaded {
 		rightSlaveTalon = new LazyTalonSRX(Constants.RightSlaveDriveId);
 		rightSlave2Talon = new LazyTalonSRX(Constants.RightSlave2DriveId);
 		configMotors();
-		// TODO: Find constants of new drivebase
-		drivePercentVbus = true;
+		
+		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
 
 		leftProfiler = new RateLimiter(Constants.TeleopAccLimit);
@@ -80,12 +80,16 @@ public class OrangeDrive extends Threaded {
 	private void configHigh() {
 		rightTalon.config_kP(0, Constants.kHighP, 10);
 		rightTalon.config_kF(0, Constants.kHighF, 10);
+		leftTalon.config_kP(0, Constants.kHighP, 10);
+		leftTalon.config_kF(0, Constants.kHighF, 10);
 		driveMultiplier = Constants.HighDriveSpeed;
 	}
 	
 	private void configLow() {
 		rightTalon.config_kP(0, Constants.kLowP, 10);
 		rightTalon.config_kF(0, Constants.kLowF, 10);	
+		leftTalon.config_kP(0, Constants.kLowP, 10);
+		leftTalon.config_kF(0, Constants.kLowF, 10);
 		driveMultiplier = Constants.LowDriveSpeed;	
 	}
 	
@@ -176,7 +180,7 @@ public class OrangeDrive extends Threaded {
 		} else if (rightMotorSpeed < -1.0) {
 			leftMotorSpeed += overPower * (-1.0 - rightMotorSpeed);
 			rightMotorSpeed = -1.0;
-		}
+		}		
 		if(drivePercentVbus){
 			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));			
 		} else {
@@ -193,13 +197,14 @@ public class OrangeDrive extends Threaded {
 		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
 
 		leftTalon.setInverted(true);
-		rightTalon.setInverted(true);
 		leftSlaveTalon.setInverted(true);
 		leftSlave2Talon.setInverted(true);
-		rightSlaveTalon.setInverted(true);
-		rightSlave2Talon.setInverted(true);
 
-		leftTalon.setSensorPhase(true);
+		rightTalon.setInverted(false);
+		rightSlaveTalon.setInverted(false);
+		rightSlave2Talon.setInverted(false);
+
+		leftTalon.setSensorPhase(false);
 		rightTalon.setSensorPhase(false);
 
 	}
@@ -225,12 +230,12 @@ public class OrangeDrive extends Threaded {
 
 	public double getLeftDistance() {
 		return leftTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
-				* Math.PI;
+				* Math.PI * 22d/62d / 3d;
 	}
 
 	public double getRightDistance() {
 		return rightTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
-				* Math.PI;
+				* Math.PI * 22d/62d / 3d;
 	}
 
 	public double getSpeed() {
@@ -239,11 +244,11 @@ public class OrangeDrive extends Threaded {
 	}
 	
 	public double getLeftSpeed() {
-		return leftTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI;
+		return leftTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI * 22d/62d / 3d;
 	}
 	
 	public double getRightSpeed() {
-		return rightTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI;
+		return rightTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI * 22d/62d / 3d;
 	}
 
 	public void resetGyro() {
@@ -257,6 +262,7 @@ public class OrangeDrive extends Threaded {
 	public synchronized void setAutoPath(Path autoPath, boolean isReversed) {
 		driveState = DriveState.AUTO;
 		autonomousDriver = new PurePursuitController(autoPath, isReversed);
+		autonomousDriver.resetTime();
 		updateAutoPath();
 	}
 
@@ -269,7 +275,7 @@ public class OrangeDrive extends Threaded {
 
 	private void setWheelPower(DriveVelocity setVelocity) {
 		leftTalon.set(ControlMode.PercentOutput, setVelocity.leftWheelSpeed);
-		rightTalon.set(ControlMode.PercentOutput, -(setVelocity.rightWheelSpeed));
+		rightTalon.set(ControlMode.PercentOutput, setVelocity.rightWheelSpeed);
 	}
 
 	private void setWheelVelocity(DriveVelocity setVelocity) {
@@ -282,8 +288,8 @@ public class OrangeDrive extends Threaded {
 		}
 		// positive deltaSpeed turns right by making left wheels faster than
 		// right
-		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
-		rightTalon.set(ControlMode.Velocity, -(setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
+		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d);
+		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d);
 	}
 
 	public synchronized void setSimpleDrive(boolean setting) {
@@ -311,6 +317,9 @@ public class OrangeDrive extends Threaded {
 	private synchronized void updateAutoPath() {
 		autoDriveVelocity = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
 		setWheelVelocity(autoDriveVelocity);
+		if(autoDriveVelocity.leftWheelSpeed == 0 && autoDriveVelocity.rightWheelSpeed == 0) {
+			driveState = DriveState.DONE;
+		}
 	}
 
 	public void zeroSensors() {
@@ -338,4 +347,7 @@ public class OrangeDrive extends Threaded {
 		rightTalon.set(ControlMode.PercentOutput, 0);
 	}
 
+	synchronized public boolean isFinished() {
+		return driveState == DriveState.DONE;
+	}
 }

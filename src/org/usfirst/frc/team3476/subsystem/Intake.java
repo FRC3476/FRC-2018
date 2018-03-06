@@ -95,4 +95,8 @@ public class Intake {
 	public double getCurrent() {
 		return intakeMotor1.getOutputCurrent() + intakeMotor2.getOutputCurrent();
 	}
+
+	public boolean isFinished() {
+		return true;
+	}
 }

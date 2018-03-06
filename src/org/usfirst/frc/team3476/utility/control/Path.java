@@ -1,9 +1,11 @@
 package org.usfirst.frc.team3476.utility.control;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.usfirst.frc.team3476.robot.Constants;
+import org.usfirst.frc.team3476.utility.auto.AutoCommand;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
@@ -22,14 +24,8 @@ public class Path {
 		private double maxSpeed, deltaDist, deltaDistSquared;
 
 		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed) {
-			start = new Translation2d(xStart, yStart);
-			end = new Translation2d(xEnd, yEnd);
-			this.maxSpeed = maxSpeed;
-			delta = start.inverse().translateBy(end);
-			deltaDist = Math.hypot(delta.getX(), delta.getY());
-			deltaDistSquared = Math.pow(deltaDist, 2);
+			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
 		}
-
 		private PathSegment(Translation2d start, Translation2d end, double maxSpeed) {
 			this.start = start;
 			this.end = end;
@@ -38,7 +34,7 @@ public class Path {
 			deltaDist = Math.hypot(delta.getX(), delta.getY());
 			deltaDistSquared = Math.pow(deltaDist, 2);
 		}
-
+		
 		private Translation2d getStart() {
 			return start;
 		}
@@ -150,7 +146,7 @@ public class Path {
 		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed));
 		lastPoint = new Translation2d(x, y);
 	}
-
+	
 	/**
 	 * Sets the desired angle for the robot to end in. It does this by placing
 	 * up to two points that have a 90 degree angle to allow the robot to

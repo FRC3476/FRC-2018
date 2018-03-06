@@ -45,12 +45,11 @@ public class OrangeDrive extends Threaded {
 	private double quickStopAccumulator;
 
 	private boolean drivePercentVbus;
-	private double driveMultiplier;
 
 	private ADXRS450_Gyro gyroSensor = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	private LazyTalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
 	private PurePursuitController autonomousDriver;
-
+	private volatile double driveMultiplier;
 	private DriveVelocity autoDriveVelocity;
 	private DriveState driveState;
 	private RateLimiter leftProfiler, rightProfiler;
@@ -70,19 +69,30 @@ public class OrangeDrive extends Threaded {
 		rightSlave2Talon = new LazyTalonSRX(Constants.RightSlave2DriveId);
 		configMotors();
 		// TODO: Find constants of new drivebase
-		drivePercentVbus = false;
+		drivePercentVbus = true;
 		driveState = DriveState.TELEOP;
 
-		rightTalon.config_kP(0, 0.2, 10);
-		rightTalon.config_kF(0, 0.2942366898763145583753006757594, 10);
-		leftTalon.config_kP(0, 0.2, 10);
-		leftTalon.config_kF(0, 0.2942366898763145583753006757594, 10);
 		leftProfiler = new RateLimiter(Constants.TeleopAccLimit);
 		rightProfiler = new RateLimiter(Constants.TeleopAccLimit);
+		configHigh();
 	}
 
-	public synchronized void arcadeDrive(double moveValue, double rotateValue) {
-		driveState = DriveState.TELEOP;
+	private void configHigh() {
+		rightTalon.config_kP(0, Constants.kHighP, 10);
+		rightTalon.config_kF(0, Constants.kHighF, 10);
+		driveMultiplier = Constants.HighDriveSpeed;
+	}
+	
+	private void configLow() {
+		rightTalon.config_kP(0, Constants.kLowP, 10);
+		rightTalon.config_kF(0, Constants.kLowF, 10);	
+		driveMultiplier = Constants.LowDriveSpeed;	
+	}
+	
+	public void arcadeDrive(double moveValue, double rotateValue) {
+		synchronized(this) {
+			driveState = DriveState.TELEOP;			
+		}
 		moveValue = scaleJoystickValues(moveValue);
 		rotateValue = scaleJoystickValues(rotateValue);
 
@@ -99,13 +109,13 @@ public class OrangeDrive extends Threaded {
 			rightMotorSpeed = OrangeUtility.coerce(moveValue - rotateValue, 1, -1);
 			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 		} else {
-			moveValue *= Constants.MaxDriveSpeed;
-			rotateValue *= Constants.MaxDriveSpeed;
+			moveValue *= Constants.HighDriveSpeed;
+			rotateValue *= Constants.HighDriveSpeed;
 
 			leftMotorSpeed = OrangeUtility.coerce(moveValue
-					+ rotateValue, Constants.MaxDriveSpeed, -Constants.MaxDriveSpeed);
+					+ rotateValue, Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 			rightMotorSpeed = OrangeUtility.coerce(moveValue
-					- rotateValue, Constants.MaxDriveSpeed, -Constants.MaxDriveSpeed);
+					- rotateValue, Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 
 			//leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
 			//rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
@@ -119,7 +129,9 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public void cheesyDrive(double moveValue, double rotateValue, boolean isQuickTurn) {
-		driveState = DriveState.TELEOP;
+		synchronized(this) {
+			driveState = DriveState.TELEOP;			
+		}
 		moveValue = scaleJoystickValues(moveValue);
 		rotateValue = scaleJoystickValues(rotateValue);
 
@@ -165,9 +177,13 @@ public class OrangeDrive extends Threaded {
 			leftMotorSpeed += overPower * (-1.0 - rightMotorSpeed);
 			rightMotorSpeed = -1.0;
 		}
-
-		
-		setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+		if(drivePercentVbus){
+			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));			
+		} else {
+			leftMotorSpeed *= driveMultiplier;
+			rightMotorSpeed *= driveMultiplier;
+			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+		}
 	}
 
 	private void configMotors() {
@@ -183,8 +199,8 @@ public class OrangeDrive extends Threaded {
 		rightSlaveTalon.setInverted(true);
 		rightSlave2Talon.setInverted(true);
 
-		leftTalon.setSensorPhase(false);
-		rightTalon.setSensorPhase(true);
+		leftTalon.setSensorPhase(true);
+		rightTalon.setSensorPhase(false);
 
 	}
 
@@ -207,7 +223,6 @@ public class OrangeDrive extends Threaded {
 		return Rotation.fromDegrees(gyroSensor.getAngle());
 	}
 
-	// TODO: Constant for 1024
 	public double getLeftDistance() {
 		return leftTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
 				* Math.PI;
@@ -220,7 +235,15 @@ public class OrangeDrive extends Threaded {
 
 	public double getSpeed() {
 		return ((leftTalon.getSelectedSensorVelocity(0) + rightTalon.getSelectedSensorVelocity(0))
-				/ Constants.SensorTicksPerMotorRotation) / 60 / 2 * Constants.WheelDiameter * Math.PI;
+				/ Constants.SensorTicksPerMotorRotation) / 10 / 2 * Constants.WheelDiameter * Math.PI;
+	}
+	
+	public double getLeftSpeed() {
+		return leftTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI;
+	}
+	
+	public double getRightSpeed() {
+		return rightTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI;
 	}
 
 	public void resetGyro() {
@@ -251,13 +274,12 @@ public class OrangeDrive extends Threaded {
 
 	private void setWheelVelocity(DriveVelocity setVelocity) {
 		// inches per sec to rotations per min
-		if (Math.abs(setVelocity.leftWheelSpeed) > Constants.MaxDriveSpeed
-				|| Math.abs(setVelocity.rightWheelSpeed) > Constants.MaxDriveSpeed) {
+		if (Math.abs(setVelocity.leftWheelSpeed) > Constants.HighDriveSpeed
+				|| Math.abs(setVelocity.rightWheelSpeed) > Constants.HighDriveSpeed) {
 			DriverStation.getInstance();
-			DriverStation.reportError("Velocity set over " + Constants.MaxDriveSpeed + " !", false);
+			DriverStation.reportError("Velocity set over " + Constants.HighDriveSpeed + " !", false);
 			return;
 		}
-		// in/s -> (in / pi) * 15
 		// positive deltaSpeed turns right by making left wheels faster than
 		// right
 		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
@@ -279,6 +301,11 @@ public class OrangeDrive extends Threaded {
 
 	public void setShiftState(boolean state) {
 		shifter.set(state);
+		if(state) {
+			configLow();
+		} else {
+			configHigh();
+		}
 	}
 
 	private synchronized void updateAutoPath() {

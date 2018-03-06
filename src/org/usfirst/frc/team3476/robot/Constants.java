@@ -5,7 +5,12 @@ public final class Constants {
 	public static final double MinimumControllerInput = 0.15;
 
 	// Driving
-	public static final double MaxDriveSpeed = 170;
+	public static final double HighDriveSpeed = 170;
+	public static final double LowDriveSpeed = 0;
+	public static final double kHighP = 0.2;
+	public static final double kHighF = 0.2942366898763145583753006757594;
+	public static final double kLowP = 0;
+	public static final double kLowF = 0;
 	public static final double TeleopAccLimit = 10;
 	public static final double TeleopJerkLimit = 2000;
 	public static final double ExpectedDriveCurrent = 0;

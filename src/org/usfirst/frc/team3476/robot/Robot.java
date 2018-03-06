@@ -92,9 +92,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-		//drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+//		//drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
+//		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+//		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Left: " + drive.getLeftSpeed());
+		System.out.println("Right: " + drive.getRightSpeed());
 		
 		if(intake.getCurrent() > 10) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);

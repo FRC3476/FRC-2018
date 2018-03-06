@@ -7,10 +7,10 @@ public final class Constants {
 	// Driving
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
-	public static final double kHighP = 0.01;
-	public static final double kHighF = 0.25447497502816394237863842227842;
-	public static final double kLowP = 0.02;
-	public static final double kLowF = 0.52308744866900365933386786801674;
+	public static final double kHighP = 0.1;
+	public static final double kHighF = 0.02959753741815024954619955622662;
+	public static final double kLowP = 0.2;
+	public static final double kLowF = 0.05763730970902943999708309631717;
 	public static final double TeleopAccLimit = 10;
 	public static final double TeleopJerkLimit = 2000;
 	public static final double ExpectedDriveCurrent = 0;
@@ -25,9 +25,7 @@ public final class Constants {
 
 	// Autonomous Driving
 	public static final double LookAheadDistance = 20;
-	public static final double WheelScrub = 0.8;
-	public static final double WheelDiameter = 6;
-	public static final double ScrubFactor = 0.65;
+	public static final double WheelDiameter = 5.9;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 10;
 	public static final double MaxPathSpeed = 100;

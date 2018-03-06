@@ -19,7 +19,7 @@ public class SetDrivePath implements AutoCommand {
 	public void run() {
 		OrangeDrive.getInstance().setAutoPath(robotPath, isReversed);
 		if(isBlocking){
-			while(!OrangeDrive.getInstance().isDone()){
+			while(!OrangeDrive.getInstance().isFinished()){
 				//Do nothing
 			}
 		}

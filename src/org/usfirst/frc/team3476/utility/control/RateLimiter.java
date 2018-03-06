@@ -89,7 +89,7 @@ public class RateLimiter {
 	 */
 	public double update(double setpoint, double remainingDist) {
 		double timeToSwitchAcc = (getAcc() / getMaxJerk()) + (getMaxAccel() / getMaxJerk());
-		double timeToDecel = getLatestValue() / getMaxAccel();
+		double timeToDecel = getLatestValue() / getMaxAccel() * 2;
 		double distanceTillStop = (timeToSwitchAcc + timeToDecel) * getLatestValue();
 		if (Math.abs(distanceTillStop) >= remainingDist) {
 			return update(0.0);
@@ -140,7 +140,7 @@ public class RateLimiter {
 	}
 
 	/**
-	 * Sets the latest value to 0 and current acceleration value to 0
+	 * Sets the latest value to 0, current acceleration value to 0 and time
 	 */
 	public void reset() {
 		latestValue = 0;

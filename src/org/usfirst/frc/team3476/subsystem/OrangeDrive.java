@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class OrangeDrive extends Threaded {
 	public enum DriveState {
-		TELEOP, AUTO
+		TELEOP, AUTO, DONE
 	}
 
 	public static class DriveVelocity {
@@ -45,7 +45,6 @@ public class OrangeDrive extends Threaded {
 	private double quickStopAccumulator;
 
 	private boolean drivePercentVbus;
-	private double driveMultiplier;
 
 	private ADXRS450_Gyro gyroSensor = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	private LazyTalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
@@ -181,12 +180,7 @@ public class OrangeDrive extends Threaded {
 		} else if (rightMotorSpeed < -1.0) {
 			leftMotorSpeed += overPower * (-1.0 - rightMotorSpeed);
 			rightMotorSpeed = -1.0;
-		}
-<<<<<<< HEAD
-
-		
-		setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
-=======
+		}		
 		if(drivePercentVbus){
 			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));			
 		} else {
@@ -194,7 +188,6 @@ public class OrangeDrive extends Threaded {
 			rightMotorSpeed *= driveMultiplier;
 			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 		}
->>>>>>> ad37115969994cc160172addf4f0e10e879aebbe
 	}
 
 	private void configMotors() {
@@ -295,8 +288,8 @@ public class OrangeDrive extends Threaded {
 		}
 		// positive deltaSpeed turns right by making left wheels faster than
 		// right
-		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
-		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * 10));
+		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d);
+		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d);
 	}
 
 	public synchronized void setSimpleDrive(boolean setting) {
@@ -324,6 +317,9 @@ public class OrangeDrive extends Threaded {
 	private synchronized void updateAutoPath() {
 		autoDriveVelocity = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
 		setWheelVelocity(autoDriveVelocity);
+		if(autoDriveVelocity.leftWheelSpeed == 0 && autoDriveVelocity.rightWheelSpeed == 0) {
+			driveState = DriveState.DONE;
+		}
 	}
 
 	public void zeroSensors() {
@@ -351,4 +347,7 @@ public class OrangeDrive extends Threaded {
 		rightTalon.set(ControlMode.PercentOutput, 0);
 	}
 
+	synchronized public boolean isFinished() {
+		return driveState == DriveState.DONE;
+	}
 }

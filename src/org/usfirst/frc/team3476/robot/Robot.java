@@ -46,7 +46,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
-		scheduler.schedule(tracker, Duration.ofMillis(20), mainExecutor);
+		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
 		camServer.startAutomaticCapture();
 	}
@@ -71,11 +71,18 @@ public class Robot extends IterativeRobot {
 		*/
 
 		autoPath = new Path(new Translation2d(0, 0));
-		autoPath.addPoint(172, 0, 30);
-		autoPath.addPoint(172, 50, 30);
-		//autoPath.addPoint(103, 0, 30);
-		//autoPath.addPoint(110, 36, 30); 
+		autoPath.addPoint(208, 0, 30);
+		autoPath.addPoint(228, -30, 30);
 		drive.setAutoPath(autoPath, false);
+		while(!drive.isFinished()){
+			
+		}
+		elevarm.setArmAngle(80); //Scale Position
+		elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
+		Timer.delay(1);
+		intake.setIntake(IntakeState.OUTTAKE_FAST);
+		
+		
 	}
 
 	@Override
@@ -107,18 +114,14 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-<<<<<<< HEAD
 		drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-		//drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+//		//drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
+//		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+//		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Left: " + drive.getLeftSpeed());
+		System.out.println("Right: " + drive.getRightSpeed());
 		
 		if (joystick.getRawButton(3))
-=======
-		//drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		if (buttonBox.getRawButton(4))
->>>>>>> ad37115969994cc160172addf4f0e10e879aebbe
 		{
 			intake.setIntake(IntakeState.INTAKE);
 		}

@@ -92,7 +92,7 @@ public class Intake {
 		}
 	}
 	
-	public boolean isDone() {
+	public boolean isFinished() {
 		return true;
 	}
 }

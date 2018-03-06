@@ -16,7 +16,7 @@ public class SetIntakeState implements AutoCommand {
 	public void run() {
 		Intake.getInstance().setIntake(state);
 		if(isBlocking) {
-			while(!Intake.getInstance().isDone()) {
+			while(!Intake.getInstance().isFinished()) {
 				//Do nothing
 			}
 		}

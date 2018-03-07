@@ -122,6 +122,10 @@ public class Robot extends IterativeRobot {
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		//System.out.println("Left: " + drive.getLeftSpeed());
 		//System.out.println("Right: " + drive.getRightSpeed());
+		xbox.update();
+		buttonBox.update();
+		joystick.update();
+		
 		
 		if(intake.getCurrent() > 10) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
@@ -183,7 +187,7 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(5))
 		{
 			elevarm.setArmAngle(-15); //Intake Position
-			elevarm.setElevatorHeight(1);
+			elevarm.setElevatorHeight(4);
 		}
 		else if (buttonBox.getRisingEdge(6))
 		{
@@ -324,8 +328,6 @@ public class Robot extends IterativeRobot {
 		if (xbox.getRisingEdge(4)) {
 			drive.setShiftState(false);
 		}*/
-		buttonBox.update();
-		xbox.update();
 	}
 
 	@Override

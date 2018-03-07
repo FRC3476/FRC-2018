@@ -54,12 +54,14 @@ public class Intake {
 			setIntakeSolenoid(SolenoidState.INTAKING);
 			break;
 		case OUTTAKE:
+			intakeMotor1.set(ControlMode.PercentOutput, .25);
+			intakeMotor2.set(ControlMode.PercentOutput, .25);
+			setIntakeSolenoid(SolenoidState.INTAKING);
+			break;
+		case OUTTAKE_FAST:
 			intakeMotor1.set(ControlMode.PercentOutput, .5);
 			intakeMotor2.set(ControlMode.PercentOutput, .5);
 			break;
-		case OUTTAKE_FAST:
-			intakeMotor1.set(ControlMode.PercentOutput, 1);
-			intakeMotor2.set(ControlMode.PercentOutput, 1);
 		case GRIP:
 			setIntakeSolenoid(SolenoidState.CLAMP);
 			intakeMotor1.set(ControlMode.PercentOutput, 0);

@@ -7,11 +7,11 @@ public final class Constants {
 	// Driving
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
-	public static final double kHighP = 0.1;
+	public static final double kHighP = 0.01;
 	public static final double kHighF = 0.02959753741815024954619955622662;
-	public static final double kLowP = 0.2;
+	public static final double kLowP = 0.01;
 	public static final double kLowF = 0.05763730970902943999708309631717;
-	public static final double TeleopAccLimit = 10;
+	public static final double TeleopAccLimit = 120;
 	public static final double TeleopJerkLimit = 2000;
 	public static final double ExpectedDriveCurrent = 0;
 	public static final double ExpectedDriveRPM = 0;
@@ -81,8 +81,10 @@ public final class Constants {
 	public static final double ExpectedRPMTolerance = 0;
 	public static final double ExpectedPositionTolerance = 0;
 
-	public static final int PracticeBotArmTicksOffset = 526;
+	public static final int PracticeBotArmTicksOffset = 2546;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
+
+	public static final double JoystickDeadzone = .15;
 
 
 	private Constants() {

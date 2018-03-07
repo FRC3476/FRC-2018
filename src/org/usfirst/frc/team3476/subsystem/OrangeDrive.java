@@ -52,7 +52,7 @@ public class OrangeDrive extends Threaded {
 	private volatile double driveMultiplier;
 	private DriveVelocity autoDriveVelocity;
 	private DriveState driveState;
-	private RateLimiter leftProfiler, rightProfiler;
+	private RateLimiter moveProfiler;
 	private Solenoid shifter;
 
 	private OrangeDrive() {
@@ -72,8 +72,7 @@ public class OrangeDrive extends Threaded {
 		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
 
-		leftProfiler = new RateLimiter(Constants.TeleopAccLimit);
-		rightProfiler = new RateLimiter(Constants.TeleopAccLimit);
+		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
 		configHigh();
 	}
 
@@ -163,6 +162,7 @@ public class OrangeDrive extends Threaded {
 			}
 		}
 
+		moveValue = moveProfiler.update(moveValue * driveMultiplier) / driveMultiplier;
 		leftMotorSpeed = moveValue + angularPower;
 		rightMotorSpeed = moveValue - angularPower;
 
@@ -180,12 +180,13 @@ public class OrangeDrive extends Threaded {
 		} else if (rightMotorSpeed < -1.0) {
 			leftMotorSpeed += overPower * (-1.0 - rightMotorSpeed);
 			rightMotorSpeed = -1.0;
-		}		
+		}
 		if(drivePercentVbus){
 			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));			
-		} else {
+		} else {			
 			leftMotorSpeed *= driveMultiplier;
 			rightMotorSpeed *= driveMultiplier;
+			
 			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
@@ -210,8 +211,7 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public void resetMotionProfile() {
-		leftProfiler.reset();
-		rightProfiler.reset();
+		moveProfiler.reset();
 	}
 
 	public double getAngle() {

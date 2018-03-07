@@ -62,7 +62,7 @@ public class RobotTracker extends Threaded {
 			vehicleHistory.add(new InterpolablePair<>(System.nanoTime(), currentOdometry));
 			gyroHistory.add(new InterpolablePair<>(System.nanoTime(), driveBase.getGyroAngle()));
 		}
-		//System.out.println("Position: " + currentOdometry.translationMat.getX() + "   " + currentOdometry.translationMat.getY());
+		System.out.println("Position: " + currentOdometry.translationMat.getX() + "   " + currentOdometry.translationMat.getY());
 		//System.out.println("Gyro: " + currentOdometry.rotationMat.getDegrees());
 	}
 

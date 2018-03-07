@@ -72,12 +72,13 @@ public class Robot extends IterativeRobot {
 		*/
 
 		autoPath = new Path(new Translation2d(0, 0));
-		autoPath.addPoint(208, 0, 30);
-		autoPath.addPoint(228, -30, 30);
+		autoPath.addPoint(210, 0, 100);
+		autoPath.addPoint(250, -25, 100);
 		drive.setAutoPath(autoPath, false);
 		while(!drive.isFinished()){
 			
 		}
+		
 		elevarm.setArmAngle(80); //Scale Position
 		elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		Timer.delay(1);
@@ -115,12 +116,12 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		drive.cheesyDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-//		//drive.arcadeDrive(xbox.getRawAxis(1), -xbox.getRawAxis(4));
-//		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-//		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-		System.out.println("Left: " + drive.getLeftSpeed());
-		System.out.println("Right: " + drive.getRightSpeed());
+		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+//		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		//System.out.println("Left: " + drive.getLeftSpeed());
+		//System.out.println("Right: " + drive.getRightSpeed());
 		
 		if(intake.getCurrent() > 10) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
@@ -159,15 +160,14 @@ public class Robot extends IterativeRobot {
 			drive.setShiftState(false);
 		}
 		
-		double nudge = 0;//joystick.getRawAxis(1);
-		System.out.println(nudge);
-		if (nudge > .3)
+		double nudge = joystick.getRawAxis(1);
+		if (nudge > Constants.JoystickDeadzone)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() + (nudge - .3) * .5);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - Constants.JoystickDeadzone) * 1.5);
 		}
-		else if (nudge < -.3)
+		else if (nudge < -Constants.JoystickDeadzone)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - .3) * .5);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge + Constants.JoystickDeadzone) * 1.5);
 		}
 		
 		

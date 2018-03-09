@@ -14,7 +14,7 @@ public class Elevarm extends Threaded {
 	Arm arm;
 
 	public enum ElevatorState {
-		MANUAL, POSITION, HOMING
+		MANUAL, POSITION, HOMING, INTAKE
 	}
 	//Practice Robot
 	//Elevator
@@ -144,6 +144,11 @@ public class Elevarm extends Threaded {
 		setElevatorHeight(elevatorHeight);
 		setArmAngle(armAngle);
 	}
+	
+	public void setElevarmIntakePosition()
+	{
+		currentElevatorState = ElevatorState.INTAKE;
+	}
 
 	public void shiftElevatorGearbox(boolean engaged) {
 		elevator.shiftElevatorGearbox(engaged);
@@ -197,7 +202,9 @@ public class Elevarm extends Threaded {
 			if (!isValidPosition(arm.getAngle(), 0)) {
 				//setArmAngle(Constants.ArmHorizontalDegrees);
 				System.out.println("CAN'T HOME. INVALID POSITION");
-				currentElevatorState = ElevatorState.MANUAL;
+				synchronized(this) {
+					currentElevatorState = ElevatorState.MANUAL;					
+				}
 				break;
 			}
 			elevator.setPercentOutput(-.2); // Some slow speed
@@ -205,17 +212,30 @@ public class Elevarm extends Threaded {
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition(0); // Sets encoder value to 0
 				System.out.println("ELEVATOR HOMED");
-				currentElevatorState = ElevatorState.MANUAL;
+				synchronized(this) {
+					currentElevatorState = ElevatorState.MANUAL;					
+				}
 			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
 						* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
-				currentElevatorState = ElevatorState.MANUAL;
+				synchronized(this) {
+					currentElevatorState = ElevatorState.MANUAL;					
+				}
 			}
 			break;
 		case POSITION:
-			elevator.setHeight(elevatorLimiter.update(elevatorSetpoint));
+			double setpoint = elevatorLimiter.update(elevatorSetpoint);
+			System.out.println(setpoint);
+			elevator.setHeight(setpoint);
+			break;
+		case INTAKE:
+			elevator.setHeight(elevatorLimiter.update(Constants.ElevatorDownHeight));
+			if (elevator.getHeight() < 25)
+			{
+				arm.setAngle(Constants.ArmIntakeAngle);
+			}
 			break;
 		case MANUAL:
 			break;

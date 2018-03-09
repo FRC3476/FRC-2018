@@ -72,7 +72,7 @@ public final class Constants {
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
-	public static final double ElevatorDownHeight = 0; // Should be the proper position for getting cubes
+	public static final double ElevatorDownHeight = 1; // Should be the proper position for getting cubes
 	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
 
 	// Arm
@@ -86,11 +86,12 @@ public final class Constants {
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
 	public static final double ArmDownDegrees = -55;
-	public static final int PracticeBotArmTicksOffset = 2546;
+	public static final int PracticeBotArmTicksOffset = 3045;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 
 	public static final double JoystickDeadzone = .15;
+	public static final double ArmIntakeAngle = -25;
 
 
 	private Constants() {

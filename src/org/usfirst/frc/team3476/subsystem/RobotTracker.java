@@ -40,9 +40,9 @@ public class RobotTracker extends Threaded {
 	}
 
 	public synchronized void resetOdometry() {
-		driveBase.zeroSensors();
+		driveBase.resetGyro();
 		currentOdometry = new RigidTransform(new Translation2d(), Rotation.fromDegrees(0));
-		oldDistance = 0;
+		oldDistance = driveBase.getDistance();
 	}
 
 	/**
@@ -52,17 +52,17 @@ public class RobotTracker extends Threaded {
 	public void update() {
 		currentDistance = driveBase.getDistance();
 		Rotation deltaRotation = driveBase.getGyroAngle().inverse().rotateBy(offset);
-		deltaDistance = currentDistance - oldDistance;
-		Translation2d deltaPosition = new Translation2d(deltaDistance, 0);
         Rotation positionAngle = Rotation.fromRadians(deltaRotation.getRadians() / 2.0);
 		synchronized (this) {			
+			deltaDistance = currentDistance - oldDistance;
+			Translation2d deltaPosition = new Translation2d(deltaDistance, 0);
 			deltaRotation = currentOdometry.rotationMat.inverse().rotateBy(deltaRotation);
 			currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition.rotateBy(positionAngle), deltaRotation));
 			oldDistance = currentDistance;
 			vehicleHistory.add(new InterpolablePair<>(System.nanoTime(), currentOdometry));
 			gyroHistory.add(new InterpolablePair<>(System.nanoTime(), driveBase.getGyroAngle()));
 		}
-		System.out.println("Position: " + currentOdometry.translationMat.getX() + "   " + currentOdometry.translationMat.getY());
+		//System.out.println("Position: " + currentOdometry.translationMat.getX() + "   " + currentOdometry.translationMat.getY());
 		//System.out.println("Gyro: " + currentOdometry.rotationMat.getDegrees());
 	}
 

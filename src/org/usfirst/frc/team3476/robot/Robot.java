@@ -49,14 +49,25 @@ public class Robot extends IterativeRobot {
 		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
 		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
-		camServer.startAutomaticCapture();
+		camServer.startAutomaticCapture(0);
+		camServer.startAutomaticCapture(1);
 	}
 
 	@Override
 	public void autonomousInit() {
 		scheduler.resume();
+		drive.resetMotionProfile();
+		elevarm.resetMotionProfile();
+		elevarm.configArmEncoder();
+		drive.stopSubsystem();
+		elevarm.stopSubsystem();
 		tracker.resetOdometry();
-		elevarm.homeElevator();
+		if (!homed)
+		{
+			elevarm.homeElevator();
+			homed = true;
+		}
+		Timer.delay(0.5);
 		/*
 		Timer.delay(0.5);
 		elevarm.setElevatorHeight(1);
@@ -71,6 +82,9 @@ public class Robot extends IterativeRobot {
 		autoPath.addPoint(300, 5, 100);
 		*/
 
+		
+		//Scale To Right
+		/*
 		autoPath = new Path(new Translation2d(0, 0));
 		autoPath.addPoint(210, 0, 100);
 		autoPath.addPoint(250, -25, 100);
@@ -83,8 +97,22 @@ public class Robot extends IterativeRobot {
 		elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		Timer.delay(1);
 		intake.setIntake(IntakeState.OUTTAKE_FAST);
+		*/
 		
+		//Left Switch from Center
 		
+		autoPath = new Path(new Translation2d(0,0));
+		autoPath.addPoint(90, 55, 100);
+		drive.setAutoPath(autoPath, false);
+		elevarm.setArmAngle(80);
+		elevarm.setElevatorHeight(20);
+		while(!drive.isFinished()){
+			if(DriverStation.getInstance().isOperatorControl()){
+				break;
+			}
+		}
+		Timer.delay(1);
+		intake.setIntake(IntakeState.OUTTAKE_FAST);
 	}
 
 	@Override
@@ -119,15 +147,11 @@ public class Robot extends IterativeRobot {
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 //		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		//System.out.println("Left: " + drive.getLeftSpeed());
 		//System.out.println("Right: " + drive.getRightSpeed());
-		xbox.update();
-		buttonBox.update();
-		joystick.update();
 		
-		
-		if(intake.getCurrent() > 10) {
+		if(intake.getCurrent() > 15) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
 			xbox.setRumble(RumbleType.kRightRumble, 1);
 		} else {
@@ -146,7 +170,7 @@ public class Robot extends IterativeRobot {
 		{
 			intake.setIntake(IntakeState.OUTTAKE_FAST);
 		}
-		else if (buttonBox.getRawButton(1))
+		else if (joystick.getRawButton(5))
 		{
 			intake.setIntake(IntakeState.OPEN);
 		}
@@ -167,11 +191,11 @@ public class Robot extends IterativeRobot {
 		double nudge = joystick.getRawAxis(1);
 		if (nudge > Constants.JoystickDeadzone)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - Constants.JoystickDeadzone) * 1.5);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - Constants.JoystickDeadzone) * 4);
 		}
 		else if (nudge < -Constants.JoystickDeadzone)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge + Constants.JoystickDeadzone) * 1.5);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge + Constants.JoystickDeadzone) * 4);
 		}
 		
 		
@@ -186,8 +210,11 @@ public class Robot extends IterativeRobot {
 
 		if (buttonBox.getRisingEdge(5))
 		{
-			elevarm.setArmAngle(-15); //Intake Position
-			elevarm.setElevatorHeight(4);
+			/*
+			elevarm.setArmAngle(Constants.ArmIntakeAngle); //Intake Position
+			elevarm.setElevatorHeight(Constants.ElevatorDownHeight);
+			*/
+			elevarm.setElevarmIntakePosition();
 		}
 		else if (buttonBox.getRisingEdge(6))
 		{
@@ -205,6 +232,11 @@ public class Robot extends IterativeRobot {
 			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		}
 		
+		xbox.update();
+		buttonBox.update();
+		joystick.update();
+		
+		/*
 		if (buttonBox.getPOV() == 0)
 		{
 			elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getTargetElevatorHeight());
@@ -213,7 +245,7 @@ public class Robot extends IterativeRobot {
 		{
 			elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getTargetElevatorHeight());
 		}
-		
+		*/
 		//if (buttonBox.getRisingEdge(button))
 		/*
 		if (elevarm.getElevatorOutputCurrent() < elevatorMaxCurrent || elevarm.getArmOutputCurrent() < armMaxCurrent) //Prevent elevator from killing itself

@@ -186,7 +186,9 @@ public class OrangeDrive extends Threaded {
 		} else {			
 			leftMotorSpeed *= driveMultiplier;
 			rightMotorSpeed *= driveMultiplier;
-			
+			if(leftMotorSpeed == 0 && rightMotorSpeed == 0) {
+				setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));	
+			}
 			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
@@ -196,7 +198,13 @@ public class OrangeDrive extends Threaded {
 		leftSlave2Talon.set(ControlMode.Follower, leftTalon.getDeviceID());
 		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());
 		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
-
+		leftTalon.setNeutralMode(NeutralMode.Coast);		
+		leftSlave2Talon.setNeutralMode(NeutralMode.Coast);		
+		leftSlave2Talon.setNeutralMode(NeutralMode.Coast);		
+		rightTalon.setNeutralMode(NeutralMode.Coast);		
+		rightSlaveTalon.setNeutralMode(NeutralMode.Coast);		
+		rightSlave2Talon.setNeutralMode(NeutralMode.Coast);		
+		
 		leftTalon.setInverted(true);
 		leftSlaveTalon.setInverted(true);
 		leftSlave2Talon.setInverted(true);
@@ -250,11 +258,7 @@ public class OrangeDrive extends Threaded {
 	public double getRightSpeed() {
 		return rightTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI * 22d/62d / 3d;
 	}
-
-	public void resetGyro() {
-		gyroSensor.reset();
-	}
-
+	
 	public double scaleJoystickValues(double rawValue) {
 		return Math.copySign(OrangeUtility.coercedNormalize(Math.abs(rawValue), Constants.MinimumControllerInput, Constants.MaximumControllerInput, Constants.MinimumControllerOutput, Constants.MaximumControllerOutput), rawValue);
 	}
@@ -322,10 +326,8 @@ public class OrangeDrive extends Threaded {
 		}
 	}
 
-	public void zeroSensors() {
+	public void resetGyro() {
 		gyroSensor.reset();
-		leftTalon.setSelectedSensorPosition(0, 0, 10);
-		rightTalon.setSelectedSensorPosition(0, 0, 10);
 	}
 
 	public boolean checkSubsystem() {

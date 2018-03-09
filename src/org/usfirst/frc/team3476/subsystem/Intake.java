@@ -49,8 +49,16 @@ public class Intake {
 		switch(state)
 		{
 		case INTAKE:
-			intakeMotor1.set(ControlMode.PercentOutput, -.7);
-			intakeMotor2.set(ControlMode.PercentOutput, -1);
+			if (getCurrent() > 15) //if stalling, ramp up power
+			{
+				intakeMotor1.set(ControlMode.PercentOutput, -.7);
+				intakeMotor2.set(ControlMode.PercentOutput, -1);
+			}
+			else
+			{
+				intakeMotor1.set(ControlMode.PercentOutput, -.4);
+				intakeMotor2.set(ControlMode.PercentOutput, -.7);
+			}
 			setIntakeSolenoid(SolenoidState.INTAKING);
 			break;
 		case OUTTAKE:
@@ -95,7 +103,7 @@ public class Intake {
 	}
 	
 	public double getCurrent() {
-		return intakeMotor1.getOutputCurrent() + intakeMotor2.getOutputCurrent();
+		return (intakeMotor1.getOutputCurrent() + intakeMotor2.getOutputCurrent()) / 2d;
 	}
 
 	public boolean isFinished() {

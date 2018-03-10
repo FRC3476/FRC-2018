@@ -13,9 +13,9 @@ public final class Constants {
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
 //<<<<<<< HEAD
-	public static final double kHighP = 0.01;
+	public static final double kHighP = 0.02;
 	public static final double kHighF = 0.02959753741815024954619955622662;
-	public static final double kLowP = 0.01;
+	public static final double kLowP = 0.02;
 /*=======
 	public static final double kHighP = 0.005;
 	public static final double kHighF = 0.02959753741815024954619955622662;

@@ -2,6 +2,8 @@ package org.usfirst.frc.team3476.utility.control;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.usfirst.frc.team3476.robot.Constants;
+import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
 import org.usfirst.frc.team3476.utility.UDP;
 import org.usfirst.frc.team3476.utility.control.Path.DrivingData;
@@ -21,10 +23,10 @@ public class PurePursuitController {
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
-		turnPID = new SynchronousPid(0.015, 0, 0, 0);
+		turnPID = new SynchronousPid(0.01, 0, 0, 0);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
-		speedProfiler = new RateLimiter(100, 400);
+		speedProfiler = new RateLimiter(100, 1000);
 	}
 
 	/**
@@ -48,34 +50,21 @@ public class PurePursuitController {
 		 * Constants.MaxPathSpeed, Constants.MinLookAheadDistance, Constants.MaxLookAheadDistance);
 		 */
 		// Motion Profiling
-		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, 25);
+		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, Constants.LookAheadDistance);
 		if(data.remainingDist == 0) {
+			OrangeDrive.getInstance().setFinished();
 			return new DriveVelocity(0, 0);
 		}
 		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);	
-		if(robotSpeed < 10) {
-			robotSpeed = 10;
+		if(robotSpeed < 15) {
+			robotSpeed = 15;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
-		double deltaSpeed = turnPID.update(-angleToLookAhead) * robotSpeed;
+		System.out.println(angleToLookAhead);
+		double deltaSpeed = turnPID.update(-angleToLookAhead) * Constants.LookAheadDistance;
 		
-		JSONObject message = new JSONObject();
-		JSONArray pose = new JSONArray();
-		JSONArray lookAhead = new JSONArray();
-		JSONArray closest = new JSONArray();
 	
-		pose.add(robotPose.translationMat.getX());
-		pose.add(robotPose.translationMat.getY());
-		lookAhead.add(data.lookAheadPoint.getX());
-		lookAhead.add(data.lookAheadPoint.getY());
-		closest.add(data.closestPoint.getX());
-		closest.add(data.closestPoint.getY());
-		message.put("pose", pose);
-		message.put("lookAhead", lookAhead);
-		message.put("closest", closest);
-		UDP.getInstance().send("10.34.76.5", message.toJSONString(), 5801);
-		
 		if (isReversed) {
 			robotSpeed *= -1;
 		}

@@ -32,7 +32,7 @@ public class Elevarm extends Threaded {
 	private volatile double elevatorSetpoint;
 
 	private Elevarm() {
-		elevatorLimiter = new RateLimiter(1000, 100);
+		elevatorLimiter = new RateLimiter(1000, 120);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}
@@ -227,7 +227,6 @@ public class Elevarm extends Threaded {
 			break;
 		case POSITION:
 			double setpoint = elevatorLimiter.update(elevatorSetpoint);
-			System.out.println(setpoint);
 			elevator.setHeight(setpoint);
 			break;
 		case INTAKE:
@@ -252,7 +251,7 @@ public class Elevarm extends Threaded {
 		return elevator.checkSubystem();
 	}
 	
-	public void stopSubsystem() {
+	public void stopMovement() {
 		setArmPercentOutput(0);
 		setElevatorPercentOutput(0);
 	}

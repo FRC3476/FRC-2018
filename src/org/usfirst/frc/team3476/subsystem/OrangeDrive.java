@@ -303,7 +303,7 @@ public class OrangeDrive extends Threaded {
 	@Override
 	public synchronized void update() {
 		if (driveState == DriveState.TELEOP) {
-
+			System.out.println("tele");
 		} else {
 			updateAutoPath();
 		}
@@ -321,9 +321,10 @@ public class OrangeDrive extends Threaded {
 	private synchronized void updateAutoPath() {
 		autoDriveVelocity = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
 		setWheelVelocity(autoDriveVelocity);
-		if(autoDriveVelocity.leftWheelSpeed == 0 && autoDriveVelocity.rightWheelSpeed == 0) {
-			driveState = DriveState.DONE;
-		}
+	}
+	
+	public synchronized void setFinished() {
+		driveState = DriveState.DONE;
 	}
 
 	public void resetGyro() {
@@ -344,9 +345,10 @@ public class OrangeDrive extends Threaded {
 		return success;
 	}
 	
-	public void stopSubsystem() {
+	public void stopMovement() {
 		leftTalon.set(ControlMode.PercentOutput, 0);
 		rightTalon.set(ControlMode.PercentOutput, 0);
+		driveState = DriveState.TELEOP;
 	}
 
 	synchronized public boolean isFinished() {

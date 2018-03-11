@@ -89,10 +89,8 @@ public class Robot extends IterativeRobot {
 		//Left Switch from Center
 		
 		autoPath = new Path(new Translation2d(0,0));
-		autoPath.addPoint(30, -70, 50);
-		autoPath.addPoint(60, -70, 50);
-		//autoPath.addPoint(60, 70, 50);
-		System.out.println("---------------------------------------------------------------------------------------------");
+		autoPath.addPoint(30, -55, 80);
+		autoPath.addPoint(85, -55, 50);
 		drive.setAutoPath(autoPath, false);
 		elevarm.setArmAngle(40);
 		elevarm.setElevatorHeight(20);
@@ -104,10 +102,9 @@ public class Robot extends IterativeRobot {
 		intake.setIntake(IntakeState.OUTTAKE_FASTEST);
 		Timer.delay(0.25);
 		intake.setIntake(IntakeState.GRIP);
-		/*
 		elevarm.setElevarmIntakePosition();
-		autoPath = new Path(new Translation2d(90, 55));
-		autoPath.addPoint(80, 75, 50);
+		autoPath = new Path(tracker.getOdometry().translationMat);
+		autoPath.addPoint(80, -75, 50);
 		drive.setAutoPath(autoPath, true);
 		while(!drive.isFinished()){
 			if(DriverStation.getInstance().isOperatorControl()){
@@ -115,9 +112,8 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		intake.setIntake(IntakeState.INTAKE);
-		
-		autoPath = new Path(new Translation2d(40, 70));
-		autoPath.addPoint(50, 10, 50);
+		autoPath = new Path(tracker.getOdometry().translationMat);
+		autoPath.addPoint(50, -10, 50);
 		drive.setAutoPath(autoPath, false);
 		while(!drive.isFinished()){
 			if(DriverStation.getInstance().isOperatorControl()){
@@ -126,8 +122,8 @@ public class Robot extends IterativeRobot {
 		}
 		intake.setIntake(IntakeState.GRIP);
 		
-		autoPath = new Path(new Translation2d(50, 10));
-		autoPath.addPoint(70, 75, 50);
+		autoPath = new Path(tracker.getOdometry().translationMat);
+		autoPath.addPoint(70, -75, 50);
 		drive.setAutoPath(autoPath, true);
 		while(!drive.isFinished()){
 			if(DriverStation.getInstance().isOperatorControl()){
@@ -135,8 +131,8 @@ public class Robot extends IterativeRobot {
 			}
 		}		
 		
-		autoPath = new Path(new Translation2d(40, 70));
-		autoPath.addPoint(90, 55, 50);
+		autoPath = new Path(tracker.getOdometry().translationMat);
+		autoPath.addPoint(90, -55, 50);
 		drive.setAutoPath(autoPath, false);
 		while(!drive.isFinished()){
 			if(DriverStation.getInstance().isOperatorControl()){
@@ -144,10 +140,8 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		intake.setIntake(IntakeState.OUTTAKE_FAST);
-		Timer.delay(0.5);
+		Timer.delay(0.25);
 		intake.setIntake(IntakeState.GRIP);
-		*/
-		
 	}
 
 	@Override
@@ -178,9 +172,7 @@ public class Robot extends IterativeRobot {
 		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-		//System.out.println("Left: " + drive.getLeftSpeed());
-		//System.out.println("Right: " + drive.getRightSpeed());
-		
+
 		if(intake.getCurrent() > 15) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
 			xbox.setRumble(RumbleType.kRightRumble, 1);
@@ -266,16 +258,16 @@ public class Robot extends IterativeRobot {
 		buttonBox.update();
 		joystick.update();
 		
-		/*
+		
 		if (buttonBox.getPOV() == 0)
 		{
-			elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getTargetElevatorHeight());
+			elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getHeight());
 		}
 		else if (buttonBox.getPOV() == 180)
 		{
-			elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getTargetElevatorHeight());
+			elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
 		}
-		*/
+		
 		//if (buttonBox.getRisingEdge(button))
 		/*
 		if (elevarm.getElevatorOutputCurrent() < elevatorMaxCurrent || elevarm.getArmOutputCurrent() < armMaxCurrent) //Prevent elevator from killing itself

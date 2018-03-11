@@ -69,7 +69,7 @@ public class Elevator {
 	}
 
 	public void configMotors() {
-		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
+		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());		
 	}
 
 	protected LazyTalonSRX[] getTalons() {

@@ -182,7 +182,7 @@ public class Elevarm extends Threaded {
 	{
 		return Math.cos(Math.toRadians(getArmAngle())) * Constants.ArmLength;
 	}
-	public double getY()
+	public double getHeight()
 	{
 		return getElevatorHeight() + Math.sin(Math.toRadians(getArmAngle())) * Constants.ArmLength;
 	}

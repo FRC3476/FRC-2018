@@ -77,18 +77,18 @@ public class OrangeDrive extends Threaded {
 	}
 
 	private void configHigh() {
-		rightTalon.config_kP(0, Constants.kHighP, 10);
-		rightTalon.config_kF(0, Constants.kHighF, 10);
-		leftTalon.config_kP(0, Constants.kHighP, 10);
-		leftTalon.config_kF(0, Constants.kHighF, 10);
+		rightTalon.config_kP(0, Constants.kRightHighP, 10);
+		rightTalon.config_kF(0, Constants.kRightHighF, 10);
+		leftTalon.config_kP(0, Constants.kLeftHighP, 10);
+		leftTalon.config_kF(0, Constants.kLeftHighF, 10);
 		driveMultiplier = Constants.HighDriveSpeed;
 	}
 	
 	private void configLow() {
-		rightTalon.config_kP(0, Constants.kLowP, 10);
-		rightTalon.config_kF(0, Constants.kLowF, 10);	
-		leftTalon.config_kP(0, Constants.kLowP, 10);
-		leftTalon.config_kF(0, Constants.kLowF, 10);
+		rightTalon.config_kP(0, Constants.kRightLowP, 10);
+		rightTalon.config_kF(0, Constants.kRightLowF, 10);	
+		leftTalon.config_kP(0, Constants.kLeftLowP, 10);
+		leftTalon.config_kF(0, Constants.kLeftLowF, 10);
 		driveMultiplier = Constants.LowDriveSpeed;	
 	}
 	
@@ -292,8 +292,15 @@ public class OrangeDrive extends Threaded {
 		}
 		// positive deltaSpeed turns right by making left wheels faster than
 		// right
-		leftTalon.set(ControlMode.Velocity, (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d);
-		rightTalon.set(ControlMode.Velocity, (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d);
+		double leftSetpoint = (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d;
+		double rightSetpoint = (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d;
+
+		System.out.println("Left: " + getLeftSpeed());
+		System.out.println("lSetpoint: " + setVelocity.leftWheelSpeed);
+		System.out.println("Right: " + getRightSpeed());
+		System.out.println("rSetpoint: " + setVelocity.rightWheelSpeed);
+		leftTalon.set(ControlMode.Velocity, leftSetpoint);
+		rightTalon.set(ControlMode.Velocity, rightSetpoint);
 	}
 
 	public synchronized void setSimpleDrive(boolean setting) {
@@ -303,7 +310,6 @@ public class OrangeDrive extends Threaded {
 	@Override
 	public synchronized void update() {
 		if (driveState == DriveState.TELEOP) {
-			System.out.println("tele");
 		} else {
 			updateAutoPath();
 		}

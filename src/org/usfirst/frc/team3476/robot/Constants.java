@@ -13,18 +13,23 @@ public final class Constants {
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
 //<<<<<<< HEAD
-	public static final double kHighP = 0.02;
-	public static final double kHighF = 0.02959753741815024954619955622662;
-	public static final double kLowP = 0.02;
+	public static final double kRightHighP = 0;
+	public static final double kRightHighF = 0.03;
+	public static final double kRightLowP = 0.05;
+	public static final double kRightLowF = 0.05763730970902943999708309631717;
+	
+	public static final double kLeftHighP = 0;
+	public static final double kLeftHighF = 0.03;
+	public static final double kLeftLowP = 0.05;
+	public static final double kLeftLowF = 0.05763730970902943999708309631717;
 /*=======
 	public static final double kHighP = 0.005;
 	public static final double kHighF = 0.02959753741815024954619955622662;
 	public static final double kLowP = 0.005;
 >>>>>>> 26954276422e19f96f09af39e125de84ec846e34*/
-	public static final double kLowF = 0.05763730970902943999708309631717;
 	public static final double TeleopAccLimit = 120;
 	public static final double TeleopJerkLimit = 2000;
-	public static final double ExpectedDriveCurrent = 0;
+	public static final double ExpectedDriveCurrent = 1.5;
 	public static final double ExpectedDriveRPM = 0;
 	public static final double ExpectedDrivePosition = 0;
 

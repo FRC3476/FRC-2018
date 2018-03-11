@@ -7,22 +7,22 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public abstract class Threaded implements Runnable {
 
-	private volatile boolean isDone = true;
+	private volatile boolean isUpdated = true;
 	private volatile double lastRuntime = 0;
 
 	@Override
 	public void run() {
-		isDone = false;
+		isUpdated = false;
 		double start = Timer.getFPGATimestamp();
 		update();
 		lastRuntime = Timer.getFPGATimestamp() - start;
-		isDone = true;
+		isUpdated = true;
 	}
 
 	public abstract void update();
 
-	public boolean isDone() {
-		return isDone;
+	public boolean isUpdated() {
+		return isUpdated;
 	}
 
 	public double getLastRuntime() {

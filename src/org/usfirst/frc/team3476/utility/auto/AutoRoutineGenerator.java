@@ -13,6 +13,8 @@ public class AutoRoutineGenerator {
 	private Path robotPath;
 	private List<Translation2d> cubeLocations;
 	private PathOption wantedOption;
+	private List<Translation2d> scalePath;
+	private List<Translation2d> switchPath;
 	
 	public enum PathOption {
 		SCALE, SWITCH, OPTIMAL, FORWARD, NONE
@@ -53,5 +55,9 @@ public class AutoRoutineGenerator {
 			break;
 		}		
 		return generatedRoutine;
+	}
+	
+	private Path flip(Path oldPath){
+		
 	}
 }

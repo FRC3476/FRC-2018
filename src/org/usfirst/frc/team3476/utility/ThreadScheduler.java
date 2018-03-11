@@ -80,7 +80,7 @@ public class ThreadScheduler implements Runnable {
 		}
 
 		public void executeIfReady() {
-			if (task.isDone()) {
+			if (task.isUpdated()) {
 				if (System.nanoTime() - taskTime > taskPeriod) {
 					thread.submit(task);
 					taskTime = System.nanoTime();

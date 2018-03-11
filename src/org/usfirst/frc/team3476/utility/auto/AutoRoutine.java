@@ -3,7 +3,7 @@ package org.usfirst.frc.team3476.utility.auto;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class AutoRoutine {
+public class AutoRoutine implements Runnable {
 
 	private ArrayList<AutoCommand> routine = new ArrayList<AutoCommand>();
 	
@@ -11,7 +11,7 @@ public class AutoRoutine {
 		routine.addAll(Arrays.asList(commands));
 	}
 	
-	synchronized public void runRoutine() {
+	synchronized public void run() {
 		for(AutoCommand command : routine) {
 			command.run();
 		}

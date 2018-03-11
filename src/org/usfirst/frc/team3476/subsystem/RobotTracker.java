@@ -24,14 +24,15 @@ public class RobotTracker extends Threaded {
 	private CircularQueue<Rotation> gyroHistory;
 
 	private double currentDistance, oldDistance, deltaDistance;
-	private volatile Rotation offset;
+	private volatile Rotation rotationOffset;
+	private volatile Translation2d translationOffset;
 
 	private RobotTracker() {
 		vehicleHistory = new CircularQueue<>(100);
 		gyroHistory = new CircularQueue<>(200);
 		driveBase = OrangeDrive.getInstance();
 		currentOdometry = new RigidTransform(new Translation2d(), driveBase.getGyroAngle());
-		offset = Rotation.fromDegrees(0);
+		rotationOffset = Rotation.fromDegrees(0);
 	}
 
 	public Rotation getGyroAngle(long time) {
@@ -44,7 +45,7 @@ public class RobotTracker extends Threaded {
 
 	public synchronized void resetOdometry() {
 		driveBase.resetGyro();
-		currentOdometry = new RigidTransform(new Translation2d(), Rotation.fromDegrees(0));
+		currentOdometry = new RigidTransform(new Translation2d().translateBy(translationOffset), Rotation.fromDegrees(0).rotateBy(rotationOffset));
 		oldDistance = driveBase.getDistance();
 	}
 
@@ -56,7 +57,7 @@ public class RobotTracker extends Threaded {
 		currentDistance = driveBase.getDistance();
 		deltaDistance = currentDistance - oldDistance;
 		Translation2d deltaPosition = new Translation2d(deltaDistance, 0);
-		Rotation deltaRotation = driveBase.getGyroAngle().inverse().rotateBy(offset);
+		Rotation deltaRotation = driveBase.getGyroAngle().inverse().rotateBy(rotationOffset);
 		deltaRotation = currentOdometry.rotationMat.inverse().rotateBy(deltaRotation);
         Rotation halfRotation = Rotation.fromRadians(deltaRotation.getRadians() / 2.0);
         synchronized(this) {
@@ -86,7 +87,11 @@ public class RobotTracker extends Threaded {
 	 *
 	 * @param offset
 	 */
-	public void setRotationOffset(Rotation offset) {
-		this.offset = offset;
+	public void setInitialRotation(Rotation offset) {
+		this.rotationOffset = offset;
+	}
+	
+	public void setInitialTranslation(Translation2d offset) {
+		this.translationOffset = offset;
 	}
 }

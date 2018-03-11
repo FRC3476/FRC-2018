@@ -199,11 +199,11 @@ public class OrangeDrive extends Threaded {
 		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());
 		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
 		leftTalon.setNeutralMode(NeutralMode.Coast);		
-		leftSlave2Talon.setNeutralMode(NeutralMode.Coast);		
-		leftSlave2Talon.setNeutralMode(NeutralMode.Coast);		
-		rightTalon.setNeutralMode(NeutralMode.Coast);		
-		rightSlaveTalon.setNeutralMode(NeutralMode.Coast);		
-		rightSlave2Talon.setNeutralMode(NeutralMode.Coast);		
+		leftSlave2Talon.setNeutralMode(NeutralMode.Brake);		
+		leftSlave2Talon.setNeutralMode(NeutralMode.Brake);		
+		rightTalon.setNeutralMode(NeutralMode.Brake);		
+		rightSlaveTalon.setNeutralMode(NeutralMode.Brake);		
+		rightSlave2Talon.setNeutralMode(NeutralMode.Brake);		
 		
 		leftTalon.setInverted(true);
 		leftSlaveTalon.setInverted(true);
@@ -294,11 +294,6 @@ public class OrangeDrive extends Threaded {
 		// right
 		double leftSetpoint = (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d;
 		double rightSetpoint = (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d;
-
-		System.out.println("Left: " + getLeftSpeed());
-		System.out.println("lSetpoint: " + setVelocity.leftWheelSpeed);
-		System.out.println("Right: " + getRightSpeed());
-		System.out.println("rSetpoint: " + setVelocity.rightWheelSpeed);
 		leftTalon.set(ControlMode.Velocity, leftSetpoint);
 		rightTalon.set(ControlMode.Velocity, rightSetpoint);
 	}

@@ -33,6 +33,7 @@ public class RobotTracker extends Threaded {
 		driveBase = OrangeDrive.getInstance();
 		currentOdometry = new RigidTransform(new Translation2d(), driveBase.getGyroAngle());
 		rotationOffset = Rotation.fromDegrees(0);
+		translationOffset = new Translation2d();
 	}
 
 	public Rotation getGyroAngle(long time) {
@@ -66,18 +67,7 @@ public class RobotTracker extends Threaded {
     		gyroHistory.add(new InterpolablePair<>(System.nanoTime(), driveBase.getGyroAngle()));       	
         }
 		oldDistance = currentDistance;
-		JSONObject message = new JSONObject();
-		JSONArray pose = new JSONArray();
-		JSONArray lookAhead = new JSONArray();
-		JSONArray closest = new JSONArray();
-
-		lookAhead.add(0);
-		lookAhead.add(0);
-		pose.add(currentOdometry.translationMat.getX());
-		pose.add(currentOdometry.translationMat.getY());
-		message.put("lookAhead", lookAhead);
-		message.put("pose", pose);
-		UDP.getInstance().send("10.34.76.5", message.toJSONString(), 5801);
+	
 		
 		//System.out.println("Position: " + currentOdometry.translationMat.getX() + "   " + currentOdometry.translationMat.getY());
 		//System.out.println("Gyro: " + currentOdometry.rotationMat.getDegrees());

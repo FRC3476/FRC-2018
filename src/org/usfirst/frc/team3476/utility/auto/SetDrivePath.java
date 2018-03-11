@@ -12,13 +12,16 @@ public class SetDrivePath extends AutoCommand {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
 	}
-	
-	public void run() {
-		OrangeDrive.getInstance().setAutoPath(robotPath, isReversed);
-	}
+
 	
 	public boolean isFinished() {
 		return OrangeDrive.getInstance().isFinished();
+	}
+
+	@Override
+	public void start() {
+		OrangeDrive.getInstance().setAutoPath(robotPath, isReversed);
+		
 	}
 
 }

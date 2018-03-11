@@ -14,13 +14,13 @@ public final class Constants {
 	public static final double LowDriveSpeed = 95;
 //<<<<<<< HEAD
 	public static final double kRightHighP = 0;
-	public static final double kRightHighF = 0.03;
-	public static final double kRightLowP = 0.05;
+	public static final double kRightHighF = 0.0347;
+	public static final double kRightLowP = 0.1;
 	public static final double kRightLowF = 0.05763730970902943999708309631717;
 	
 	public static final double kLeftHighP = 0;
-	public static final double kLeftHighF = 0.03;
-	public static final double kLeftLowP = 0.05;
+	public static final double kLeftHighF = 0.036;
+	public static final double kLeftLowP = 0.1;
 	public static final double kLeftLowF = 0.05763730970902943999708309631717;
 /*=======
 	public static final double kHighP = 0.005;
@@ -41,7 +41,7 @@ public final class Constants {
 	public static final double MaxAcceleration = 1000;
 
 	// Autonomous Driving
-	public static final double LookAheadDistance = 20;
+	public static final double LookAheadDistance = 32;
 	public static final double WheelDiameter = 5.9;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 10;
@@ -77,12 +77,12 @@ public final class Constants {
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
-	public static final double ElevatorDownHeight = 1; // Should be the proper position for getting cubes
+	public static final double ElevatorDownHeight = 2.5; // Should be the proper position for getting cubes
 	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
 
 	// Arm
 	public static final double ArmLowerAngleLimit = -55;
-	public static final double ArmUpperAngleLimit = 85;
+	public static final double ArmUpperAngleLimit = 96;
 	public static final double ArmRotationsPerMotorRotation = 1 / 1.5;
 	public static final double ArmSpeed = 0; // Degrees Per Second
 	public static final double ArmLength = 18.6; // Inches
@@ -91,7 +91,7 @@ public final class Constants {
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
 	public static final double ArmDownDegrees = -55;
-	public static final int PracticeBotArmTicksOffset = 3045;
+	public static final int PracticeBotArmTicksOffset = 3781;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 

@@ -3,7 +3,7 @@ package org.usfirst.frc.team3476.utility.auto;
 import org.usfirst.frc.team3476.subsystem.Intake;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 
-public class SetIntakeState implements AutoCommand {
+public class SetIntakeState extends AutoCommand {
 	
 	private IntakeState state;
 	private boolean isBlocking = false;
@@ -12,18 +12,16 @@ public class SetIntakeState implements AutoCommand {
 		this.state = state;
 	}
 	
+
 	@Override
-	public void run() {
-		Intake.getInstance().setIntake(state);
-		if(isBlocking) {
-			while(!Intake.getInstance().isFinished()) {
-				//Do nothing
-			}
-		}
+	public void start() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void setBlocking(boolean isBlocking) {
-		this.isBlocking = isBlocking;
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

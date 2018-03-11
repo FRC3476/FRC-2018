@@ -52,12 +52,12 @@ public class Intake {
 		case INTAKE:
 			if (getCurrent() > 15) //if stalling, ramp up power
 			{
-				intakeMotor1.set(ControlMode.PercentOutput, -.7);
+				intakeMotor1.set(ControlMode.PercentOutput, -1);
 				intakeMotor2.set(ControlMode.PercentOutput, -1);
 			}
 			else
 			{
-				intakeMotor1.set(ControlMode.PercentOutput, -.4);
+				intakeMotor1.set(ControlMode.PercentOutput, -.7);
 				intakeMotor2.set(ControlMode.PercentOutput, -.7);
 			}
 			setIntakeSolenoid(SolenoidState.INTAKING);

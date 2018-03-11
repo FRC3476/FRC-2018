@@ -23,10 +23,10 @@ public class PurePursuitController {
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
-		turnPID = new SynchronousPid(0.05, 0, 0, 0);
+		turnPID = new SynchronousPid(0.2, 0, 5, 0);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
-		speedProfiler = new RateLimiter(100, 1000);
+		speedProfiler = new RateLimiter(50, 1000);
 	}
 
 	/**
@@ -56,14 +56,28 @@ public class PurePursuitController {
 			return new DriveVelocity(0, 0);
 		}
 		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);	
-		if(robotSpeed < 15) {
-			robotSpeed = 15;
+		if(robotSpeed < 20) {
+			robotSpeed = 20;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
-		System.out.println(angleToLookAhead);
-		double deltaSpeed = turnPID.update(-angleToLookAhead) * Constants.LookAheadDistance;
-		
+		double turn = turnPID.update(-angleToLookAhead);
+		if(Math.abs(turn) < 1){
+			turn = 0;
+		}
+		double deltaSpeed =  turn * robotSpeed;
+		JSONObject message = new JSONObject();
+		JSONArray pose = new JSONArray();
+		JSONArray lookAhead = new JSONArray();
+		JSONArray closest = new JSONArray();
+
+		closest.add(data.closestPoint.getX());
+		closest.add(data.closestPoint.getY());
+		pose.add(robotPose.translationMat.getX());
+		pose.add(robotPose.translationMat.getY());
+		message.put("lookAhead", closest);
+		message.put("pose", pose);
+		UDP.getInstance().send("10.34.76.5", message.toJSONString(), 5801);
 	
 		if (isReversed) {
 			robotSpeed *= -1;

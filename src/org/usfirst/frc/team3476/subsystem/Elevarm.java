@@ -130,19 +130,22 @@ public class Elevarm extends Threaded {
 
 			armAngle = (timeToPosition1 < timeToPosition2 ? armAngle1 : armAngle2);
 			elevatorHeight = (timeToPosition1 < timeToPosition2 ? elevatorHeight1 : elevatorHeight2);
+			setElevatorHeight(elevatorHeight);
+			setArmAngle(armAngle);
 
 		} else if (position1Valid) {
 			armAngle = armAngle1;
 			elevatorHeight = elevatorHeight1;
+			setElevatorHeight(elevatorHeight);
+			setArmAngle(armAngle);
 		} else if (position2Valid) {
 			armAngle = armAngle2;
 			elevatorHeight = elevatorHeight2;
+			setElevatorHeight(elevatorHeight);
+			setArmAngle(armAngle);
 		} else {
 			System.out.println("Invalid Position. Not moving");
 		}
-
-		setElevatorHeight(elevatorHeight);
-		setArmAngle(armAngle);
 	}
 	
 	public void setElevarmIntakePosition()

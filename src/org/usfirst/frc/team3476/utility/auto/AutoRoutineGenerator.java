@@ -57,7 +57,4 @@ public class AutoRoutineGenerator {
 		return generatedRoutine;
 	}
 	
-	private Path flip(Path oldPath){
-		
-	}
 }

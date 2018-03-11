@@ -2,7 +2,7 @@ package org.usfirst.frc.team3476.utility.auto;
 
 import org.usfirst.frc.team3476.subsystem.Elevarm;
 
-public class SetElevatorHeight implements AutoCommand {
+public class SetElevatorHeight extends AutoCommand {
 
 	private double height;
 	
@@ -10,11 +10,13 @@ public class SetElevatorHeight implements AutoCommand {
 		this.height = height;
 	}
 	
-	public void run() {
-		Elevarm.getInstance().setElevatorHeight(height);
-	}
-
 	public boolean isFinished() {
 		return Math.abs(Elevarm.getInstance().getElevatorHeight() - height) < 5;
+	}
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		
 	}
 }

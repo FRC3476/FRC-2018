@@ -147,7 +147,7 @@ public class OrangeDrive extends Threaded {
 		if (isQuickTurn) {
 			overPower = 1;
 			if (moveValue < 0.2) {
-				quickStopAccumulator = 0.9 * quickStopAccumulator + 0.1 * rotateValue * 2;
+				quickStopAccumulator = 0.9 * quickStopAccumulator + 0.1 * rotateValue * 1.1 * 2;
 			}
 			angularPower = rotateValue;
 		} else {

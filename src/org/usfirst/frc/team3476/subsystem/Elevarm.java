@@ -234,10 +234,15 @@ public class Elevarm extends Threaded {
 			break;
 		case INTAKE:
 			elevator.setHeight(elevatorLimiter.update(Constants.ElevatorDownHeight));
-			if (elevator.getHeight() < 25)
+			if (elevator.getHeight() < 20)
 			{
-				arm.setAngle(Constants.ArmIntakeAngle);
+				arm.setAngle(-10);
 			}
+			if (Math.abs(arm.getAngle() + 10) < 4)
+			{
+				arm.setPercentOutput(0);
+			}
+			
 			break;
 		case MANUAL:
 			break;

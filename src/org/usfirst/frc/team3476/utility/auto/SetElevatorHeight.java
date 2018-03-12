@@ -16,7 +16,6 @@ public class SetElevatorHeight extends AutoCommand {
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		Elevarm.getInstance().setElevatorHeight(height);
 	}
 }

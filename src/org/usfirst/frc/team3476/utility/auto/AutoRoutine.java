@@ -7,8 +7,15 @@ public class AutoRoutine implements Runnable {
 
 	private ArrayList<AutoCommand> routine = new ArrayList<AutoCommand>();
 	
-	synchronized public void addCommand(AutoCommand...commands) {
+	synchronized public void addCommands(AutoCommand...commands) {
 		routine.addAll(Arrays.asList(commands));
+	}
+
+	synchronized public void addRoutines(AutoRoutine...routines) {
+		for (AutoRoutine r : routines)
+		{
+			routine.addAll(r.routine);
+		}
 	}
 	
 	synchronized public void run() {

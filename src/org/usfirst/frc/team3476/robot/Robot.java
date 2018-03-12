@@ -14,6 +14,11 @@ import org.usfirst.frc.team3476.utility.Controller;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
 import org.usfirst.frc.team3476.utility.auto.AutoCommand;
+import org.usfirst.frc.team3476.utility.auto.AutoRoutine;
+import org.usfirst.frc.team3476.utility.auto.Delay;
+import org.usfirst.frc.team3476.utility.auto.SetArmAngle;
+import org.usfirst.frc.team3476.utility.auto.SetDrivePath;
+import org.usfirst.frc.team3476.utility.auto.SetElevatorHeight;
 import org.usfirst.frc.team3476.utility.auto.SetIntakeState;
 import org.usfirst.frc.team3476.utility.control.Path;
 import org.usfirst.frc.team3476.utility.math.Rotation;
@@ -39,6 +44,8 @@ public class Robot extends IterativeRobot {
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
 	CameraServer camServer = CameraServer.getInstance();
+	LazyTalonSRX climber = new LazyTalonSRX(30);
+	LazyTalonSRX climber2 = new LazyTalonSRX(30);
 	
 	boolean homed = false;
 
@@ -50,6 +57,7 @@ public class Robot extends IterativeRobot {
 		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
 		camServer.startAutomaticCapture(0);
+		camServer.startAutomaticCapture(1);
 	}
 
 	@Override
@@ -60,9 +68,13 @@ public class Robot extends IterativeRobot {
 		elevarm.configArmEncoder();
 		drive.stopMovement();
 		elevarm.stopMovement();
-		tracker.setInitialTranslation(new Translation2d(18, -108));
+		tracker.setInitialTranslation(new Translation2d(0,0));
 		tracker.resetOdometry();
 		elevarm.homeElevator();
+		
+		
+		
+		/*
 		Timer.delay(1);
 		elevarm.setArmAngle(70);
 		elevarm.setElevatorHeight(10);
@@ -90,13 +102,13 @@ public class Robot extends IterativeRobot {
 		while(!drive.isFinished() || Timer.getFPGATimestamp() - start < 2) {}
 		intake.setIntake(IntakeState.GRIP);
 		autoPath = new Path(tracker.getOdometry().translationMat);
-		autoPath.addPoint(tracker.getOdometry().translationMat.getX() + 5, tracker.getOdometry().translationMat.getY(), 30);
+		autoPath.addPoint(tracker.getOdometry().translationMat.getX() + 5, tracker.getOdometry().translationMat.getY() - 5, 30);
 		drive.setAutoPath(autoPath, true);
 		elevarm.setElevatorHeight(10);
 		elevarm.setArmAngle(40);
 		while(!drive.isFinished()) {}
 		intake.setIntake(IntakeState.OUTTAKE_FASTEST);
-		
+		*/
 
 		//Scale To Right
 		/*
@@ -203,8 +215,8 @@ public class Robot extends IterativeRobot {
 		joystick.update();
 		
 		
-		//drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-		drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 
@@ -267,10 +279,6 @@ public class Robot extends IterativeRobot {
 
 		if (buttonBox.getRisingEdge(5))
 		{
-			/*
-			elevarm.setArmAngle(Constants.ArmIntakeAngle); //Intake Position
-			elevarm.setElevatorHeight(Constants.ElevatorDownHeight);
-			*/
 			elevarm.setElevarmIntakePosition();
 		}
 		else if (buttonBox.getRisingEdge(6))
@@ -287,6 +295,10 @@ public class Robot extends IterativeRobot {
 		{
 			elevarm.setArmAngle(80); //Scale Horizontal Arm
 			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
+		}
+		else if (buttonBox.getRisingEdge(4))
+		{
+			elevarm.setArmAngle(0);
 		}
 		
 		if (buttonBox.getPOV() == 0)

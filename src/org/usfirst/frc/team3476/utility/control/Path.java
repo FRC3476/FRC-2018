@@ -148,6 +148,11 @@ public class Path {
 		lastPoint = new Translation2d(x, y);
 	}
 	
+	public void addPoint(Translation2d point, double speed)
+	{
+		addPoint(point.getX(), point.getY(), speed);	
+	}
+	
 	/**
 	 * Sets the desired angle for the robot to end in. It does this by placing
 	 * up to two points that have a 90 degree angle to allow the robot to

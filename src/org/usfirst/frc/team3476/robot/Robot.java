@@ -44,8 +44,8 @@ public class Robot extends IterativeRobot {
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
 	CameraServer camServer = CameraServer.getInstance();
-	LazyTalonSRX climber = new LazyTalonSRX(30);
-	LazyTalonSRX climber2 = new LazyTalonSRX(30);
+	LazyTalonSRX climber = new LazyTalonSRX(21);
+	Solenoid elevatorShift = new Solenoid(3);
 	
 	boolean homed = false;
 
@@ -217,9 +217,27 @@ public class Robot extends IterativeRobot {
 		
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-
+		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		
+		if (joystick.getRisingEdge(2))
+		{
+			elevatorShift.set(true);
+		}
+		if (joystick.getRawButton(2))
+		{
+			climber.set(ControlMode.PercentOutput, .75);
+			System.out.println(climber.getOutputCurrent());
+		}
+		else
+		{
+			climber.set(ControlMode.PercentOutput, 0);
+		}
+		if (joystick.getRisingEdge(12))
+		{
+			elevatorShift.set(false);
+		}
+		
 		if(intake.getCurrent() > 15) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
 			xbox.setRumble(RumbleType.kRightRumble, 1);

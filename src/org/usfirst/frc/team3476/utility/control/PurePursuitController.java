@@ -67,7 +67,20 @@ public class PurePursuitController {
 		if(Math.abs(turn) < 0.5){
 			turn = 0;
 		}
+		
 		double deltaSpeed =  turn * robotSpeed;
+		/*
+		 * TODO: test
+		double radius;
+		if(robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees() < 1E-2){
+			radius = 0;
+		} else {
+			radius = getRadius(robotPose, data.lookAheadPoint);
+		}
+		double deltaSpeed = Constants.TrackDiameter * robotSpeed / (radius * 2 * Constants.TurnScrubCoeff);
+		Constants.TurnScrubCoeff = deltaRotation * Constants.TrackDiameter / (deltaPos * 2)
+		*/
+		
 		JSONObject message = new JSONObject();
 		JSONArray pose = new JSONArray();
 		JSONArray lookAhead = new JSONArray();
@@ -87,12 +100,11 @@ public class PurePursuitController {
 		return new DriveVelocity(robotSpeed + deltaSpeed, robotSpeed - deltaSpeed);
 	}
 
-	@Deprecated
-	public double getRadius(RigidTransform robotPose, Translation2d lookAheadPoint) {
+	private double getRadius(RigidTransform robotPose, Translation2d lookAheadPoint) {
 		Translation2d robotToLookAheadPoint = getRobotToLookAheadPoint(robotPose, lookAheadPoint);
 		// Hypotenuse^2 / (2 * X)
 		double radius = Math.pow(Math.hypot(robotToLookAheadPoint.getX(), robotToLookAheadPoint.getY()), 2)
-				/ (2 * robotToLookAheadPoint.getX());
+				/ (2 * robotToLookAheadPoint.getY());
 		return radius;
 	}
 

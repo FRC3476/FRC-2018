@@ -44,8 +44,7 @@ public class Robot extends IterativeRobot {
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
 	CameraServer camServer = CameraServer.getInstance();
-	LazyTalonSRX climber = new LazyTalonSRX(30);
-	LazyTalonSRX climber2 = new LazyTalonSRX(30);
+	LazyTalonSRX climber = new LazyTalonSRX(21);
 	
 	boolean homed = false;
 
@@ -53,8 +52,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
-		scheduler.schedule(drive, Duration.ofMillis(10), mainExecutor);
-		scheduler.schedule(tracker, Duration.ofMillis(10), mainExecutor);
+		scheduler.schedule(drive, Duration.ofMillis(5), mainExecutor);
+		scheduler.schedule(tracker, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
 		camServer.startAutomaticCapture(0);
 		camServer.startAutomaticCapture(1);
@@ -68,11 +67,19 @@ public class Robot extends IterativeRobot {
 		elevarm.configArmEncoder();
 		drive.stopMovement();
 		elevarm.stopMovement();
-		tracker.setInitialTranslation(new Translation2d(0,0));
+		tracker.setInitialTranslation(new Translation2d(18, -108));
 		tracker.resetOdometry();
 		elevarm.homeElevator();
-		
-		
+
+		autoPath = new Path(new Translation2d(18,-108));
+		autoPath.addPoint(225, -124, 100);
+		autoPath.addPoint(264, -108, 100);
+		drive.setAutoPath(autoPath, false);
+		while(!drive.isFinished()) {}
+		autoPath = new Path(tracker.getOdometry().translationMat);
+		autoPath.addPoint(264, -124, 100);
+		drive.setAutoPath(autoPath, true);
+		while(!drive.isFinished()) {}
 		
 		/*
 		Timer.delay(1);
@@ -217,8 +224,8 @@ public class Robot extends IterativeRobot {
 		
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 
 		if(intake.getCurrent() > 15) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
@@ -308,6 +315,13 @@ public class Robot extends IterativeRobot {
 		else if (buttonBox.getPOV() == 180)
 		{
 			elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
+		}
+		
+		if(joystick.getRawButton(2)){
+			climber.set(ControlMode.PercentOutput, 0.75);
+			System.out.println(climber.getOutputCurrent());
+		} else {
+			climber.set(ControlMode.PercentOutput, 0);
 		}
 		
 		//if (buttonBox.getRisingEdge(button))

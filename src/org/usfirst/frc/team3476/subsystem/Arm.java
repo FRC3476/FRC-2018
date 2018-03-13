@@ -18,7 +18,7 @@ public class Arm {
 		armTalon = new LazyTalonSRX(Constants.ArmId);
 		armTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		setEncoderFromPWM();
-		armTalon.setInverted(true);
+		armTalon.setInverted(false);
 	}
 
 	protected static Arm getInstance() {

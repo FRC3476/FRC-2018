@@ -52,7 +52,7 @@ public class AutoRoutineGenerator {
 		
 		AutoRoutine getRightSwitchCube = new AutoRoutine();
 		
-		getRightSwitchCube.addCommands(new SetIntakeState(IntakeState.INTAKE), new DriveToPoint(rightSwitchCubePosition, 50, false), new SetIntakeState(IntakeState.GRIP), new DriveToPoint(midFieldRightScale));
+		//getRightSwitchCube.addCommands(new SetIntakeState(IntakeState.INTAKE), new DriveToPoint(rightSwitchCubePosition, 50, false), new SetIntakeState(IntakeState.GRIP), new DriveToPoint(midFieldRightScale));
 		
 		
 		switch(option)

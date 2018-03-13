@@ -73,13 +73,18 @@ public class OrangeDrive extends Threaded {
 		driveState = DriveState.TELEOP;
 
 		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
+		
 		configHigh();
 	}
 
 	private void configHigh() {
 		rightTalon.config_kP(0, Constants.kRightHighP, 10);
+		rightTalon.config_kI(0, Constants.kRightHighI, 10);
+		rightTalon.config_kD(0, Constants.kRightHighD, 10);
 		rightTalon.config_kF(0, Constants.kRightHighF, 10);
 		leftTalon.config_kP(0, Constants.kLeftHighP, 10);
+		leftTalon.config_kI(0, Constants.kLeftHighI, 10);
+		leftTalon.config_kD(0, Constants.kRightHighD, 10);
 		leftTalon.config_kF(0, Constants.kLeftHighF, 10);
 		driveMultiplier = Constants.HighDriveSpeed;
 	}
@@ -204,6 +209,9 @@ public class OrangeDrive extends Threaded {
 		rightTalon.setNeutralMode(NeutralMode.Brake);		
 		rightSlaveTalon.setNeutralMode(NeutralMode.Brake);		
 		rightSlave2Talon.setNeutralMode(NeutralMode.Brake);		
+		
+		rightTalon.configNominalOutputForward(0.05, 10);
+		rightTalon.configNominalOutputReverse(-0.05, 10);
 		
 		leftTalon.setInverted(true);
 		leftSlaveTalon.setInverted(true);

@@ -23,10 +23,11 @@ public class PurePursuitController {
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
-		turnPID = new SynchronousPid(0.2, 0, 5, 0);
+		//0.2, 0, 5, 0 values
+		turnPID = new SynchronousPid(0.15, 0, 0.5, 0);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
-		speedProfiler = new RateLimiter(50, 1000);
+		speedProfiler = new RateLimiter(120, 1000);
 	}
 
 	/**
@@ -56,13 +57,14 @@ public class PurePursuitController {
 			return new DriveVelocity(0, 0);
 		}
 		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);	
-		if(robotSpeed < 20) {
-			robotSpeed = 20;
+		if(robotSpeed < 10) {
+			robotSpeed = 10;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
 		double turn = turnPID.update(-angleToLookAhead);
-		if(Math.abs(turn) < 1){
+		//System.out.println("turn: " + turn + " angle: " + angleToLookAhead);
+		if(Math.abs(turn) < 0.5){
 			turn = 0;
 		}
 		double deltaSpeed =  turn * robotSpeed;

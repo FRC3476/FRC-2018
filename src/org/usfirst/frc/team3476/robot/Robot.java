@@ -227,6 +227,17 @@ public class Robot extends IterativeRobot {
 		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 
+		if (joystick.getRawButton(2))
+		{
+			climber.set(ControlMode.PercentOutput, .75);
+			System.out.println(climber.getOutputCurrent());
+		}
+		else
+		{
+			climber.set(ControlMode.PercentOutput, 0);
+		}
+
+		
 		if(intake.getCurrent() > 15) {
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
 			xbox.setRumble(RumbleType.kRightRumble, 1);

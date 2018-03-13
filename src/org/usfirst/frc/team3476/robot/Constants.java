@@ -53,7 +53,7 @@ public final class Constants {
 	public static final int DriveShifterId = 0;
 	public static final int IntakeSolenoid30PsiId = 4;
 	public static final int IntakeSolenoid60PsiId = 1;
-	public static final int ElevatorGearboxShifterId = 3; //
+	public static final int ElevatorGearboxShifterId = 6; //
 	public static final int LeftMasterDriveId = 16;
 	public static final int LeftSlaveDriveId = 15;
 	public static final int LeftSlave2DriveId = 14;

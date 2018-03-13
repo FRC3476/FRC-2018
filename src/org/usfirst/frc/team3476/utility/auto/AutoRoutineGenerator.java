@@ -40,21 +40,21 @@ public class AutoRoutineGenerator {
 	public static AutoRoutine generate(String gameMsg, PathOption option, StartPosition position) {
 		AutoRoutine overallRoutine = new AutoRoutine();	
 		
-		AutoRoutine toMidFieldRight = new AutoRoutine();
+		AutoRoutine toMidFieldRight = new AutoRoutine(); //Drives to Mid Field Right Position from Current Location
 		toMidFieldRight.addCommands(new DriveToPoint(midFieldRightPosition, 100, false));
 		
-		AutoRoutine cubeOnRightScale = new AutoRoutine();
+		AutoRoutine cubeOnRightScale = new AutoRoutine(); //Puts Cube on Right Scale from Mid Field Right Position, then backs up to Mid Field Right Position
 		Path midFieldRightToScale = new Path(midFieldRightPosition);
-		midFieldRightToScale.addPoint(midFieldRightPosition, 50);
 		midFieldRightToScale.addPoint(rightScalePosition, 50);
 		cubeOnRightScale.addCommands(new SetDrivePath(midFieldRightToScale, false, false), new SetElevatorHeight(60), new SetArmAngle(80), new Delay(.5),
 				new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(.5), new SetElevatorHeight(10), new SetIntakeState(IntakeState.GRIP), new DriveToPoint(midFieldRightPosition, 50, true));
 		
-		AutoRoutine getRightSwitchCube = new AutoRoutine();
-		
-		//getRightSwitchCube.addCommands(new SetIntakeState(IntakeState.INTAKE), new DriveToPoint(rightSwitchCubePosition, 50, false), new SetIntakeState(IntakeState.GRIP), new DriveToPoint(midFieldRightScale));
-		
-		
+
+		AutoRoutine getRightSwitchCube = new AutoRoutine(); //From Mid Field Right Position, grabs Switch Cube, then backs up to Mid Field Right Position
+		Path midFieldRightToSwitchCube = new Path(midFieldRightPosition);
+		midFieldRightToSwitchCube.addPoint(rightSwitchCubePosition, 50);
+		getRightSwitchCube.addCommands(new SetIntakeState(IntakeState.INTAKE), new SetDrivePath(midFieldRightToSwitchCube, false), new SetIntakeState(IntakeState.GRIP));
+
 		switch(option)
 		{
 			case SCALE:

@@ -1,5 +1,7 @@
 package org.usfirst.frc.team3476.utility.auto;
 
+import java.util.ArrayList;
+
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.utility.control.Path;
@@ -7,12 +9,12 @@ import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 public class DriveToPoint extends AutoCommand{
 
-	private Translation2d point;
+	private ArrayList<Translation2d> points;
 	private double speed;
 	private boolean isReversed;
 	public DriveToPoint(Translation2d point, double speed, boolean isReversed)
 	{
-		this.point = point;
+		points.add(point);
 		this.speed = speed;
 		this.isReversed = isReversed;
 	}
@@ -20,7 +22,10 @@ public class DriveToPoint extends AutoCommand{
 	@Override
 	public void start() {
 		Path drivePath = new Path(RobotTracker.getInstance().getOdometry().translationMat);
-		drivePath.addPoint(point, speed);
+		for (Translation2d point : points)
+		{
+			drivePath.addPoint(point, speed);
+		}
 		OrangeDrive.getInstance().setAutoPath(drivePath, isReversed);
 	}
 

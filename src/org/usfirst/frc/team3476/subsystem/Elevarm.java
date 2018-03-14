@@ -30,6 +30,8 @@ public class Elevarm extends Threaded {
 	private ElevatorState currentElevatorState = ElevatorState.MANUAL;
 	private RateLimiter elevatorLimiter;
 	private volatile double elevatorSetpoint;
+	
+	private boolean elevatorIntakePositionSet = false;
 
 	private Elevarm() {
 		elevatorLimiter = new RateLimiter(1000, 120);
@@ -236,13 +238,14 @@ public class Elevarm extends Threaded {
 			elevator.setHeight(elevatorLimiter.update(Constants.ElevatorDownHeight));
 			if (elevator.getHeight() < 20)
 			{
-				arm.setAngle(-10);
+				arm.setAngle(-18);
 			}
-			if (Math.abs(arm.getAngle() + 10) < 4)
+			/*if (Math.abs(arm.getAngle() + 10) < 5)
 			{
 				arm.setPercentOutput(0);
+				elevatorIntakePositionSet = true;
 			}
-			
+			*/
 			break;
 		case MANUAL:
 			break;

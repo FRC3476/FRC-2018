@@ -7,16 +7,19 @@ import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.utility.control.Path;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
-public class DriveToPoint extends AutoCommand{
+public class DriveToPoints extends AutoCommand{
 
 	private ArrayList<Translation2d> points;
 	private double speed;
 	private boolean isReversed;
-	public DriveToPoint(Translation2d point, double speed, boolean isReversed)
+	public DriveToPoints(double speed, boolean isReversed, Translation2d...points)
 	{
-		points.add(point);
 		this.speed = speed;
 		this.isReversed = isReversed;
+		for (Translation2d point : points)
+		{
+			this.points.add(point);
+		}
 	}
 	
 	@Override

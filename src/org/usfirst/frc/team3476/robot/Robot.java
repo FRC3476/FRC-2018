@@ -15,11 +15,14 @@ import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
 import org.usfirst.frc.team3476.utility.auto.AutoCommand;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutine;
+import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator;
 import org.usfirst.frc.team3476.utility.auto.Delay;
 import org.usfirst.frc.team3476.utility.auto.SetArmAngle;
 import org.usfirst.frc.team3476.utility.auto.SetDrivePath;
 import org.usfirst.frc.team3476.utility.auto.SetElevatorHeight;
 import org.usfirst.frc.team3476.utility.auto.SetIntakeState;
+import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.PathOption;
+import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.StartPosition;
 import org.usfirst.frc.team3476.utility.control.Path;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
@@ -70,17 +73,25 @@ public class Robot extends IterativeRobot {
 		tracker.setInitialTranslation(new Translation2d(18, -108));
 		tracker.resetOdometry();
 		elevarm.homeElevator();
+		
+		AutoRoutine routine = AutoRoutineGenerator.generate("", PathOption.BOTH, StartPosition.RIGHT);
+		routine.run();
 
-		autoPath = new Path(new Translation2d(18,-108));
+		/*autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(225, -124, 100);
 		autoPath.addPoint(264, -108, 100);
+		autoPath.addPoint(50, -108, 100);
+		autoPath.addPoint(50, -150, 100);
 		drive.setAutoPath(autoPath, false);
+		
 		while(!drive.isFinished()) {}
+		*/
+		/*
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(264, -124, 100);
 		drive.setAutoPath(autoPath, true);
 		while(!drive.isFinished()) {}
-		
+		*/
 		/*
 		Timer.delay(1);
 		elevarm.setArmAngle(70);

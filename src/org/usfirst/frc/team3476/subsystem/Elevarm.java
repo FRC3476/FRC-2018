@@ -236,9 +236,9 @@ public class Elevarm extends Threaded {
 			elevator.setHeight(elevatorLimiter.update(Constants.ElevatorDownHeight));
 			if (elevator.getHeight() < 20)
 			{
-				arm.setAngle(-10);
+				arm.setAngle(-15);
 			}
-			if (Math.abs(arm.getAngle() + 10) < 4)
+			if (arm.getAngle() < -16)
 			{
 				arm.setPercentOutput(0);
 			}

@@ -240,12 +240,6 @@ public class Elevarm extends Threaded {
 			{
 				arm.setAngle(-18);
 			}
-			/*if (Math.abs(arm.getAngle() + 10) < 5)
-			{
-				arm.setPercentOutput(0);
-				elevatorIntakePositionSet = true;
-			}
-			*/
 			break;
 		case MANUAL:
 			break;

@@ -36,7 +36,8 @@ public class AutoRoutineGenerator {
 		LEFT, CENTER, RIGHT
 	}
 	
-	static {		
+	static 
+	{		
 		Translation2d midFieldRightPosition = new Translation2d(240, -108);
 		Translation2d midFieldLeftPosition = new Translation2d(240, 108);
 		
@@ -47,7 +48,7 @@ public class AutoRoutineGenerator {
 		Translation2d leftSwitchCubePosition = new Translation2d(224, 90);
 		
 		toMidFieldRight = new AutoRoutine(); //Drives to Mid Field Right Position from Current Location
-		toMidFieldRight.addCommands(new DriveToPoints(100, false, midFieldRightPosition));
+		toMidFieldRight.addCommands(new DriveToPoints(100, false, midFieldRightPosition, rightScalePosition));
 		
 		toMidFieldLeft = new AutoRoutine();
 		toMidFieldLeft.addCommands(new DriveToPoints(100, false, midFieldLeftPosition));
@@ -76,6 +77,7 @@ public class AutoRoutineGenerator {
 		placeCubeInRightSwitch.addCommands(new SetElevatorHeight(Constants.ElevatorDownHeight), new SetArmAngle(Constants.ArmIntakeAngle),
 				new SetElevatorHeight(10), new SetArmAngle(80), new DriveToPoints(50, false, midFieldRightPosition, rightSwitchCubePosition),
 				new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(1), new SetIntakeState(IntakeState.GRIP));
+
 	}
 	
 
@@ -83,6 +85,7 @@ public class AutoRoutineGenerator {
 	public static AutoRoutine generate(String gameMsg, PathOption option, StartPosition position) {
 		AutoRoutine overallRoutine = new AutoRoutine();	
 		
+				
 		switch(option)
 		{
 			case SCALE:
@@ -107,7 +110,7 @@ public class AutoRoutineGenerator {
 						break;
 					case RIGHT:
 						RobotTracker.getInstance().setInitialTranslation(robotRightStartPosition);
-						overallRoutine.addRoutines(toMidFieldRight, placeCubeOnRightScale, getRightSwitchCube, placeCubeInRightSwitch);
+						overallRoutine.addRoutines(toMidFieldRight);//, placeCubeOnRightScale, getRightSwitchCube, placeCubeInRightSwitch);
 						break;
 					case CENTER:
 						break;
@@ -119,7 +122,7 @@ public class AutoRoutineGenerator {
 				break;
 		}
 		
-		
+		/*
 		if(gameMsg.charAt(0) == 'l') {
 			
 		} else {
@@ -130,7 +133,7 @@ public class AutoRoutineGenerator {
 			
 		} else {
 			
-		}
+		}*/
 		
 		return overallRoutine;
 	}

@@ -40,7 +40,7 @@ public class PurePursuitController {
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	public DriveVelocity calculate(RigidTransform robotPose) {
+	public synchronized DriveVelocity calculate(RigidTransform robotPose) {
 		if (isReversed) {
 			robotPose = new RigidTransform(robotPose.translationMat, robotPose.rotationMat.flip());
 		}
@@ -52,7 +52,7 @@ public class PurePursuitController {
 		 */
 		// Motion Profiling
 		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, Constants.LookAheadDistance);
-		if(data.remainingDist == 0) {
+		if(data.remainingDist < 0.5) {
 			OrangeDrive.getInstance().setFinished();
 			return new DriveVelocity(0, 0);
 		}

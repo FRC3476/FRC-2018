@@ -14,8 +14,10 @@ public class DriveToPoints extends AutoCommand{
 	private boolean isReversed;
 	public DriveToPoints(double speed, boolean isReversed, Translation2d...points)
 	{
+		this.points = new ArrayList<Translation2d>();
 		this.speed = speed;
 		this.isReversed = isReversed;
+		setBlocking(true);
 		for (Translation2d point : points)
 		{
 			this.points.add(point);
@@ -27,7 +29,7 @@ public class DriveToPoints extends AutoCommand{
 		Path drivePath = new Path(RobotTracker.getInstance().getOdometry().translationMat);
 		for (Translation2d point : points)
 		{
-			drivePath.addPoint(point, speed);
+			drivePath.addPoint(point.getX(), point.getY(), speed);
 		}
 		OrangeDrive.getInstance().setAutoPath(drivePath, isReversed);
 	}

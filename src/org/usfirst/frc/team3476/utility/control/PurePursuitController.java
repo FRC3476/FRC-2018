@@ -52,13 +52,15 @@ public class PurePursuitController {
 		 */
 		// Motion Profiling
 		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, Constants.LookAheadDistance);
-		if(data.remainingDist < 0.5) {
+		
+		
+		if(data.remainingDist < .5) { //If robot passes point, remaining distance is 0
 			OrangeDrive.getInstance().setFinished();
 			return new DriveVelocity(0, 0);
 		}
 		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);	
-		if(robotSpeed < 10) {
-			robotSpeed = 10;
+		if(robotSpeed < 20) {
+			robotSpeed = 20;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();

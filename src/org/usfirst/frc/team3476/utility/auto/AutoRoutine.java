@@ -3,6 +3,8 @@ package org.usfirst.frc.team3476.utility.auto;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 public class AutoRoutine implements Runnable {
 
 	private ArrayList<AutoCommand> routine = new ArrayList<AutoCommand>();
@@ -21,6 +23,9 @@ public class AutoRoutine implements Runnable {
 	synchronized public void run() {
 		for(AutoCommand command : routine) {
 			command.run();
+			if(!DriverStation.getInstance().isAutonomous()){
+				break;
+			}
 		}
 	}
 }

@@ -5,9 +5,7 @@ import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 
 public class SetIntakeState extends AutoCommand {
 	
-	private IntakeState state;
-	private boolean isBlocking = false;
-	
+	private IntakeState state;	
 	public SetIntakeState(IntakeState state) {
 		this.state = state;
 	}
@@ -15,13 +13,11 @@ public class SetIntakeState extends AutoCommand {
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		Intake.getInstance().setIntake(state);
 	}
 
 	@Override
 	public boolean isFinished() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

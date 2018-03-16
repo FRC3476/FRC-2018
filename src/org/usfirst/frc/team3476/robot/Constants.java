@@ -92,7 +92,9 @@ public final class Constants {
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
 	public static final double ArmDownDegrees = -55;
-	public static final int PracticeBotArmTicksOffset = 754;
+	
+	
+	public static final int PracticeBotArmTicksOffset = 1276;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 

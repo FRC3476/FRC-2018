@@ -244,14 +244,15 @@ public class Path {
 		}
 		if (lookAheadDistance > remainingSegDist && segments.size() > 1) {
 			lookAheadDistance -= remainingSegDist;
+			PathSegment lastSegment;
 			for (int i = 1; i < segments.size(); i++) {
-				if (lookAheadDistance > segments.get(i).getDistance()) {
+				if (lookAheadDistance > segments.get(i).getDistance() && i != (segments.size() - 1)) {
 					lookAheadDistance -= segments.get(i).getDistance();
 				} else {
 					data.lookAheadPoint = segments.get(i).getPointByDistance(lookAheadDistance);
 					break;
 				}
-			}
+			}			
 		} else {
 			lookAheadDistance += Math.hypot(closestToStart.getX(), closestToStart.getY());
 			data.lookAheadPoint = segments.get(0).getPointByDistance(lookAheadDistance);

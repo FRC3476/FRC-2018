@@ -24,6 +24,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends IterativeRobot {
@@ -39,12 +40,22 @@ public class Robot extends IterativeRobot {
 	CameraServer camServer = CameraServer.getInstance();
 	LazyTalonSRX climber = new LazyTalonSRX(21);
 	
+	SendableChooser<String> posChooser = new SendableChooser<>();
+	SendableChooser<String> optionChooser = new SendableChooser<>();
+	
 	boolean homed = false;
 
 	Path autoPath;
 
 	@Override
 	public void robotInit() {
+		posChooser.addObject("Position", "Left");
+		posChooser.addObject("Position", "Center");
+		posChooser.addObject("Position", "Right");
+		optionChooser.addObject("Option", "a");
+		optionChooser.addObject("Option", "b");
+		optionChooser.addObject("Option", "c");
+		optionChooser.addObject("Option", "d");
 		scheduler.schedule(drive, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(tracker, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
@@ -54,6 +65,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
+		String pos = posChooser.getSelected();
+		String option = optionChooser.getSelected();
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
@@ -61,7 +74,7 @@ public class Robot extends IterativeRobot {
 		drive.stopMovement();
 		elevarm.stopMovement();
 		elevarm.homeElevator();
-
+		SmartDashboard.setstr
 		
 		AutoRoutine routine = AutoRoutineGenerator.generate("", PathOption.BOTH, StartPosition.RIGHT);
 		ExecutorService autoRunner = Executors.newSingleThreadExecutor();

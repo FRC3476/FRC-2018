@@ -1,4 +1,5 @@
 
+
 package org.usfirst.frc.team3476.utility.control;
 
 import java.util.ArrayList;
@@ -243,13 +244,15 @@ public class Path {
 			data.remainingDist += segments.get(i).getDistance();
 		}
 		if (lookAheadDistance > remainingSegDist && segments.size() > 1) {
-			lookAheadDistance -= remainingSegDist;
-			for (int i = 1; i < segments.size(); i++) {
-				if (lookAheadDistance > segments.get(i).getDistance()) {
-					lookAheadDistance -= segments.get(i).getDistance();
-				} else {
-					data.lookAheadPoint = segments.get(i).getPointByDistance(lookAheadDistance);
-					break;
+			while (lookAheadDistance > remainingSegDist && segments.size() > 1) {
+				lookAheadDistance -= remainingSegDist;
+				for (int i = 1; i < segments.size(); i++) {
+					if (lookAheadDistance > segments.get(i).getDistance()) {
+						lookAheadDistance -= segments.get(i).getDistance();
+					} else {
+						data.lookAheadPoint = segments.get(i).getPointByDistance(lookAheadDistance);
+						break;
+					}
 				}
 			}
 		} else {

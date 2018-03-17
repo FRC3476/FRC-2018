@@ -290,7 +290,7 @@ public class OrangeDrive extends Threaded {
 		rightTalon.set(ControlMode.PercentOutput, setVelocity.rightWheelSpeed);
 	}
 
-	private void setWheelVelocity(DriveVelocity setVelocity) {
+	public void setWheelVelocity(DriveVelocity setVelocity) {
 		// inches per sec to rotations per min
 		if (Math.abs(setVelocity.leftWheelSpeed) > Constants.HighDriveSpeed
 				|| Math.abs(setVelocity.rightWheelSpeed) > Constants.HighDriveSpeed) {
@@ -300,6 +300,8 @@ public class OrangeDrive extends Threaded {
 		}
 		// positive deltaSpeed turns right by making left wheels faster than
 		// right
+
+		System.out.println(getLeftSpeed() + " " + getRightSpeed());
 		double leftSetpoint = (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d;
 		double rightSetpoint = (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d;
 		leftTalon.set(ControlMode.Velocity, leftSetpoint);

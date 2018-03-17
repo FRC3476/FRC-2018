@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import org.usfirst.frc.team3476.subsystem.Elevarm;
 import org.usfirst.frc.team3476.subsystem.Intake;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
+import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 import org.usfirst.frc.team3476.utility.Controller;
@@ -73,11 +74,19 @@ public class Robot extends IterativeRobot {
 		tracker.setInitialTranslation(new Translation2d(18, -108));
 		tracker.resetOdometry();
 		elevarm.homeElevator();
-		
-		AutoRoutine routine = AutoRoutineGenerator.generate("rr", PathOption.BOTH, StartPosition.RIGHT);
-		routine.run();
 
-		/*autoPath = new Path(new Translation2d(18,-108));
+		/*
+		AutoRoutine routine = AutoRoutineGenerator.generate("", PathOption.BOTH, StartPosition.RIGHT);
+>>>>>>> master
+		routine.run();
+		*/
+
+
+		/*
+		autoPath = new Path(new Translation2d(18,-108));
+		autoPath.addPoint(50, -108, 100);
+		autoPath.addPoint(50, -158, 100);
+		autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(225, -124, 100);
 		autoPath.addPoint(264, -108, 100);
 		autoPath.addPoint(50, -108, 100);
@@ -85,8 +94,6 @@ public class Robot extends IterativeRobot {
 		drive.setAutoPath(autoPath, false);
 		
 		while(!drive.isFinished()) {}
-		*/
-		/*
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(264, -124, 100);
 		drive.setAutoPath(autoPath, true);
@@ -96,37 +103,37 @@ public class Robot extends IterativeRobot {
 		Timer.delay(1);
 		elevarm.setArmAngle(70);
 		elevarm.setElevatorHeight(10);
-		
+		*/
 		//Scale Switch
 		autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(225, -124, 70);
 		autoPath.addPoint(264, -108, 50);
 		drive.setAutoPath(autoPath, false);
 		while(!drive.isFinished()) {}
-		elevarm.setElevatorHeight(60);
-		Timer.delay(1.1);
-		intake.setIntake(IntakeState.OUTTAKE_FAST);
+		//elevarm.setElevatorHeight(60);
+		//Timer.delay(1.1);
+		//intake.setIntake(IntakeState.OUTTAKE_FAST);
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(264, -124, 50);
 		drive.setAutoPath(autoPath, true);
-		elevarm.setElevarmIntakePosition();
+		//elevarm.setElevarmIntakePosition();
 		while(!drive.isFinished()) {}
-		System.out.println("Arm Angle: " + elevarm.getArmAngle());
+		//System.out.println("Arm Angle: " + elevarm.getArmAngle());
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(230, -100, 50);
 		drive.setAutoPath(autoPath, false);
-		intake.setIntake(IntakeState.INTAKE);
+		//intake.setIntake(IntakeState.INTAKE);
 		double start = Timer.getFPGATimestamp();
 		while(!drive.isFinished() || Timer.getFPGATimestamp() - start < 2) {}
-		intake.setIntake(IntakeState.GRIP);
+		//intake.setIntake(IntakeState.GRIP);
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(tracker.getOdometry().translationMat.getX() + 5, tracker.getOdometry().translationMat.getY() - 5, 30);
 		drive.setAutoPath(autoPath, true);
-		elevarm.setElevatorHeight(10);
-		elevarm.setArmAngle(40);
+		//elevarm.setElevatorHeight(10);
+		//elevarm.setArmAngle(40);
 		while(!drive.isFinished()) {}
-		intake.setIntake(IntakeState.OUTTAKE_FASTEST);
-		*/
+		//intake.setIntake(IntakeState.OUTTAKE_FASTEST);
+		
 
 		//Scale To Right
 		/*
@@ -232,7 +239,7 @@ public class Robot extends IterativeRobot {
 		buttonBox.update();
 		joystick.update();
 		
-		
+		//drive.setWheelVelocity(new DriveVelocity(20, 20));
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());

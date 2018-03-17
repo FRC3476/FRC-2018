@@ -66,8 +66,8 @@ public class Robot extends IterativeRobot {
 
 		
 		AutoRoutine routine = AutoRoutineGenerator.generate("", PathOption.BOTH, StartPosition.RIGHT);
-		routine.run();
-
+		ExecutorService autoRunner = Executors.newSingleThreadExecutor();
+		autoRunner.submit(routine);
 
 		/*
 		autoPath = new Path(new Translation2d(18,-108));

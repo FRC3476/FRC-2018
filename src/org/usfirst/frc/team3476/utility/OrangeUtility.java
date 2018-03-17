@@ -238,7 +238,7 @@ public class OrangeUtility {
 			return maxOutput;
 		}
 		double norm = (Math.abs(rawValue) - minInput) / (maxInput - minInput);
-		norm = Math.copySign(norm * (maxOutput - minOutput), rawValue);
+		norm = Math.copySign(norm * (maxOutput - minOutput), rawValue) + minOutput;
 		return norm;
 	}
 

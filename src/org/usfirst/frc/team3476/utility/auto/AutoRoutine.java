@@ -20,6 +20,7 @@ public class AutoRoutine implements Runnable {
 		}
 	}
 	
+	@Override
 	synchronized public void run() {
 		for(AutoCommand command : routine) {
 			command.run();

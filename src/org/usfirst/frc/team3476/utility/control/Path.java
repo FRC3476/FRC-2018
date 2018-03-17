@@ -1,12 +1,11 @@
 
+
 package org.usfirst.frc.team3476.utility.control;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.usfirst.frc.team3476.robot.Constants;
-import org.usfirst.frc.team3476.utility.auto.AutoCommand;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 

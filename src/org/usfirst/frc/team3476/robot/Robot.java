@@ -1,7 +1,6 @@
 package org.usfirst.frc.team3476.robot;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,27 +12,19 @@ import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 import org.usfirst.frc.team3476.utility.Controller;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
-import org.usfirst.frc.team3476.utility.auto.AutoCommand;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutine;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator;
-import org.usfirst.frc.team3476.utility.auto.Delay;
-import org.usfirst.frc.team3476.utility.auto.SetArmAngle;
-import org.usfirst.frc.team3476.utility.auto.SetDrivePath;
-import org.usfirst.frc.team3476.utility.auto.SetElevatorHeight;
-import org.usfirst.frc.team3476.utility.auto.SetIntakeState;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.PathOption;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.StartPosition;
 import org.usfirst.frc.team3476.utility.control.Path;
-import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends IterativeRobot {
@@ -49,12 +40,22 @@ public class Robot extends IterativeRobot {
 	CameraServer camServer = CameraServer.getInstance();
 	LazyTalonSRX climber = new LazyTalonSRX(21);
 	
+	SendableChooser<String> posChooser = new SendableChooser<>();
+	SendableChooser<String> optionChooser = new SendableChooser<>();
+	
 	boolean homed = false;
 
 	Path autoPath;
 
 	@Override
 	public void robotInit() {
+		posChooser.addObject("Position", "Left");
+		posChooser.addObject("Position", "Center");
+		posChooser.addObject("Position", "Right");
+		optionChooser.addObject("Option", "a");
+		optionChooser.addObject("Option", "b");
+		optionChooser.addObject("Option", "c");
+		optionChooser.addObject("Option", "d");
 		scheduler.schedule(drive, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(tracker, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
@@ -64,6 +65,8 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
+		String pos = posChooser.getSelected();
+		String option = optionChooser.getSelected();
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
@@ -72,10 +75,15 @@ public class Robot extends IterativeRobot {
 		elevarm.stopMovement();
 		elevarm.homeElevator();
 		
-		AutoRoutine routine = AutoRoutineGenerator.generate("lr", PathOption.SWITCH, StartPosition.CENTER);
-		routine.run();
+		AutoRoutine routine = AutoRoutineGenerator.generate("", PathOption.BOTH, StartPosition.RIGHT);
+		ExecutorService autoRunner = Executors.newSingleThreadExecutor();
+		autoRunner.submit(routine);
 
-		/*autoPath = new Path(new Translation2d(18,-108));
+		/*
+		autoPath = new Path(new Translation2d(18,-108));
+		autoPath.addPoint(50, -108, 100);
+		autoPath.addPoint(50, -158, 100);
+		autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(225, -124, 100);
 		autoPath.addPoint(264, -108, 100);
 		autoPath.addPoint(50, -108, 100);
@@ -83,48 +91,43 @@ public class Robot extends IterativeRobot {
 		drive.setAutoPath(autoPath, false);
 		
 		while(!drive.isFinished()) {}
-		*/
-		/*
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(264, -124, 100);
 		drive.setAutoPath(autoPath, true);
 		while(!drive.isFinished()) {}
-		*/
-		/*
 		Timer.delay(1);
 		elevarm.setArmAngle(70);
 		elevarm.setElevatorHeight(10);
-		
 		//Scale Switch
 		autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(225, -124, 70);
 		autoPath.addPoint(264, -108, 50);
 		drive.setAutoPath(autoPath, false);
 		while(!drive.isFinished()) {}
-		elevarm.setElevatorHeight(60);
-		Timer.delay(1.1);
-		intake.setIntake(IntakeState.OUTTAKE_FAST);
+		//elevarm.setElevatorHeight(60);
+		//Timer.delay(1.1);
+		//intake.setIntake(IntakeState.OUTTAKE_FAST);
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(264, -124, 50);
 		drive.setAutoPath(autoPath, true);
-		elevarm.setElevarmIntakePosition();
+		//elevarm.setElevarmIntakePosition();
 		while(!drive.isFinished()) {}
-		System.out.println("Arm Angle: " + elevarm.getArmAngle());
+		//System.out.println("Arm Angle: " + elevarm.getArmAngle());
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(230, -100, 50);
 		drive.setAutoPath(autoPath, false);
-		intake.setIntake(IntakeState.INTAKE);
+		//intake.setIntake(IntakeState.INTAKE);
 		double start = Timer.getFPGATimestamp();
 		while(!drive.isFinished() || Timer.getFPGATimestamp() - start < 2) {}
-		intake.setIntake(IntakeState.GRIP);
+		//intake.setIntake(IntakeState.GRIP);
 		autoPath = new Path(tracker.getOdometry().translationMat);
 		autoPath.addPoint(tracker.getOdometry().translationMat.getX() + 5, tracker.getOdometry().translationMat.getY() - 5, 30);
 		drive.setAutoPath(autoPath, true);
-		elevarm.setElevatorHeight(10);
-		elevarm.setArmAngle(40);
+		//elevarm.setElevatorHeight(10);
+		//elevarm.setArmAngle(40);
 		while(!drive.isFinished()) {}
-		intake.setIntake(IntakeState.OUTTAKE_FASTEST);
-		*/
+		//intake.setIntake(IntakeState.OUTTAKE_FASTEST);
+		
 
 		//Scale To Right
 		/*
@@ -230,7 +233,7 @@ public class Robot extends IterativeRobot {
 		buttonBox.update();
 		joystick.update();
 		
-		
+		//drive.setWheelVelocity(new DriveVelocity(20, 20));
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());

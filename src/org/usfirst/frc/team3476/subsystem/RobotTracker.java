@@ -1,10 +1,7 @@
 package org.usfirst.frc.team3476.subsystem;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.utility.CircularQueue;
 import org.usfirst.frc.team3476.utility.Threaded;
-import org.usfirst.frc.team3476.utility.UDP;
 import org.usfirst.frc.team3476.utility.math.InterpolablePair;
 import org.usfirst.frc.team3476.utility.math.RigidTransform;
 import org.usfirst.frc.team3476.utility.math.Rotation;

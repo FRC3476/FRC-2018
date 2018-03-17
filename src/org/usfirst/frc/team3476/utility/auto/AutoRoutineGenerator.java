@@ -1,16 +1,11 @@
 package org.usfirst.frc.team3476.utility.auto;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 import org.usfirst.frc.team3476.utility.control.Path;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
-
-import edu.wpi.first.wpilibj.DriverStation;
 
 public class AutoRoutineGenerator {
 	
@@ -117,15 +112,17 @@ public class AutoRoutineGenerator {
 		initialDrive = new AutoRoutine();
 		
 		if(gameMsg.charAt(0) == 'l')
+		{
 			switchPos = Position.LEFT;
-		else
+		} else {
 			switchPos = Position.RIGHT;
-		
-		if(gameMsg.charAt(1) == 'l')
+		}
+		if(gameMsg.charAt(1) == 'l') {
 			scalePos = Position.LEFT;
-		else
+		} else {
 			scalePos = Position.RIGHT;
-				
+		}
+		
 		switch (position)
 		{
 			case LEFT:

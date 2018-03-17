@@ -290,7 +290,7 @@ public class OrangeDrive extends Threaded {
 		rightTalon.set(ControlMode.PercentOutput, setVelocity.rightWheelSpeed);
 	}
 
-	private void setWheelVelocity(DriveVelocity setVelocity) {
+	public void setWheelVelocity(DriveVelocity setVelocity) {
 		// inches per sec to rotations per min
 		if (Math.abs(setVelocity.leftWheelSpeed) > Constants.HighDriveSpeed
 				|| Math.abs(setVelocity.rightWheelSpeed) > Constants.HighDriveSpeed) {

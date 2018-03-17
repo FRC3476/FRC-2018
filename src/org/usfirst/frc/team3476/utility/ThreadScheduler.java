@@ -57,16 +57,6 @@ public class ThreadScheduler implements Runnable {
 		isRunning = false;
 	}
 
-	public void remove(Threaded task) {
-		for (Schedule schedule : schedules) {
-			if (task == schedule.getTask()) {
-				schedules.remove(schedule);
-				return;
-			}
-		}
-		System.out.println("Task not found");
-	}
-
 	private static class Schedule {
 		Threaded task;
 		public long taskPeriod, taskTime;

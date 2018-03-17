@@ -1,16 +1,10 @@
 package org.usfirst.frc.team3476.utility.auto;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
-import org.usfirst.frc.team3476.utility.control.Path;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
-
-import edu.wpi.first.wpilibj.DriverStation;
 
 public class AutoRoutineGenerator {
 	
@@ -66,8 +60,8 @@ public class AutoRoutineGenerator {
 		toMidFieldLeft.addCommands(new DriveToPoints(100, false, midFieldLeftPosition));
 		
 		placeCubeOnRightScale = new AutoRoutine(); //Puts Cube on Right Scale from Mid Field Right Position, then backs up to Mid Field Right Position
-		placeCubeOnRightScale.addCommands(new DriveToPoints(100, false, midFieldRightPosition, rightScalePosition), new SetElevatorHeight(60), 
-				new SetArmAngle(80), new Delay(1),	new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(.75), new SetElevatorHeight(10),
+		placeCubeOnRightScale.addCommands(new SetArmAngle(80), new DriveToPoints(100, false, midFieldRightPosition, rightScalePosition),
+				new SetElevatorHeight(60), new Delay(1), new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(.75), new SetElevatorHeight(10),
 				new SetIntakeState(IntakeState.GRIP), new DriveToPoints(50, true, midFieldRightPosition));
 		
 		placeCubeOnLeftScale = new AutoRoutine();
@@ -95,17 +89,18 @@ public class AutoRoutineGenerator {
 
 	public static AutoRoutine generate(String gameMsg, PathOption option, StartPosition position) {
 		AutoRoutine overallRoutine = new AutoRoutine();	
-		
-		if(gameMsg.charAt(0) == 'l')
+		/*
+		if(gameMsg.charAt(0) == 'l') {
 			switchPos = Position.LEFT;
-		else
+		} else {
 			switchPos = Position.RIGHT;
-		
-		if(gameMsg.charAt(1) == 'l')
+		}
+		if(gameMsg.charAt(1) == 'l') {
 			scalePos = Position.LEFT;
-		else
+		} else {
 			scalePos = Position.RIGHT;
-				
+		}
+		*/
 		switch (position)
 		{
 			case LEFT:

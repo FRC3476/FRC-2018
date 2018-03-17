@@ -21,7 +21,7 @@ public class ThreadScheduler implements Runnable {
 	public ThreadScheduler() {
 		schedules = new Vector<Schedule>();
 		isRunning = true;
-		paused = false;
+		paused = true;
 		ExecutorService schedulingThread = Executors.newSingleThreadExecutor();
 		schedulingThread.execute(this);
 	}
@@ -55,16 +55,6 @@ public class ThreadScheduler implements Runnable {
 
 	public void shutdown() {
 		isRunning = false;
-	}
-
-	public void remove(Threaded task) {
-		for (Schedule schedule : schedules) {
-			if (task == schedule.getTask()) {
-				schedules.remove(schedule);
-				return;
-			}
-		}
-		System.out.println("Task not found");
 	}
 
 	private static class Schedule {

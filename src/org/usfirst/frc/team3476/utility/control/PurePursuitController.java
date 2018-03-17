@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
+import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.UDP;
 import org.usfirst.frc.team3476.utility.control.Path.DrivingData;
 import org.usfirst.frc.team3476.utility.math.RigidTransform;
@@ -47,11 +48,12 @@ public class PurePursuitController {
 
 		/*
 		 * Adaptive Lookahead
-		 * double lookAheadDist = OrangeUtility.coercedNormalize(speedProfiler.getLatestValue(), Constants.MinPathSpeed,
-		 * Constants.MaxPathSpeed, Constants.MinLookAheadDistance, Constants.MaxLookAheadDistance);
 		 */
+
 		// Motion Profiling
-		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, Constants.LookAheadDistance);
+		double lookAheadDist = OrangeUtility.coercedNormalize(speedProfiler.getLatestValue(), Constants.MinPathSpeed,
+		Constants.MaxPathSpeed, Constants.MinLookAheadDistance, Constants.MaxLookAheadDistance);
+		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, lookAheadDist);
 		
 		
 		if(data.remainingDist < .5) { //If robot passes point, remaining distance is 0
@@ -63,7 +65,8 @@ public class PurePursuitController {
 			robotSpeed = 20;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
-		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
+		System.out.println(lookAheadDist);
+		//double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
 		//System.out.println("turn: " + turn + " angle: " + angleToLookAhead);
 		
 		//double deltaSpeed =  turn * robotSpeed;

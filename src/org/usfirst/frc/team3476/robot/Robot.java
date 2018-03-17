@@ -1,39 +1,28 @@
 package org.usfirst.frc.team3476.robot;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.usfirst.frc.team3476.subsystem.Elevarm;
 import org.usfirst.frc.team3476.subsystem.Intake;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
-import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 import org.usfirst.frc.team3476.utility.Controller;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.ThreadScheduler;
-import org.usfirst.frc.team3476.utility.auto.AutoCommand;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutine;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator;
-import org.usfirst.frc.team3476.utility.auto.Delay;
-import org.usfirst.frc.team3476.utility.auto.SetArmAngle;
-import org.usfirst.frc.team3476.utility.auto.SetDrivePath;
-import org.usfirst.frc.team3476.utility.auto.SetElevatorHeight;
-import org.usfirst.frc.team3476.utility.auto.SetIntakeState;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.PathOption;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.StartPosition;
 import org.usfirst.frc.team3476.utility.control.Path;
-import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -75,11 +64,9 @@ public class Robot extends IterativeRobot {
 		tracker.resetOdometry();
 		elevarm.homeElevator();
 
-		/*
+		
 		AutoRoutine routine = AutoRoutineGenerator.generate("", PathOption.BOTH, StartPosition.RIGHT);
->>>>>>> master
 		routine.run();
-		*/
 
 
 		/*
@@ -98,12 +85,9 @@ public class Robot extends IterativeRobot {
 		autoPath.addPoint(264, -124, 100);
 		drive.setAutoPath(autoPath, true);
 		while(!drive.isFinished()) {}
-		*/
-		/*
 		Timer.delay(1);
 		elevarm.setArmAngle(70);
 		elevarm.setElevatorHeight(10);
-		*/
 		//Scale Switch
 		autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(225, -124, 70);

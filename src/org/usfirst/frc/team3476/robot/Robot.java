@@ -60,8 +60,6 @@ public class Robot extends IterativeRobot {
 		elevarm.configArmEncoder();
 		drive.stopMovement();
 		elevarm.stopMovement();
-		tracker.setInitialTranslation(new Translation2d(18, -108));
-		tracker.resetOdometry();
 		elevarm.homeElevator();
 
 		

@@ -21,7 +21,7 @@ public class ThreadScheduler implements Runnable {
 	public ThreadScheduler() {
 		schedules = new Vector<Schedule>();
 		isRunning = true;
-		paused = false;
+		paused = true;
 		ExecutorService schedulingThread = Executors.newSingleThreadExecutor();
 		schedulingThread.execute(this);
 	}

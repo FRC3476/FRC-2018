@@ -24,7 +24,7 @@ public class PurePursuitController {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
 		//0.2, 0, 5, 0 values
-		turnPID = new SynchronousPid(0.15, 0, 0.5, 0);
+		turnPID = new SynchronousPid(0.2, 0, 5, 0);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
 		speedProfiler = new RateLimiter(120, 1000);
@@ -52,7 +52,7 @@ public class PurePursuitController {
 		 */
 		// Motion Profiling
 		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, Constants.LookAheadDistance);
-		
+		System.out.println("X: " + data.lookAheadPoint.getX() + "Y: " + data.lookAheadPoint.getY());
 		
 		if(data.remainingDist < .5) { //If robot passes point, remaining distance is 0
 			OrangeDrive.getInstance().setFinished();
@@ -66,11 +66,12 @@ public class PurePursuitController {
 		double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
 		double turn = turnPID.update(-angleToLookAhead);
 		//System.out.println("turn: " + turn + " angle: " + angleToLookAhead);
-		if(Math.abs(turn) < 0.5){
+		if(Math.abs(turn) < 0.1){
 			turn = 0;
 		}
 		
 		double deltaSpeed =  turn * robotSpeed;
+		
 		/*
 		 * TODO: test
 		double radius;

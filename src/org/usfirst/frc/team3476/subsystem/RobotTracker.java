@@ -83,5 +83,6 @@ public class RobotTracker extends Threaded {
 	
 	public void setInitialTranslation(Translation2d offset) {
 		this.translationOffset = offset;
+		resetOdometry();
 	}
 }

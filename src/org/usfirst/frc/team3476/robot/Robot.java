@@ -70,11 +70,9 @@ public class Robot extends IterativeRobot {
 		elevarm.configArmEncoder();
 		drive.stopMovement();
 		elevarm.stopMovement();
-		tracker.setInitialTranslation(new Translation2d(18, -108));
-		tracker.resetOdometry();
 		elevarm.homeElevator();
 		
-		AutoRoutine routine = AutoRoutineGenerator.generate("rr", PathOption.BOTH, StartPosition.RIGHT);
+		AutoRoutine routine = AutoRoutineGenerator.generate("lr", PathOption.SWITCH, StartPosition.CENTER);
 		routine.run();
 
 		/*autoPath = new Path(new Translation2d(18,-108));

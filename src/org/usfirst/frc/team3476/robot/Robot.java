@@ -240,7 +240,7 @@ public class Robot extends IterativeRobot {
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 
 		if (joystick.getRawButton(2))
@@ -294,11 +294,11 @@ public class Robot extends IterativeRobot {
 		double nudge = joystick.getRawAxis(1);
 		if (nudge > Constants.JoystickDeadzone)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - Constants.JoystickDeadzone) * 4);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - Constants.JoystickDeadzone) * 5);
 		}
 		else if (nudge < -Constants.JoystickDeadzone)
 		{
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge + Constants.JoystickDeadzone) * 4);
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge + Constants.JoystickDeadzone) * 5);
 		}
 		
 		
@@ -337,11 +337,13 @@ public class Robot extends IterativeRobot {
 		
 		if (buttonBox.getPOV() == 0)
 		{
-			elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getHeight());
+			//elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getHeight());
+			elevarm.setArmAngle(elevarm.getArmAngle() - 3);
 		}
 		else if (buttonBox.getPOV() == 180)
 		{
-			elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
+			//elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
+			elevarm.setArmAngle(elevarm.getArmAngle() + 3);
 		}
 		
 		if(joystick.getRawButton(2)){

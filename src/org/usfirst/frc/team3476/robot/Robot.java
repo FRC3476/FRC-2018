@@ -75,7 +75,7 @@ public class Robot extends IterativeRobot {
 		elevarm.stopMovement();
 		elevarm.homeElevator();
 		
-		AutoRoutine routine = AutoRoutineGenerator.generate("", PathOption.BOTH, StartPosition.RIGHT);
+		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.SWITCH, StartPosition.LEFT);
 		ExecutorService autoRunner = Executors.newSingleThreadExecutor();
 		autoRunner.submit(routine);
 

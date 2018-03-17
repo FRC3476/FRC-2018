@@ -10,6 +10,12 @@ public class SetElevatorHeight extends AutoCommand {
 		this.height = height;
 	}
 	
+	public SetElevatorHeight(double height, boolean isBlocking)
+	{
+		this.height = height;
+		setBlocking(isBlocking);
+	}
+	
 	@Override
 	public boolean isFinished() {
 		return Math.abs(Elevarm.getInstance().getElevatorHeight() - height) < 5;

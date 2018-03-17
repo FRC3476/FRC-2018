@@ -9,15 +9,15 @@ import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 public class AutoRoutineGenerator {
 	
-	private static Translation2d robotRightStartPosition = new Translation2d(18, -108);
-	private static Translation2d robotCenterStartPosition = new Translation2d(18, 0);
-	private static Translation2d robotLeftStartPosition = new Translation2d(18, 108);
+	private static Translation2d robotRightStartPosition = new Translation2d(20, -115);
+	private static Translation2d robotCenterStartPosition = new Translation2d(20, 0);
+	private static Translation2d robotLeftStartPosition = new Translation2d(20, 115);
 	
 	private static Translation2d midFieldRightPosition = new Translation2d(240, -108);
 	private static Translation2d midFieldLeftPosition = new Translation2d(240, 108);
 	
-	private static Translation2d rightScalePosition = new Translation2d(264, -100);
-	private static Translation2d leftScalePosition = new Translation2d(264, 100);
+	private static Translation2d rightScalePosition = new Translation2d(280, -94);
+	private static Translation2d leftScalePosition = new Translation2d(280, 94);
 	
 	private static Translation2d rightSwitchCubePositionFar = new Translation2d(224, -90);
 	private static Translation2d leftSwitchCubePositionFar = new Translation2d(224, 90);
@@ -25,8 +25,8 @@ public class AutoRoutineGenerator {
 	private static Translation2d rightSwitchOuttakePositionNear = new Translation2d(120, -50);
 	private static Translation2d leftSwitchOuttakePositionNear = new Translation2d(120, 50);
 	
-	private static Translation2d rightSwitchOuttakeLeadUpNear = new Translation2d(60, -50);
-	private static Translation2d leftSwitchOuttakeLeadUpNear = new Translation2d(60, 50);
+	private static Translation2d rightSwitchOuttakeLeadUpNear = new Translation2d(60, -40);
+	private static Translation2d leftSwitchOuttakeLeadUpNear = new Translation2d(60, 40);
 	
 	private static Translation2d rightSwitchOuttakePositionFar = new Translation2d(220, -54);
 	private static Translation2d leftSwitchOuttakePositionFar = new Translation2d(220, 54);
@@ -37,8 +37,7 @@ public class AutoRoutineGenerator {
 	
 	private static AutoRoutine toMidFieldRight;
 	private static AutoRoutine toMidFieldLeft;
-	private static AutoRoutine placeCubeOnRightScale;
-	private static AutoRoutine placeCubeOnLeftScale;
+	private static AutoRoutine placeCubeOnScale;
 	private static AutoRoutine getRightSwitchCube;
 	private static AutoRoutine getLeftSwitchCube;
 	private static AutoRoutine placeCubeInRightSwitchFar;
@@ -72,15 +71,10 @@ public class AutoRoutineGenerator {
 		toMidFieldLeft = new AutoRoutine();
 		toMidFieldLeft.addCommands(new DriveToPoints(100, false, midFieldLeftPosition));
 		
-		placeCubeOnRightScale = new AutoRoutine(); //Puts Cube on Right Scale from Mid Field Right Position, then backs up to Mid Field Right Position
-		placeCubeOnRightScale.addCommands(new SetElevatorHeight(60), new SetArmAngle(80), new Delay(1),
+		placeCubeOnScale = new AutoRoutine(); //Puts Cube on Right Scale from Mid Field Right Position, then backs up to Mid Field Right Position
+		placeCubeOnScale.addCommands(new SetElevatorHeight(60, true), new SetArmAngle(80),
 				new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(.75), new SetElevatorHeight(10),
-				new SetIntakeState(IntakeState.GRIP), new DriveToPoints(50, true, midFieldRightPosition));
-		
-		placeCubeOnLeftScale = new AutoRoutine();
-		placeCubeOnLeftScale.addCommands(new DriveToPoints(50, false, midFieldLeftPosition, leftScalePosition), new SetElevatorHeight(60), 
-				new SetArmAngle(80), new Delay(.5),	new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(.5), new SetElevatorHeight(10),
-				new SetIntakeState(IntakeState.GRIP), new DriveToPoints(50, true, midFieldLeftPosition));
+				new SetIntakeState(IntakeState.GRIP));
 		
 
 		getRightSwitchCube = new AutoRoutine(); //Grab Switch Cube, then back up to Mid Field Right Position
@@ -101,7 +95,7 @@ public class AutoRoutineGenerator {
 				new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(1), new SetIntakeState(IntakeState.GRIP));
 		
 		placeCubeInSwitch = new AutoRoutine();
-		placeCubeInSwitch.addCommands(new SetElevatorHeight(10), new SetArmAngle(80), new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(.75), new SetIntakeState(IntakeState.GRIP));		
+		placeCubeInSwitch.addCommands(new SetElevatorHeight(10, true), new SetArmAngle(80), new SetIntakeState(IntakeState.OUTTAKE_FAST), new Delay(.75), new SetIntakeState(IntakeState.GRIP));		
 	}
 	
 
@@ -110,6 +104,7 @@ public class AutoRoutineGenerator {
 		AutoRoutine overallRoutine = new AutoRoutine();
 		Path initialPath;
 		initialDrive = new AutoRoutine();
+		initialDrive.addCommands(new SetElevatorHeight(0), new SetArmAngle(80));
 		
 		if(gameMsg.charAt(0) == 'l')
 		{
@@ -127,10 +122,10 @@ public class AutoRoutineGenerator {
 		{
 			case LEFT:
 				RobotTracker.getInstance().setInitialTranslation(robotLeftStartPosition);
+				initialPath = new Path(robotLeftStartPosition);
 				switch(option)
 				{
 					case SWITCH:
-						initialPath = new Path(robotLeftStartPosition);
 						if (switchPos == Position.LEFT)
 						{
 							initialPath.addPoint(leftSwitchOuttakeLeadUpNear, 80);
@@ -145,22 +140,33 @@ public class AutoRoutineGenerator {
 						overallRoutine.addRoutines(initialDrive, placeCubeInSwitch);
 						break;
 					case SCALE:
+						initialPath.addPoint(midFieldLeftPosition, 70);
+						if (scalePos == Position.LEFT)
+						{
+							initialPath.addPoint(leftScalePosition, 50);
+						}
+						else
+						{
+							initialPath.addPoint(midFieldRightPosition, 70);
+							initialPath.addPoint(rightScalePosition, 50);
+						}
+						initialDrive.addCommands(new SetDrivePath(initialPath, false));
+						overallRoutine.addRoutines(initialDrive, placeCubeOnScale);
 						break;
 					case BOTH:
-						initialPath = new Path(robotLeftStartPosition);
 						initialPath.addPoint(midFieldLeftPosition, 100);
 						if (scalePos == Position.RIGHT)
 						{
 							initialPath.addPoint(midFieldRightPosition, 100);
 							initialPath.addPoint(rightScalePosition, 50);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
-							overallRoutine.addRoutines(initialDrive, placeCubeOnRightScale, getRightSwitchCube);
+							overallRoutine.addRoutines(initialDrive, placeCubeOnScale, getRightSwitchCube);
 						}
 						else
 						{
 							initialPath.addPoint(leftScalePosition, 50);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
-							overallRoutine.addRoutines(initialDrive, placeCubeOnLeftScale, getLeftSwitchCube);
+							overallRoutine.addRoutines(initialDrive, placeCubeOnScale, getLeftSwitchCube);
 						}
 						if (switchPos == Position.RIGHT)
 						{
@@ -179,10 +185,10 @@ public class AutoRoutineGenerator {
 				break;
 			case CENTER:
 				RobotTracker.getInstance().setInitialTranslation(robotCenterStartPosition);
+				initialPath = new Path(robotCenterStartPosition);
 				switch(option)
 				{
 					case SWITCH:
-						initialPath = new Path(robotCenterStartPosition);
 						if (switchPos == Position.LEFT)
 						{
 							initialPath.addPoint(leftSwitchOuttakeLeadUpNear, 80);
@@ -212,7 +218,6 @@ public class AutoRoutineGenerator {
 				switch(option)
 				{
 					case SWITCH:
-						initialPath = new Path(robotRightStartPosition);
 						if (switchPos == Position.LEFT)
 						{
 							initialPath.addPoint(leftSwitchOuttakeLeadUpNear, 80);
@@ -234,14 +239,14 @@ public class AutoRoutineGenerator {
 						{
 							initialPath.addPoint(rightScalePosition, 50);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
-							overallRoutine.addRoutines(initialDrive, placeCubeOnRightScale, getRightSwitchCube);
+							overallRoutine.addRoutines(initialDrive, placeCubeOnScale, getRightSwitchCube);
 						}
 						else
 						{
 							initialPath.addPoint(midFieldLeftPosition, 100);
 							initialPath.addPoint(leftScalePosition, 50);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
-							overallRoutine.addRoutines(initialDrive, placeCubeOnLeftScale, getLeftSwitchCube);
+							overallRoutine.addRoutines(initialDrive, placeCubeOnScale, getLeftSwitchCube);
 						}
 						if (switchPos == Position.RIGHT)
 						{

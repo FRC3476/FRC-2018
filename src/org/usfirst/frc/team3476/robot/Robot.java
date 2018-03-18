@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends IterativeRobot {
@@ -75,7 +76,8 @@ public class Robot extends IterativeRobot {
 		elevarm.stopMovement();
 		elevarm.homeElevator();
 		
-		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.SWITCH, StartPosition.LEFT);
+		
+		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.BOTH, StartPosition.LEFT);
 		ExecutorService autoRunner = Executors.newSingleThreadExecutor();
 		autoRunner.submit(routine);
 
@@ -237,7 +239,7 @@ public class Robot extends IterativeRobot {
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 
 		if (joystick.getRawButton(2))
 		{
@@ -257,11 +259,11 @@ public class Robot extends IterativeRobot {
 			xbox.setRumble(RumbleType.kLeftRumble, 0);
 			xbox.setRumble(RumbleType.kRightRumble, 0);
 		}
-		if (joystick.getRawButton(3))
+		if (joystick.getRawButton(3) || xbox.getRawButton(Controller.Xbox.RightBumper))
 		{
 			intake.setIntake(IntakeState.INTAKE);
 		}
-		else if (joystick.getRawButton(4))
+		else if (joystick.getRawButton(4) || xbox.getRawButton(Controller.Xbox.LeftBumper))
 		{
 			intake.setIntake(IntakeState.OUTTAKE);
 		}
@@ -269,7 +271,7 @@ public class Robot extends IterativeRobot {
 		{
 			intake.setIntake(IntakeState.OUTTAKE_FAST);
 		}
-		else if (joystick.getRawButton(5))
+		else if (joystick.getRawButton(5) || xbox.getRawButton(Controller.Xbox.A))
 		{
 			intake.setIntake(IntakeState.OPEN);
 		}
@@ -349,6 +351,7 @@ public class Robot extends IterativeRobot {
 			climber.set(ControlMode.PercentOutput, 0);
 		}
 		
+
 		//if (buttonBox.getRisingEdge(button))
 		/*
 		if (elevarm.getElevatorOutputCurrent() < elevatorMaxCurrent || elevarm.getArmOutputCurrent() < armMaxCurrent) //Prevent elevator from killing itself

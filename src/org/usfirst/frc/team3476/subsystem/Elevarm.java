@@ -238,7 +238,7 @@ public class Elevarm extends Threaded {
 			elevator.setHeight(elevatorLimiter.update(Constants.ElevatorDownHeight));
 			if (elevator.getHeight() < 20)
 			{
-				arm.setAngle(-18);
+				arm.setAngle(Constants.ArmIntakeDegrees);
 			}
 			break;
 		case MANUAL:

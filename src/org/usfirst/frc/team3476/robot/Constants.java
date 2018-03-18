@@ -47,8 +47,8 @@ public final class Constants {
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 20;
 	public static final double MaxPathSpeed = 100;
-	public static final double MinLookAheadDistance = 15;
-	public static final double MaxLookAheadDistance = 30;
+	public static final double MinLookAheadDistance = 14;
+	public static final double MaxLookAheadDistance = 35;
 
 	// CAN IDs
 	public static final int DriveShifterId = 0;
@@ -78,7 +78,7 @@ public final class Constants {
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
-	public static final double ElevatorDownHeight = 2.5; // Should be the proper position for getting cubes
+	public static final double ElevatorDownHeight = .5; // Should be the proper position for getting cubes
 	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
 
 	// Arm
@@ -92,9 +92,10 @@ public final class Constants {
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
 	public static final double ArmDownDegrees = -55;
+	public static final double ArmIntakeDegrees = -22;
 	
 	
-	public static final int PracticeBotArmTicksOffset = 1276;
+	public static final int PracticeBotArmTicksOffset = 1864;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 

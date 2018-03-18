@@ -10,6 +10,12 @@ public class SetArmAngle extends AutoCommand {
 		this.angle = angle;
 	}
 	
+	public SetArmAngle(double angle, boolean isBlocking)
+	{
+		this.angle = angle;
+		setBlocking(isBlocking);
+	}
+	
 	@Override
 	public void start() {
 		Elevarm.getInstance().setArmAngle(angle);

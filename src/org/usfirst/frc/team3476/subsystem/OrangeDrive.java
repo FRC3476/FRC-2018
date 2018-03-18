@@ -152,9 +152,9 @@ public class OrangeDrive extends Threaded {
 		if (isQuickTurn) {
 			overPower = 1;
 			if (moveValue < 0.2) {
-				quickStopAccumulator = 0.9 * quickStopAccumulator + 0.1 * rotateValue * 1.1 * 2;
+				quickStopAccumulator = 0.9 * quickStopAccumulator + 0.1 * rotateValue * 2;
 			}
-			angularPower = rotateValue;
+			angularPower = rotateValue * 0.8;
 		} else {
 			overPower = 0;
 			angularPower = Math.abs(moveValue) * rotateValue - quickStopAccumulator;
@@ -203,13 +203,7 @@ public class OrangeDrive extends Threaded {
 		leftSlave2Talon.set(ControlMode.Follower, leftTalon.getDeviceID());
 		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());
 		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
-		leftTalon.setNeutralMode(NeutralMode.Coast);		
-		leftSlave2Talon.setNeutralMode(NeutralMode.Brake);		
-		leftSlave2Talon.setNeutralMode(NeutralMode.Brake);		
-		rightTalon.setNeutralMode(NeutralMode.Brake);		
-		rightSlaveTalon.setNeutralMode(NeutralMode.Brake);		
-		rightSlave2Talon.setNeutralMode(NeutralMode.Brake);		
-		
+		setBrakeState(NeutralMode.Coast);
 		rightTalon.configNominalOutputForward(0.05, 10);
 		rightTalon.configNominalOutputReverse(-0.05, 10);
 		

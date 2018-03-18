@@ -198,6 +198,46 @@ public class OrangeDrive extends Threaded {
 		}
 	}
 
+	public void orangeDrive(double moveValue, double rotateValue, boolean isQuickTurn) {
+		synchronized(this) {
+			driveState = DriveState.TELEOP;			
+		}
+		moveValue = scaleJoystickValues(moveValue);
+		rotateValue = scaleJoystickValues(rotateValue);
+		//50 is min turn radius
+		double radius = (1 / rotateValue) - 1 + 1E-9;
+		double deltaSpeed = (Constants.TrackRadius * ((moveValue * driveMultiplier) / radius));
+		deltaSpeed /= driveMultiplier;
+		if(isQuickTurn){
+			deltaSpeed = rotateValue;
+		}
+		double leftMotorSpeed = moveValue + deltaSpeed;
+		double rightMotorSpeed = moveValue - deltaSpeed;
+		if (leftMotorSpeed > 1.0) {
+			rightMotorSpeed -= (leftMotorSpeed - 1.0);
+			leftMotorSpeed = 1.0;
+		} else if (rightMotorSpeed > 1.0) {
+			leftMotorSpeed -= (rightMotorSpeed - 1.0);
+			rightMotorSpeed = 1.0;
+		} else if (leftMotorSpeed < -1.0) {
+			rightMotorSpeed += (-1.0 - leftMotorSpeed);
+			leftMotorSpeed = -1.0;
+		} else if (rightMotorSpeed < -1.0) {
+			leftMotorSpeed += (-1.0 - rightMotorSpeed);
+			rightMotorSpeed = -1.0;
+		}		
+		if(drivePercentVbus){
+			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));			
+		} else {			
+			leftMotorSpeed *= driveMultiplier;
+			rightMotorSpeed *= driveMultiplier;
+			if(leftMotorSpeed == 0 && rightMotorSpeed == 0) {
+				setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));	
+			}
+			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+		}
+	}
+	
 	private void configMotors() {
 		leftSlaveTalon.set(ControlMode.Follower, leftTalon.getDeviceID());
 		leftSlave2Talon.set(ControlMode.Follower, leftTalon.getDeviceID());

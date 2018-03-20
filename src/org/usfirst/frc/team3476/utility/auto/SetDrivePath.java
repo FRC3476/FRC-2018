@@ -15,6 +15,7 @@ public class SetDrivePath extends AutoCommand {
 	
 	public SetDrivePath (Path robotPath, boolean isReversed, boolean isBlocking)
 	{
+		System.out.println("Set Drive Path");
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
 		this.setBlocking(isBlocking);

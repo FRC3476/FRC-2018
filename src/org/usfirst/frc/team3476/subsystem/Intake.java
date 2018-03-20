@@ -5,6 +5,7 @@ import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Intake {
@@ -14,6 +15,7 @@ public class Intake {
 	private LazyTalonSRX intakeMotor1;
 	private LazyTalonSRX intakeMotor2;
 	private static Intake intakeInstance = new Intake();
+	private DigitalInput cubeSwitch = new DigitalInput(Constants.CubeSwitchId);
 	
 	public enum SolenoidState
 	{
@@ -29,7 +31,8 @@ public class Intake {
 		GRIP,
 		OPEN, 
 		OUTTAKE_FAST,
-		OUTTAKE_FASTEST
+		OUTTAKE_FASTEST,
+		INTAKE_OPEN
 	}
 	
 	private Intake()
@@ -45,21 +48,26 @@ public class Intake {
 		return intakeInstance;
 	}
 	
+	public boolean getCubeSwitch()
+	{
+		return !cubeSwitch.get();
+	}
+	
 	public void setIntake(IntakeState state)
 	{
 		switch(state)
 		{
 		case INTAKE:
-			if (getCurrent() > 15) //if stalling, ramp up power
-			{
-				intakeMotor1.set(ControlMode.PercentOutput, -0.6);
-				intakeMotor2.set(ControlMode.PercentOutput, -1);
+		
+			intakeMotor1.set(ControlMode.PercentOutput, -.7);
+			intakeMotor2.set(ControlMode.PercentOutput, -.3);
+			/*
+			if(getCubeSwitch()){
+				setIntakeSolenoid(SolenoidState.CLAMP);
+			} else {
+				setIntakeSolenoid(SolenoidState.OPEN);
 			}
-			else
-			{
-				intakeMotor1.set(ControlMode.PercentOutput, -.7);
-				intakeMotor2.set(ControlMode.PercentOutput, -.3);
-			}
+			*/
 			setIntakeSolenoid(SolenoidState.INTAKING);
 			break;
 		case OUTTAKE:
@@ -84,6 +92,11 @@ public class Intake {
 			setIntakeSolenoid(SolenoidState.OPEN);
 			intakeMotor1.set(ControlMode.PercentOutput, 0);
 			intakeMotor2.set(ControlMode.PercentOutput, 0);
+			break;
+		case INTAKE_OPEN:
+			setIntakeSolenoid(SolenoidState.OPEN);
+			intakeMotor1.set(ControlMode.PercentOutput, -.7);
+			intakeMotor2.set(ControlMode.PercentOutput, -.3);
 			break;
 		}
 	}

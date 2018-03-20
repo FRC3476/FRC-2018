@@ -26,6 +26,7 @@ public class DriveToPoints extends AutoCommand{
 	
 	@Override
 	public void start() {
+		System.out.println("Drive To Points");
 		Path drivePath = new Path(RobotTracker.getInstance().getOdometry().translationMat);
 		for (Translation2d point : points)
 		{

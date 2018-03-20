@@ -22,7 +22,9 @@ import org.usfirst.frc.team3476.utility.math.Translation2d;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,10 +38,11 @@ public class Robot extends IterativeRobot {
 	Elevarm elevarm = Elevarm.getInstance();
 	RobotTracker tracker = RobotTracker.getInstance();
 	Intake intake = Intake.getInstance();
+	Solenoid fork = new Solenoid(Constants.ForkId);
+	
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
 	CameraServer camServer = CameraServer.getInstance();
-	LazyTalonSRX climber = new LazyTalonSRX(21);
 	
 	SendableChooser<String> posChooser = new SendableChooser<>();
 	SendableChooser<String> optionChooser = new SendableChooser<>();
@@ -75,12 +78,10 @@ public class Robot extends IterativeRobot {
 		drive.stopMovement();
 		elevarm.stopMovement();
 		elevarm.homeElevator();
+		Timer.delay(1);
 		
-		
-		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.BOTH, StartPosition.LEFT);
-		ExecutorService autoRunner = Executors.newSingleThreadExecutor();
-		autoRunner.submit(routine);
-
+		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.SCALE, StartPosition.LEFT);
+		new Thread(routine).start();
 		/*
 		autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(50, -108, 100);
@@ -225,9 +226,13 @@ public class Robot extends IterativeRobot {
 			elevarm.homeElevator();
 			homed = true;
 		}
+		oldAxis = false;
 	}
 
 	double elevatorMaxCurrent = 150, armMaxCurrent = 40; // TEMP for testing
+	
+	boolean axis;
+	boolean oldAxis;
 
 	@Override
 	public void teleopPeriodic() {
@@ -238,29 +243,39 @@ public class Robot extends IterativeRobot {
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-
-		if (joystick.getRawButton(2))
+		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		
+		if (buttonBox.getRawButton(10))
 		{
-			climber.set(ControlMode.PercentOutput, .75);
-			System.out.println(climber.getOutputCurrent());
+			elevarm.setClimberPercentOutput(.75);
+			elevarm.setElevatorGearbox(true);
+			elevarm.setElevatorPercentOutput(0);
+			System.out.println("Climber: " + elevarm.getClimberCurrent());
 		}
 		else
 		{
-			climber.set(ControlMode.PercentOutput, 0);
+			elevarm.setClimberPercentOutput(0);
 		}
-
 		
-		if(intake.getCurrent() > 15) {
-			xbox.setRumble(RumbleType.kLeftRumble, 1);
-			xbox.setRumble(RumbleType.kRightRumble, 1);
-		} else {
-			xbox.setRumble(RumbleType.kLeftRumble, 0);
-			xbox.setRumble(RumbleType.kRightRumble, 0);
+		if (joystick.getRisingEdge(11))
+		{
+			elevarm.setElevatorGearbox(false);
 		}
+	
+		
 		if (joystick.getRawButton(3) || xbox.getRawButton(Controller.Xbox.RightBumper))
 		{
+			if (intake.getCubeSwitch())
+			{
+				xbox.setRumble(RumbleType.kLeftRumble, 1);
+				xbox.setRumble(RumbleType.kRightRumble, 1);
+			}
+			else
+			{
+				xbox.setRumble(RumbleType.kLeftRumble, 0);
+				xbox.setRumble(RumbleType.kRightRumble, 0);
+			}
 			intake.setIntake(IntakeState.INTAKE);
 		}
 		else if (joystick.getRawButton(4) || xbox.getRawButton(Controller.Xbox.LeftBumper))
@@ -280,14 +295,17 @@ public class Robot extends IterativeRobot {
 			intake.setIntake(IntakeState.GRIP);
 		}
 		
-		if (xbox.getRawAxis(3) > .3)
+		axis = xbox.getRawAxis(3) > .3;
+		
+		if (axis && !oldAxis)
 		{
 			drive.setShiftState(true);
 		}
-		else
+		if (oldAxis && !axis)
 		{
 			drive.setShiftState(false);
 		}
+		oldAxis = axis;
 		
 		double nudge = joystick.getRawAxis(1);
 		if (nudge > Constants.JoystickDeadzone)
@@ -303,10 +321,6 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(9))
 		{
 			elevarm.homeElevator();
-		}
-		if (buttonBox.getRisingEdge(10))
-		{
-			elevarm.configArmEncoder();
 		}
 
 		if (buttonBox.getRisingEdge(5))
@@ -330,7 +344,15 @@ public class Robot extends IterativeRobot {
 		}
 		else if (buttonBox.getRisingEdge(4))
 		{
-			elevarm.setArmAngle(0);
+			if (elevarm.getElevatorHeight() < 58)
+				elevarm.setArmAngle(25);
+			else
+				elevarm.setArmAngle(60);
+		}
+		else if (buttonBox.getRisingEdge(3))
+		{
+			elevarm.setElevatorHeight(55);
+			elevarm.setArmAngle(80);
 		}
 		
 		if (buttonBox.getPOV() == 0)
@@ -343,13 +365,10 @@ public class Robot extends IterativeRobot {
 			//elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
 			elevarm.setArmAngle(elevarm.getArmAngle() + 3);
 		}
-		
-		if(joystick.getRawButton(2)){
-			climber.set(ControlMode.PercentOutput, 0.75);
-			System.out.println(climber.getOutputCurrent());
-		} else {
-			climber.set(ControlMode.PercentOutput, 0);
+		if(joystick.getRawButton(7) && joystick.getRawButton(8)){
+			fork.set(true);
 		}
+		
 		
 
 		//if (buttonBox.getRisingEdge(button))
@@ -471,9 +490,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledInit()
 	{
+		System.out.println("Auto boi: " + DriverStation.getInstance().isAutonomous());
 		scheduler.pause();
 		drive.stopMovement();
 		elevarm.stopMovement();
+		fork.set(false);
+		elevarm.setElevatorGearbox(false);
 	}
 
 	@Override
@@ -521,6 +543,10 @@ public class Robot extends IterativeRobot {
 		else
 		{
 			elevarm.setArmPercentOutput(0);
+		}
+		if (buttonBox.getRisingEdge(3))
+		{
+			elevarm.checkClimber();
 		}
 	}
 }

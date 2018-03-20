@@ -54,7 +54,8 @@ public final class Constants {
 	public static final int DriveShifterId = 0;
 	public static final int IntakeSolenoid30PsiId = 4;
 	public static final int IntakeSolenoid60PsiId = 1;
-	public static final int ElevatorGearboxShifterId = 6; //
+	public static final int ElevatorGearboxShifterId = 3;
+	public static final int ForkId = 2;
 	public static final int LeftMasterDriveId = 16;
 	public static final int LeftSlaveDriveId = 15;
 	public static final int LeftSlave2DriveId = 14;
@@ -68,10 +69,13 @@ public final class Constants {
 	public static final int ElevatorMotorId = 24;
 	public static final int ElevatorSlaveMotorId = 26;
 	public static final int ArmId = 30;
+	
+	public static final int Climber1TalonId = 21;
+	public static final int Climber2TalonId = 25;
 
 	// Elevator
-	public static final double ElevatorMinHeight = 0;
-	public static final double ElevatorMaxHeight = 67; //
+	public static final double ElevatorMinHeight = -0.5;
+	public static final double ElevatorMaxHeight = 70; //
 	public static final double ElevatorInchesPerMotorRotation = 8;
 	public static final double ElevatorSpeed = 120; // Inches Per Second - need to double check value
 	public static final double ElevatorStallCurrent = 1.25; //
@@ -95,12 +99,14 @@ public final class Constants {
 	public static final double ArmIntakeDegrees = -22;
 	
 	
-	public static final int PracticeBotArmTicksOffset = 1864;
+	public static final int PracticeBotArmTicksOffset = 652;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 
 	public static final double JoystickDeadzone = .15;
-	public static final double ArmIntakeAngle = -25;
+	
+	public static final int CubeSwitchId = 0;
+	public static final double ExpectedClimberCurrent = 0;
 
 
 	private Constants() {

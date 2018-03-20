@@ -13,6 +13,7 @@ public class SetIntakeState extends AutoCommand {
 
 	@Override
 	public void start() {
+		System.out.println("Set Intake State");
 		Intake.getInstance().setIntake(state);
 	}
 

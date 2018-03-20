@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator {
 
-	private LazyTalonSRX elevatorTalon, slaveTalon;
+	private LazyTalonSRX elevatorTalon, slaveTalon, climber1Talon, climber2Talon;
 	private Solenoid gearboxSolenoid;
 	protected long homeStartTime;
 
@@ -25,8 +25,29 @@ public class Elevator {
 		elevatorTalon.setSensorPhase(true); // flip encoder direction
 		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
 		slaveTalon.setInverted(true);
+		
+		climber1Talon = new LazyTalonSRX(Constants.Climber1TalonId);
+		climber2Talon = new LazyTalonSRX(Constants.Climber2TalonId);
+		climber1Talon.setInverted(true);
+		climber2Talon.setInverted(true);
 
 		gearboxSolenoid = new Solenoid(Constants.ElevatorGearboxShifterId);
+	}
+	
+	public void setElevatorGearbox(boolean on)
+	{
+		gearboxSolenoid.set(on);
+	}
+	
+	public void setClimberPercentOutput(double output)
+	{
+		climber1Talon.set(ControlMode.PercentOutput, output);
+		climber2Talon.set(ControlMode.PercentOutput, output);
+	}
+	
+	public double getClimberCurrent()
+	{
+		return (climber1Talon.getOutputCurrent() + climber2Talon.getOutputCurrent()) / 2d;
 	}
 
 	protected static Elevator getInstance() {
@@ -39,6 +60,16 @@ public class Elevator {
 
 	public int getEncoderTicks() {
 		return elevatorTalon.getSelectedSensorPosition(0);
+	}
+	
+	public void setSpeed(double speed)
+	{
+		elevatorTalon.set(ControlMode.Velocity, speed);
+	}
+	
+	public double getSpeed()
+	{
+		return elevatorTalon.getSelectedSensorVelocity(0);
 	}
 
 	protected void setEncoderPosition(int position) {
@@ -80,5 +111,10 @@ public class Elevator {
 		boolean success = OrangeUtility.checkMotors(.05, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon, slaveTalon);
 		configMotors();
 		return success;
+	}
+	
+	public boolean checkClimber()
+	{
+		return OrangeUtility.checkMotors(.25, Constants.ExpectedClimberCurrent, 0, 0, null, climber1Talon, climber2Talon);
 	}
 }

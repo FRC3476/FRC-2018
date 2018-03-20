@@ -23,6 +23,7 @@ public class SetElevatorHeight extends AutoCommand {
 
 	@Override
 	public void start() {
+		System.out.println("Set Elevator Height");
 		Elevarm.getInstance().setElevatorHeight(height);
 	}
 }

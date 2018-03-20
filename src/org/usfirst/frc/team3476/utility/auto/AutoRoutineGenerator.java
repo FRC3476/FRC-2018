@@ -13,17 +13,17 @@ public class AutoRoutineGenerator {
 	private static Translation2d robotCenterStartPosition = new Translation2d(20, 0);
 	private static Translation2d robotLeftStartPosition = new Translation2d(20, 115);
 	
-	private static Translation2d midFieldRightPosition = new Translation2d(240, -108);
-	private static Translation2d midFieldLeftPosition = new Translation2d(240, 108);
+	private static Translation2d midFieldRightPosition = new Translation2d(260, -128);
+	private static Translation2d midFieldLeftPosition = new Translation2d(260, 128);
 	
 	private static Translation2d midFieldRightLeadUp = new Translation2d(120, -108);
 	private static Translation2d midFieldLeftLeadUp = new Translation2d(120, 108);
 	
-	private static Translation2d rightScalePosition = new Translation2d(285, -94);
-	private static Translation2d leftScalePosition = new Translation2d(285, 94);
+	private static Translation2d rightScalePosition = new Translation2d(280, -94);
+	private static Translation2d leftScalePosition = new Translation2d(280, 94);
 	
-	private static Translation2d rightSwitchCubePositionFar = new Translation2d(234, -54);
-	private static Translation2d leftSwitchCubePositionFar = new Translation2d(234, 54);
+	private static Translation2d rightSwitchCubePositionFar = new Translation2d(234, -69);
+	private static Translation2d leftSwitchCubePositionFar = new Translation2d(234, 69);
 	
 	private static Translation2d rightSwitchOuttakePositionNear = new Translation2d(120, -50);
 	private static Translation2d leftSwitchOuttakePositionNear = new Translation2d(120, 50);
@@ -31,11 +31,11 @@ public class AutoRoutineGenerator {
 	private static Translation2d rightSwitchOuttakeLeadUpNear = new Translation2d(70, -50);
 	private static Translation2d leftSwitchOuttakeLeadUpNear = new Translation2d(70, 50);
 	
-	private static Translation2d rightSwitchOuttakePositionFar = new Translation2d(226, -54);
-	private static Translation2d leftSwitchOuttakePositionFar = new Translation2d(226, 54);
+	private static Translation2d rightSwitchOuttakePositionFar = new Translation2d(226, -46);
+	private static Translation2d leftSwitchOuttakePositionFar = new Translation2d(226, 46);
 	
-	private static Translation2d rightSwitchOuttakeLeadUpFar = new Translation2d(260, -54);
-	private static Translation2d leftSwitchOuttakeLeadUpFar = new Translation2d(260, 54);
+	private static Translation2d rightSwitchLeadUpFar = new Translation2d(260, -72);
+	private static Translation2d leftSwitchLeadUpFar = new Translation2d(260, 72);
 	
 	private static double switchSpeed = 40;
 	private static double scaleSpeed = 50;
@@ -85,12 +85,13 @@ public class AutoRoutineGenerator {
 		
 
 		getRightSwitchCube = new AutoRoutine(); //Grab Switch Cube, then back up to Mid Field Right Position
-		getRightSwitchCube.addCommands(new SetIntakeState(IntakeState.INTAKE), new SetElevatorHeight(Constants.ElevatorDownHeight), new SetArmAngle(Constants.ArmDownDegrees), new DriveToPoints(50, false, midFieldRightPosition, rightSwitchOuttakeLeadUpFar, rightSwitchCubePositionFar),
+		getRightSwitchCube.addCommands(new SetIntakeState(IntakeState.INTAKE_OPEN), new SetElevatorHeight(Constants.ElevatorDownHeight),
+				new SetArmAngle(Constants.ArmIntakeDegrees), new DriveToPoints(50, false, midFieldRightPosition, rightSwitchLeadUpFar, rightSwitchCubePositionFar),
 				new Delay(1), new SetIntakeState(IntakeState.GRIP));
 		
 		getLeftSwitchCube = new AutoRoutine();
-		getLeftSwitchCube.addCommands(new SetIntakeState(IntakeState.INTAKE), new SetIntakeState(IntakeState.OPEN), new SetElevatorHeight(Constants.ElevatorDownHeight), 
-				new SetArmAngle(Constants.ArmDownDegrees), new DriveToPoints(50, false, midFieldLeftPosition, leftSwitchOuttakeLeadUpFar, leftSwitchCubePositionFar),
+		getLeftSwitchCube.addCommands(new SetIntakeState(IntakeState.INTAKE_OPEN), new SetElevatorHeight(Constants.ElevatorDownHeight), 
+				new SetArmAngle(Constants.ArmIntakeDegrees), new DriveToPoints(50, false, midFieldLeftPosition, leftSwitchLeadUpFar, leftSwitchCubePositionFar),
 				new Delay(1), new SetIntakeState(IntakeState.GRIP));
 		
 		placeCubeInSwitch = new AutoRoutine();
@@ -159,26 +160,32 @@ public class AutoRoutineGenerator {
 							initialPath.addPoint(midFieldRightPosition, midFieldSpeed);
 							initialPath.addPoint(rightScalePosition, scaleSpeed);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
-							overallRoutine.addRoutines(initialDrive, placeCubeOnScale, toMidFieldRightReverse, getRightSwitchCube);
+							overallRoutine.addRoutines(initialDrive, placeCubeOnScale);
 						}
 						else
 						{
 							initialPath.addPoint(leftScalePosition, scaleSpeed);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
-							overallRoutine.addRoutines(initialDrive, placeCubeOnScale, toMidFieldLeftReverse, getLeftSwitchCube);
+							overallRoutine.addRoutines(initialDrive, placeCubeOnScale);
 						}
+						
 						if (switchPos == Position.RIGHT)
 						{
-							//overallRoutine.addCommands(new DriveToPoints(50, false, rightSwitchOuttakePositionFar));
+							overallRoutine.addRoutines(toMidFieldRightReverse, getRightSwitchCube);
+							overallRoutine.addCommands(new DriveToPoints(50, false, rightSwitchOuttakePositionFar));
 						}
 						else
 						{
+							overallRoutine.addRoutines(toMidFieldLeftReverse, getLeftSwitchCube);
 							overallRoutine.addCommands(new DriveToPoints(50, false, leftSwitchOuttakePositionFar));
 						}
 						
 						overallRoutine.addRoutines(placeCubeInSwitch);
 						break;
 					case FORWARD:
+						initialPath.addPoint(midFieldLeftLeadUp, longDistanceSpeed);
+						initialDrive.addCommands(new SetDrivePath(initialPath, false));
+						overallRoutine.addRoutines(initialDrive);
 						break;
 					case NONE:
 						break;
@@ -248,31 +255,36 @@ public class AutoRoutineGenerator {
 						overallRoutine.addRoutines(initialDrive, placeCubeOnScale);
 						break;
 					case BOTH:
-						initialPath.addPoint(midFieldLeftPosition, longDistanceSpeed);
+						initialPath.addPoint(midFieldRightPosition, longDistanceSpeed);
 						if (scalePos == Position.RIGHT)
 						{
 							initialPath.addPoint(rightScalePosition, scaleSpeed);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
-							overallRoutine.addRoutines(initialDrive, placeCubeOnScale, toMidFieldRightReverse, getRightSwitchCube);
+							overallRoutine.addRoutines(initialDrive, placeCubeOnScale);
 						}
 						else
 						{
 							initialPath.addPoint(midFieldLeftPosition, midFieldSpeed);
 							initialPath.addPoint(leftScalePosition, scaleSpeed);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
-							overallRoutine.addRoutines(initialDrive, placeCubeOnScale, toMidFieldLeftReverse, getLeftSwitchCube);
-						}
+							overallRoutine.addRoutines(initialDrive, placeCubeOnScale);
+						}						
 						if (switchPos == Position.RIGHT)
 						{
-							//overallRoutine.addCommands(new DriveToPoints(50, false, rightSwitchOuttakePositionFar));
+							overallRoutine.addRoutines(toMidFieldRightReverse, getRightSwitchCube);
+							overallRoutine.addCommands(new DriveToPoints(50, false, rightSwitchOuttakePositionFar));
 						}
 						else
 						{
+							overallRoutine.addRoutines(toMidFieldLeftReverse, getLeftSwitchCube);
 							overallRoutine.addCommands(new DriveToPoints(50, false, leftSwitchOuttakePositionFar));
 						}
 						overallRoutine.addRoutines(placeCubeInSwitch);
 						break;
 					case FORWARD:
+						initialPath.addPoint(midFieldRightLeadUp, longDistanceSpeed);
+						initialDrive.addCommands(new SetDrivePath(initialPath, false));
+						overallRoutine.addRoutines(initialDrive);
 						break;
 					case NONE:
 						break;

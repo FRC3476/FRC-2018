@@ -18,6 +18,7 @@ public class SetArmAngle extends AutoCommand {
 	
 	@Override
 	public void start() {
+		System.out.println("Set Arm Angle");
 		Elevarm.getInstance().setArmAngle(angle);
 		
 	}

@@ -64,7 +64,6 @@ public class PurePursuitController {
 			robotSpeed = 20;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
-		System.out.println(lookAheadDist);
 		//double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
 		//System.out.println("turn: " + turn + " angle: " + angleToLookAhead);
 

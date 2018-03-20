@@ -17,17 +17,19 @@ public class PurePursuitController {
 	 */
 
 	private Path robotPath;
-	private boolean isReversed;
+	private boolean isReversed, turnToHeading;
 	private SynchronousPid turnPID;
 	private RateLimiter speedProfiler;
 
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
+		this.turnToHeading = false;
 		//0.2, 0, 5, 0 values
 		turnPID = new SynchronousPid(0.2, 0, 5, 0);
 		turnPID.setInputRange(180, -180);
-		turnPID.setOutputRange(1, -1);
+		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
+		turnPID.setTolerance(1);
 		speedProfiler = new RateLimiter(140, 1000);
 	}
 
@@ -64,7 +66,25 @@ public class PurePursuitController {
 			robotSpeed = 20;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
-
+		/*
+		TEST
+		Translation2d closestToEnd = data.currentSegEnd.translateBy(data.closestPoint.inverse());
+		double angleToPath = robotPose.rotationMat.inverse().rotateBy(closestToEnd.getAngleFromOffset(new Translation2d(0, 0))).getDegrees();
+		if(Math.abs(angleToPath) > 135) {
+			turnToHeading = true;
+		}
+		
+		if(turnToHeading) {
+			double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
+			double deltaSpeed = turnPID.update(angleToLookAhead);
+			if(turnPID.isDone()) {
+				turnToHeading = false;
+			} else {
+				return new DriveVelocity(deltaSpeed, deltaSpeed);				
+			}
+		}
+		*/
+		
 		double radius;
 		radius = getRadius(robotToLookAhead);
 		double delta =  (robotSpeed / radius);

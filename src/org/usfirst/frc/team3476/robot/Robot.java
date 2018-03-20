@@ -56,12 +56,14 @@ public class Robot extends IterativeRobot {
 		posChooser.addDefault("Left", "Left");
 		posChooser.addObject("Center", "Center");
 		posChooser.addObject("Right", "Right");
-		optionChooser.addDefault("a", "a");
-		optionChooser.addObject("b", "b");
-		optionChooser.addObject("c", "c");
-		optionChooser.addObject("d", "d");
+		optionChooser.addDefault("SCALE", "SCALE");
+		optionChooser.addObject("SWITCH", "SWITCH");
+		optionChooser.addObject("BOTH", "BOTH");
+		optionChooser.addObject("FORWARD", "FORWARD");
+		optionChooser.addObject("mInD bUsInEsS", "mInD bUsInEsS");
+		optionChooser.addObject("NONE", "NONE");
 		SmartDashboard.putData("Position", posChooser);
-		SmartDashboard.putData("lul", optionChooser);
+		SmartDashboard.putData("Option", optionChooser);
 		scheduler.schedule(drive, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(tracker, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
@@ -73,6 +75,29 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		String pos = posChooser.getSelected();
 		String option = optionChooser.getSelected();
+		switch(pos){
+		case "Left":
+			break;
+		case "Center":
+			break;
+		case "Right":
+			break;
+		}
+		
+		switch(option){
+		case "SCALE":
+			break;
+		case "SWITCH":
+			break;
+		case "BOTH":
+			break;
+		case "FORWARD":
+			break;
+		case "mInD bUsInEsS":
+			break;
+		case "NONE":
+			break;
+		}
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
@@ -80,7 +105,6 @@ public class Robot extends IterativeRobot {
 		drive.stopMovement();
 		elevarm.stopMovement();
 		
-
 		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.SCALE, StartPosition.LEFT);
 		new Thread(routine).start();
 

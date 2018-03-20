@@ -42,7 +42,7 @@ public class AutoRoutineGenerator {
 	
 	private static double switchSpeed = 40;
 	private static double scaleSpeed = 50;
-	private static double longDistanceSpeed = 180;
+	private static double longDistanceSpeed = 140;
 	private static double shortDistanceSpeed = 60;
 	private static double midFieldSpeed = 70;
 	private static double reverseSpeed = 60;

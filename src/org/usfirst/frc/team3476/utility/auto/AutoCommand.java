@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public abstract class AutoCommand {
 	
+	/**
+	 * Should never block.
+	 */
 	public abstract void start();
 	public abstract boolean isFinished();
 	

@@ -53,13 +53,15 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
-		posChooser.addObject("Position", "Left");
-		posChooser.addObject("Position", "Center");
-		posChooser.addObject("Position", "Right");
-		optionChooser.addObject("Option", "a");
-		optionChooser.addObject("Option", "b");
-		optionChooser.addObject("Option", "c");
-		optionChooser.addObject("Option", "d");
+		posChooser.addDefault("Left", "Left");
+		posChooser.addObject("Center", "Center");
+		posChooser.addObject("Right", "Right");
+		optionChooser.addDefault("a", "a");
+		optionChooser.addObject("b", "b");
+		optionChooser.addObject("c", "c");
+		optionChooser.addObject("d", "d");
+		SmartDashboard.putData("Position", posChooser);
+		SmartDashboard.putData("lul", optionChooser);
 		scheduler.schedule(drive, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(tracker, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
@@ -80,8 +82,15 @@ public class Robot extends IterativeRobot {
 		elevarm.homeElevator();
 		Timer.delay(1);
 		
+<<<<<<< HEAD
 		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.SCALE, StartPosition.LEFT);
 		new Thread(routine).start();
+=======
+		
+		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.BOTH, StartPosition.LEFT);
+		new Thread(routine).run();
+
+>>>>>>> f3e68983e9f306685f424bf8e855aa62dc6b7203
 		/*
 		autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(50, -108, 100);
@@ -240,8 +249,9 @@ public class Robot extends IterativeRobot {
 		buttonBox.update();
 		joystick.update();
 		
+		drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
-		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		//drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());

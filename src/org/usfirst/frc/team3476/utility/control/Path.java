@@ -224,6 +224,7 @@ public class Path {
 			double distToNext = Math.hypot(closestNextToRobot.getX(), closestNextToRobot.getY());
 			if (distToClosest > distToNext) {
 				segments.remove(0);
+				
 				closestPoint = closestNextPoint;
 				closestToRobot = closestNextToRobot;
 			} else {
@@ -253,8 +254,8 @@ public class Path {
 				}
 			}			
 		} else {
-			lookAheadDistance += Math.hypot(closestToStart.getX(), closestToStart.getY());
-			data.lookAheadPoint = segments.get(0).getPointByDistance(lookAheadDistance);
+			double distanceOnPath = segments.get(0).getDistance() - remainingSegDist + lookAheadDistance;
+			data.lookAheadPoint = segments.get(0).getPointByDistance(distanceOnPath);
 		}
 		/*
 		 * UDPServer.getInstance().send(data.lookAheadPoint.getX() + "," +

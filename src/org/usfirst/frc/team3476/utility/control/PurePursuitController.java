@@ -64,20 +64,11 @@ public class PurePursuitController {
 			robotSpeed = 20;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
-		//double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
-		//System.out.println("turn: " + turn + " angle: " + angleToLookAhead);
 
-		
-		//double deltaSpeed =  turn * robotSpeed;
-	
 		double radius;
-		
 		radius = getRadius(robotToLookAhead);
-
 		double delta =  (robotSpeed / radius);
-		
 		double deltaSpeed = Constants.TrackRadius * delta;
-		//Constants.TurnScrubCoeff = deltaRotation * Constants.TrackDiameter / (deltaPos * 2)
 		
 		
 		JSONObject message = new JSONObject();

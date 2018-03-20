@@ -95,8 +95,8 @@ public class Intake {
 			break;
 		case INTAKE_OPEN:
 			setIntakeSolenoid(SolenoidState.OPEN);
-			intakeMotor1.set(ControlMode.PercentOutput, -.7);
-			intakeMotor2.set(ControlMode.PercentOutput, -.3);
+			intakeMotor1.set(ControlMode.PercentOutput, -.15);
+			intakeMotor2.set(ControlMode.PercentOutput, -.15);
 			break;
 		}
 	}

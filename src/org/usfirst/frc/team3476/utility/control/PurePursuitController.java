@@ -28,7 +28,7 @@ public class PurePursuitController {
 		turnPID = new SynchronousPid(0.2, 0, 5, 0);
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(1, -1);
-		speedProfiler = new RateLimiter(120, 1000);
+		speedProfiler = new RateLimiter(140, 1000);
 	}
 
 	/**
@@ -76,8 +76,8 @@ public class PurePursuitController {
 		JSONArray lookAhead = new JSONArray();
 		JSONArray closest = new JSONArray();
 
-		closest.add(data.closestPoint.getX());
-		closest.add(data.closestPoint.getY());
+		closest.add(data.lookAheadPoint.getX());
+		closest.add(data.lookAheadPoint.getY());
 		pose.add(robotPose.translationMat.getX());
 		pose.add(robotPose.translationMat.getY());
 		message.put("lookAhead", closest);

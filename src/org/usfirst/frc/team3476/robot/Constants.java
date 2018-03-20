@@ -41,14 +41,14 @@ public final class Constants {
 	public static final double MaxAcceleration = 1000;
 
 	// Autonomous Driving
-	public static final double TrackRadius = 13.5;
+	public static final double TrackRadius = 15.5;
 	public static final double LookAheadDistance = 20;
 	public static final double WheelDiameter = 5.9;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 20;
-	public static final double MaxPathSpeed = 100;
-	public static final double MinLookAheadDistance = 14;
-	public static final double MaxLookAheadDistance = 35;
+	public static final double MaxPathSpeed = 150;
+	public static final double MinLookAheadDistance = 18;
+	public static final double MaxLookAheadDistance = 30;
 
 	// CAN IDs
 	public static final int DriveShifterId = 0;
@@ -99,7 +99,7 @@ public final class Constants {
 	public static final double ArmIntakeDegrees = -22;
 	
 	
-	public static final int PracticeBotArmTicksOffset = 652;
+	public static final int PracticeBotArmTicksOffset = 657;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 

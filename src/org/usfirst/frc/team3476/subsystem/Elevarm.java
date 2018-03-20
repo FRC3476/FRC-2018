@@ -362,4 +362,8 @@ public class Elevarm extends Threaded {
 		armLimiter.reset();
 		armLimiter.setLatestValue(arm.getAngle());
 	}
+	
+	public boolean isHomed() {
+		return currentElevatorState != ElevatorState.HOMING;
+	}
 }

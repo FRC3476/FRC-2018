@@ -79,18 +79,11 @@ public class Robot extends IterativeRobot {
 		elevarm.configArmEncoder();
 		drive.stopMovement();
 		elevarm.stopMovement();
-		elevarm.homeElevator();
-		Timer.delay(1);
 		
-<<<<<<< HEAD
+
 		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.SCALE, StartPosition.LEFT);
 		new Thread(routine).start();
-=======
-		
-		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.BOTH, StartPosition.LEFT);
-		new Thread(routine).run();
 
->>>>>>> f3e68983e9f306685f424bf8e855aa62dc6b7203
 		/*
 		autoPath = new Path(new Translation2d(18,-108));
 		autoPath.addPoint(50, -108, 100);
@@ -249,12 +242,12 @@ public class Robot extends IterativeRobot {
 		buttonBox.update();
 		joystick.update();
 		
-		drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
-		//drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		
 		if (buttonBox.getRawButton(10))
 		{
@@ -500,7 +493,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledInit()
 	{
-		System.out.println("Auto boi: " + DriverStation.getInstance().isAutonomous());
 		scheduler.pause();
 		drive.stopMovement();
 		elevarm.stopMovement();

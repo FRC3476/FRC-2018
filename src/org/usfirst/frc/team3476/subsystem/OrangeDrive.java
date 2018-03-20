@@ -205,7 +205,7 @@ public class OrangeDrive extends Threaded {
 		moveValue = scaleJoystickValues(moveValue);
 		rotateValue = scaleJoystickValues(rotateValue);
 		//50 is min turn radius
-		double radius = (1 / rotateValue) - 1 + 1E-9;
+		double radius = (1 / rotateValue) + Math.copySign(24, rotateValue);
 		double deltaSpeed = (Constants.TrackRadius * ((moveValue * driveMultiplier) / radius));
 		deltaSpeed /= driveMultiplier;
 		if(isQuickTurn){

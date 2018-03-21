@@ -46,6 +46,7 @@ public class Robot extends IterativeRobot {
 	
 	SendableChooser<String> posChooser = new SendableChooser<>();
 	SendableChooser<String> optionChooser = new SendableChooser<>();
+	SendableChooser<String> mInDbUsInEsS = new SendableChooser<>();
 	
 	boolean homed = false;
 
@@ -53,15 +54,18 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
+		mInDbUsInEsS.addDefault("Business", "Business");
+		mInDbUsInEsS.addObject("mInDbUsInEsS", "mInDbUsInEsS");
 		posChooser.addDefault("Left", "Left");
 		posChooser.addObject("Center", "Center");
 		posChooser.addObject("Right", "Right");
-		optionChooser.addDefault("a", "a");
-		optionChooser.addObject("b", "b");
-		optionChooser.addObject("c", "c");
-		optionChooser.addObject("d", "d");
+		optionChooser.addDefault("SCALE", "SCALE");
+		optionChooser.addObject("SWITCH", "SWITCH");
+		optionChooser.addObject("BOTH", "BOTH");
+		optionChooser.addObject("FORWARD", "FORWARD");
+		optionChooser.addObject("NONE", "NONE");
 		SmartDashboard.putData("Position", posChooser);
-		SmartDashboard.putData("lul", optionChooser);
+		SmartDashboard.putData("Option", optionChooser);
 		scheduler.schedule(drive, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(tracker, Duration.ofMillis(5), mainExecutor);
 		scheduler.schedule(elevarm, Duration.ofMillis(20), mainExecutor);
@@ -73,6 +77,52 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		String pos = posChooser.getSelected();
 		String option = optionChooser.getSelected();
+		String business = mInDbUsInEsS.getSelected();
+		
+		PathOption pOption = PathOption.NONE;
+		StartPosition sPos = StartPosition.CENTER;
+		boolean mind = false;
+		switch(business){
+		case "Business":
+			mind = false;
+			break;
+		case "mInDbUsInEsS":
+			mind = true;
+			break;
+		}
+		
+		switch(pos){
+		case "Left":
+			sPos = StartPosition.LEFT;
+			break;
+		case "Center":
+			sPos = StartPosition.CENTER;
+			break;
+		case "Right":
+			sPos = StartPosition.RIGHT;
+			break;
+		}
+		
+		switch(option){
+		case "SCALE":
+			pOption = PathOption.SCALE;
+			break;
+		case "SWITCH":
+			pOption = PathOption.SWITCH;
+			break;
+		case "BOTH":
+			pOption = PathOption.BOTH;
+			break;
+		case "FORWARD":
+			pOption = PathOption.FORWARD;
+			break;
+		case "mInD bUsInEsS":
+			pOption = PathOption.SCALE;
+			break;
+		case "NONE":
+			pOption = PathOption.NONE;
+			break;
+		}
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
@@ -80,8 +130,26 @@ public class Robot extends IterativeRobot {
 		drive.stopMovement();
 		elevarm.stopMovement();
 		
-
-		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.SWITCH, StartPosition.CENTER);
+		double start = Timer.getFPGATimestamp();
+		while (DriverStation.getInstance().getGameSpecificMessage().isEmpty() && Timer.getFPGATimestamp() - start < 1)
+		{
+			
+		}
+		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		if (gameData.isEmpty())
+		{
+			gameData = "rr";
+			if (pOption == PathOption.NONE)
+			{}
+			else if (sPos != StartPosition.CENTER)
+				pOption = PathOption.FORWARD;
+			else
+				pOption = PathOption.SWITCH;
+		}
+		System.out.println(pOption);
+		System.out.println(sPos);
+		
+		AutoRoutine routine = AutoRoutineGenerator.generate(gameData, pOption, sPos, mind);
 		new Thread(routine).start();
 
 		/*
@@ -264,6 +332,7 @@ public class Robot extends IterativeRobot {
 		if (joystick.getRisingEdge(11))
 		{
 			elevarm.setElevatorGearbox(false);
+			elevarm.homeElevator();
 		}
 	
 		

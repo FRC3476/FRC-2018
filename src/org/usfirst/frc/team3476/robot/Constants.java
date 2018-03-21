@@ -42,11 +42,10 @@ public final class Constants {
 
 	// Autonomous Driving
 	public static final double TrackRadius = 15.5;
-	public static final double LookAheadDistance = 20;
 	public static final double WheelDiameter = 5.9;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 20;
-	public static final double MaxPathSpeed = 150;
+	public static final double MaxPathSpeed = 140;
 	public static final double MinLookAheadDistance = 18;
 	public static final double MaxLookAheadDistance = 30;
 

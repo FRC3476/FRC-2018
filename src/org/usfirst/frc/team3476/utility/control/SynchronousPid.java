@@ -51,6 +51,10 @@ public class SynchronousPid {
 		return m_result;
 	}
 
+	public synchronized void setTolerance(double tolerance) {
+		m_tolerance = tolerance;
+	}
+	
 	public synchronized boolean isDone() {
 		return m_error < m_tolerance;
 	}

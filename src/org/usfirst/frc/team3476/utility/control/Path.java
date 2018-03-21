@@ -117,6 +117,7 @@ public class Path {
 		public double remainingDist, maxSpeed;
 		public Translation2d lookAheadPoint;
 		public Translation2d closestPoint;
+		public Translation2d currentSegEnd;
 	}
 
 	private List<PathSegment> segments;
@@ -232,6 +233,7 @@ public class Path {
 			}
 		}
 		data.closestPoint = closestPoint;
+		data.currentSegEnd = segments.get(0).getEnd();
 		Translation2d closestToEnd = closestPoint.inverse().translateBy(segments.get(0).getEnd());
 		Translation2d closestToStart = segments.get(0).getStart().inverse().translateBy(closestPoint);
 

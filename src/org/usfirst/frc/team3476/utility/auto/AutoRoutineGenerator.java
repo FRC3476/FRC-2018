@@ -10,7 +10,7 @@ import org.usfirst.frc.team3476.utility.math.Translation2d;
 public class AutoRoutineGenerator {
 	
 	private static Translation2d robotRightStartPosition = new Translation2d(20, -115);
-	private static Translation2d robotCenterStartPosition = new Translation2d(20, 0);
+	private static Translation2d robotCenterStartPosition = new Translation2d(20, -6);
 	private static Translation2d robotLeftStartPosition = new Translation2d(20, 115);
 	
 	private static Translation2d midFieldRightPosition = new Translation2d(240, -108);

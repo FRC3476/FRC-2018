@@ -16,16 +16,6 @@ public class Elevarm extends Threaded {
 	public enum ElevatorState {
 		MANUAL, POSITION, HOMING, INTAKE
 	}
-	//Practice Robot
-	//Elevator
-	//P .1
-	//I .0001
-	//D .0001
-	//I Zone 1000
-	//Arm
-	//P .8
-	//I .0005
-	//D 0
 
 	private ElevatorState currentElevatorState = ElevatorState.MANUAL;
 	private RateLimiter elevatorLimiter, armLimiter;
@@ -34,8 +24,8 @@ public class Elevarm extends Threaded {
 	private boolean elevatorIntakePositionSet = false;
 
 	private Elevarm() {
-		elevatorLimiter = new RateLimiter(1000, 120);
-		armLimiter = new RateLimiter(200, 500);
+		elevatorLimiter = new RateLimiter(1000, 250);
+		armLimiter = new RateLimiter(200, 300);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}
@@ -302,10 +292,12 @@ public class Elevarm extends Threaded {
 			break;
 		case INTAKE:
 			elevator.setHeight(elevatorLimiter.update(Constants.ElevatorDownHeight));
-			if (elevator.getHeight() < 20)
+			if (elevator.getHeight() < 30)
 			{
 				setArmAngle(Constants.ArmIntakeDegrees);
 				arm.setAngle(armLimiter.update(armSetpoint));
+			} else {
+				armLimiter.update(armLimiter.getLatestValue());
 			}
 			break;
 		case MANUAL:

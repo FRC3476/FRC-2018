@@ -17,6 +17,10 @@ public class Elevator {
 
 	private static final Elevator instance = new Elevator();
 
+	//P .1
+	//I .0001
+	//D .0001
+	//I Zone 1000
 	private Elevator() {
 		elevatorTalon = new LazyTalonSRX(Constants.ElevatorMotorId);
 		slaveTalon = new LazyTalonSRX(Constants.ElevatorSlaveMotorId);
@@ -32,6 +36,11 @@ public class Elevator {
 		climber2Talon.setInverted(true);
 
 		gearboxSolenoid = new Solenoid(Constants.ElevatorGearboxShifterId);
+		
+		elevatorTalon.config_kP(0, 0.125, 10);
+		elevatorTalon.config_kI(0, 0.0, 10);
+		elevatorTalon.config_kD(0, 0.0, 10);
+		elevatorTalon.config_IntegralZone(0, 1000, 10);
 	}
 	
 	public void setElevatorGearbox(boolean on)
@@ -108,7 +117,7 @@ public class Elevator {
 	}
 
 	public boolean checkSubystem() {
-		boolean success = OrangeUtility.checkMotors(.05, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon, slaveTalon);
+		boolean success = OrangeUtility.checkMotors(.25, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon, slaveTalon);
 		configMotors();
 		return success;
 	}

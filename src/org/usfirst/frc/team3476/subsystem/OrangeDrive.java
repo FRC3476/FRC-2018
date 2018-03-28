@@ -238,10 +238,10 @@ public class OrangeDrive extends Threaded {
 	}
 	
 	private void configMotors() {
-		leftSlaveTalon.set(ControlMode.Follower, leftTalon.getDeviceID());
-		leftSlave2Talon.set(ControlMode.Follower, leftTalon.getDeviceID());
-		rightSlaveTalon.set(ControlMode.Follower, rightTalon.getDeviceID());
-		rightSlave2Talon.set(ControlMode.Follower, rightTalon.getDeviceID());
+		leftSlaveTalon.set(ControlMode.Follower, Constants.LeftMasterDriveId);
+		leftSlave2Talon.set(ControlMode.Follower, Constants.LeftMasterDriveId);
+		rightSlaveTalon.set(ControlMode.Follower, Constants.RightMasterDriveId);
+		rightSlave2Talon.set(ControlMode.Follower, Constants.RightMasterDriveId);
 		setBrakeState(NeutralMode.Coast);
 		rightTalon.configNominalOutputForward(0.05, 10);
 		rightTalon.configNominalOutputReverse(-0.05, 10);

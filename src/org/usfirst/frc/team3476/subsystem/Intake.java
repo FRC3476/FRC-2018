@@ -15,7 +15,7 @@ public class Intake {
 	private LazyTalonSRX intakeMotor1;
 	private LazyTalonSRX intakeMotor2;
 	private static Intake intakeInstance = new Intake();
-	private DigitalInput cubeSwitch = new DigitalInput(Constants.CubeSwitchId);
+	//private DigitalInput cubeSwitch = new DigitalInput(Constants.CubeSwitchId);
 	
 	public enum SolenoidState
 	{
@@ -47,12 +47,12 @@ public class Intake {
 	{
 		return intakeInstance;
 	}
-	
+	/*
 	public boolean getCubeSwitch()
 	{
 		return !cubeSwitch.get();
 	}
-	
+	*/
 	public void setIntake(IntakeState state)
 	{
 		switch(state)

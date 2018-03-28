@@ -19,6 +19,9 @@ public class Arm {
 		armTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		setEncoderFromPWM();
 		armTalon.setInverted(true);
+		armTalon.config_kP(0, 6, 10);
+		armTalon.config_kI(0, 0.0, 10);
+		armTalon.config_kD(0, 2, 10);
 	}
 
 	protected static Arm getInstance() {

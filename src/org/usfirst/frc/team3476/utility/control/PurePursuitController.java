@@ -29,7 +29,12 @@ public class PurePursuitController {
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 		turnPID.setTolerance(1);
-		speedProfiler = new RateLimiter(140, 1000);
+		speedProfiler = new RateLimiter(200, 1000);
+		/*
+		if(robotPath.isEmpty()){
+			OrangeDrive.getInstance().setFinished();
+		}
+		*/
 	}
 
 	/**

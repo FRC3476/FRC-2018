@@ -70,6 +70,7 @@ public class Robot extends IterativeRobot {
 		optionChooser.addObject("NONE", "NONE");
 		SmartDashboard.putData("Position", posChooser);
 		SmartDashboard.putData("Option", optionChooser);
+		SmartDashboard.putData("business", mInDbUsInEsS);
 		camServer.startAutomaticCapture(0);
 		camServer.startAutomaticCapture(1);
 	}
@@ -127,13 +128,12 @@ public class Robot extends IterativeRobot {
 			pOption = PathOption.NONE;
 			break;
 		}
-		
 		double start = Timer.getFPGATimestamp();
 		while (DriverStation.getInstance().getGameSpecificMessage().isEmpty() && Timer.getFPGATimestamp() - start < 1)
 		{
 			
 		}
-		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		String gameData = DriverStation.getInstance().getGameSpecificMessage().toLowerCase();
 		if (gameData.isEmpty())
 		{
 			gameData = "rr";
@@ -144,7 +144,6 @@ public class Robot extends IterativeRobot {
 			else
 				pOption = PathOption.SWITCH;
 		}
-		
 		AutoRoutine routine = AutoRoutineGenerator.generate(gameData, pOption, sPos, mind);
 		new Thread(routine).start();
 	}
@@ -191,8 +190,9 @@ public class Robot extends IterativeRobot {
 		}
 	
 		
-		if (joystick.getRawButton(3) || xbox.getRawButton(Controller.Xbox.RightBumper))
+		if (joystick.getRawButton(3) || xbox.getRawButton(6))
 		{
+			/*
 			if (intake.getCubeSwitch())
 			{
 				xbox.setRumble(RumbleType.kLeftRumble, 1);
@@ -203,15 +203,16 @@ public class Robot extends IterativeRobot {
 				xbox.setRumble(RumbleType.kLeftRumble, 0);
 				xbox.setRumble(RumbleType.kRightRumble, 0);
 			}
+			*/
 			intake.setIntake(IntakeState.INTAKE);
 		}
-		else if (joystick.getRawButton(4) || xbox.getRawButton(Controller.Xbox.LeftBumper))
-		{
-			intake.setIntake(IntakeState.OUTTAKE);
-		}
-		else if (joystick.getRawButton(6))
+		else if (joystick.getRawButton(6) || xbox.getRawAxis(2) > .9)
 		{
 			intake.setIntake(IntakeState.OUTTAKE_FAST);
+		}
+		else if (joystick.getRawButton(4) || xbox.getRawAxis(2) > .05)
+		{
+			intake.setIntake(IntakeState.OUTTAKE);
 		}
 		else if (joystick.getRawButton(5) || xbox.getRawButton(Controller.Xbox.A))
 		{
@@ -276,7 +277,7 @@ public class Robot extends IterativeRobot {
 		}
 		else if (buttonBox.getRisingEdge(3))
 		{
-			elevarm.setElevatorHeight(55);
+			elevarm.setElevatorHeight(56.5);
 			elevarm.setArmAngle(80);
 		}
 		
@@ -291,6 +292,7 @@ public class Robot extends IterativeRobot {
 			elevarm.setArmAngle(elevarm.getArmAngle() + 3);
 		}
 		if(joystick.getRawButton(7) && joystick.getRawButton(8)){
+			System.out.println("Forks");
 			fork.set(true);
 		}
 	}
@@ -329,7 +331,7 @@ public class Robot extends IterativeRobot {
 			drive.checkSubsystem();
 		}
 		if (xbox.getRisingEdge(2)) {
-			elevarm.checkSubsystem();
+			elevarm.checkElevator();
 		}
 		if (xbox.getRisingEdge(3)) {
 			elevarm.homeElevator();

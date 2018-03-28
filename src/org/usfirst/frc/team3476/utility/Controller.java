@@ -36,9 +36,15 @@ public class Controller extends Joystick {
 	 */
 	private int oldButtons;
 	private int currentButtons;
+	private int buttonCount;
+	private int axisCount;
+	private double[] oldAxis;
 
 	public Controller(int port) {
 		super(port);
+		axisCount = DriverStation.getInstance().getStickAxisCount(port);
+		buttonCount = DriverStation.getInstance().getStickButtonCount(getPort());
+		oldAxis = new double[axisCount];
 	}
 
 	/**
@@ -50,7 +56,7 @@ public class Controller extends Joystick {
 	 * 		Falling edge state of the button
 	 */
 	public boolean getFallingEdge(int button) {
-		if (button <= DriverStation.getInstance().getStickButtonCount(getPort())) {
+		if (button <= buttonCount) {
 			boolean oldVal = ((0x1 << (button - 1)) & oldButtons) != 0;
 			boolean currentVal = ((0x1 << (button - 1)) & currentButtons) != 0;
 			if (oldVal == true && currentVal == false) {
@@ -71,7 +77,7 @@ public class Controller extends Joystick {
 	 * 		Rising edge state of the button
 	 */
 	public boolean getRisingEdge(int button) {
-		if (button <= DriverStation.getInstance().getStickButtonCount(getPort())) {
+		if (button <= buttonCount) {
 			boolean oldVal = ((0x1 << (button - 1)) & oldButtons) != 0;
 			boolean currentVal = ((0x1 << (button - 1)) & currentButtons) != 0;
 
@@ -81,6 +87,32 @@ public class Controller extends Joystick {
 				return false;
 			}
 		}
+		return false;
+	}
+	
+	public boolean getRisingEdge(int axis, double threshold) {
+		if(axis <= axisCount) {
+			boolean oldVal = oldAxis[axis] > threshold;
+			boolean currentVal = super.getRawAxis(axis) > threshold;
+			if (oldVal == false && currentVal == true) {
+				return true;
+			} else {
+				return false;
+			}
+		} 
+		return false;
+	}
+	
+	public boolean getFallingEdge(int axis, double threshold) {
+		if(axis <= axisCount) {
+			boolean oldVal = oldAxis[axis] > threshold;
+			boolean currentVal = super.getRawAxis(axis) > threshold;
+			if (oldVal == true && currentVal == false) {
+				return true;
+			} else {
+				return false;
+			}
+		} 
 		return false;
 	}
 
@@ -105,6 +137,9 @@ public class Controller extends Joystick {
 		}
 		oldButtons = currentButtons;
 		currentButtons = DriverStation.getInstance().getStickButtons(getPort());
+		for(int i = 0; i < axisCount; i++){
+			oldAxis[i] = super.getRawAxis(i);
+		}
 	}
 
 }

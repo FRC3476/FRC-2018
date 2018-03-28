@@ -144,8 +144,6 @@ public class Robot extends IterativeRobot {
 			else
 				pOption = PathOption.SWITCH;
 		}
-		System.out.println(pOption);
-		System.out.println(sPos);
 		
 		AutoRoutine routine = AutoRoutineGenerator.generate(gameData, pOption, sPos, mind);
 		new Thread(routine).start();
@@ -160,13 +158,9 @@ public class Robot extends IterativeRobot {
 		configSubsytems();
 		drive.pause();
 		tracker.pause();
-		oldAxis = false;
 	}
 
 	double elevatorMaxCurrent = 150, armMaxCurrent = 40; // TEMP for testing
-	
-	boolean axis;
-	boolean oldAxis;
 
 	@Override
 	public void teleopPeriodic() {
@@ -228,17 +222,15 @@ public class Robot extends IterativeRobot {
 			intake.setIntake(IntakeState.GRIP);
 		}
 		
-		axis = xbox.getRawAxis(3) > .3;
 		
-		if (axis && !oldAxis)
+		if (xbox.getRisingEdge(Controller.Xbox.RightTrigger, 0.3))
 		{
 			drive.setShiftState(true);
 		}
-		if (oldAxis && !axis)
+		if (xbox.getFallingEdge(Controller.Xbox.RightTrigger, 0.3))
 		{
 			drive.setShiftState(false);
 		}
-		oldAxis = axis;
 		
 		double nudge = joystick.getRawAxis(1);
 		if (nudge > Constants.JoystickDeadzone)

@@ -20,8 +20,6 @@ public class PurePursuitController {
 	private boolean isReversed, turnToHeading;
 	private SynchronousPid turnPID;
 	private RateLimiter speedProfiler;
-	
-	private boolean LOGGING = false;
 
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
@@ -97,7 +95,7 @@ public class PurePursuitController {
 		JSONArray lookAhead = new JSONArray();
 		JSONArray closest = new JSONArray();
 
-		if(LOGGING){
+		if(Constants.LOGGING){
 			closest.add(data.closestPoint.getX());
 			closest.add(data.closestPoint.getY());		
 			lookAhead.add(data.lookAheadPoint.getX());

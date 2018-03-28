@@ -25,7 +25,7 @@ public class Elevator {
 		elevatorTalon.setSensorPhase(true); // flip encoder direction
 		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
 		slaveTalon.setInverted(true);
-		
+
 		climber1Talon = new LazyTalonSRX(Constants.Climber1TalonId);
 		climber2Talon = new LazyTalonSRX(Constants.Climber2TalonId);
 		climber1Talon.setInverted(true);
@@ -33,20 +33,17 @@ public class Elevator {
 
 		gearboxSolenoid = new Solenoid(Constants.ElevatorGearboxShifterId);
 	}
-	
-	public void setElevatorGearbox(boolean on)
-	{
+
+	public void setElevatorGearbox(boolean on) {
 		gearboxSolenoid.set(on);
 	}
-	
-	public void setClimberPercentOutput(double output)
-	{
+
+	public void setClimberPercentOutput(double output) {
 		climber1Talon.set(ControlMode.PercentOutput, output);
 		climber2Talon.set(ControlMode.PercentOutput, output);
 	}
-	
-	public double getClimberCurrent()
-	{
+
+	public double getClimberCurrent() {
 		return (climber1Talon.getOutputCurrent() + climber2Talon.getOutputCurrent()) / 2d;
 	}
 
@@ -61,14 +58,12 @@ public class Elevator {
 	public int getEncoderTicks() {
 		return elevatorTalon.getSelectedSensorPosition(0);
 	}
-	
-	public void setSpeed(double speed)
-	{
+
+	public void setSpeed(double speed) {
 		elevatorTalon.set(ControlMode.Velocity, speed);
 	}
-	
-	public double getSpeed()
-	{
+
+	public double getSpeed() {
 		return elevatorTalon.getSelectedSensorVelocity(0);
 	}
 
@@ -100,7 +95,7 @@ public class Elevator {
 	}
 
 	public void configMotors() {
-		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());		
+		slaveTalon.set(ControlMode.Follower, elevatorTalon.getDeviceID());
 	}
 
 	protected LazyTalonSRX[] getTalons() {
@@ -112,9 +107,8 @@ public class Elevator {
 		configMotors();
 		return success;
 	}
-	
-	public boolean checkClimber()
-	{
+
+	public boolean checkClimber() {
 		return OrangeUtility.checkMotors(.25, Constants.ExpectedClimberCurrent, 0, 0, null, climber1Talon, climber2Talon);
 	}
 }

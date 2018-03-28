@@ -21,8 +21,8 @@ public class RobotTracker extends Threaded {
 	private CircularQueue<Rotation> gyroHistory;
 
 	private double currentDistance, oldDistance, deltaDistance;
-	private volatile Rotation rotationOffset;
-	private volatile Translation2d translationOffset;
+	private Rotation rotationOffset;
+	private Translation2d translationOffset;
 
 	private RobotTracker() {
 		vehicleHistory = new CircularQueue<>(100);
@@ -33,15 +33,15 @@ public class RobotTracker extends Threaded {
 		translationOffset = new Translation2d();
 	}
 
-	public Rotation getGyroAngle(long time) {
+	synchronized public Rotation getGyroAngle(long time) {
 		return gyroHistory.getInterpolatedKey(time);
 	}
 
-	public synchronized RigidTransform getOdometry() {
+	synchronized public RigidTransform getOdometry() {
 		return currentOdometry;
 	}
 
-	public synchronized void resetOdometry() {
+	synchronized public void resetOdometry() {
 		driveBase.resetGyro();
 		currentOdometry = new RigidTransform(new Translation2d().translateBy(translationOffset), Rotation.fromDegrees(0).rotateBy(rotationOffset));
 		oldDistance = driveBase.getDistance();
@@ -56,29 +56,29 @@ public class RobotTracker extends Threaded {
 		deltaDistance = currentDistance - oldDistance;
 		Translation2d deltaPosition = new Translation2d(deltaDistance, 0);
 		Rotation deltaRotation = driveBase.getGyroAngle().inverse().rotateBy(rotationOffset);
-		deltaRotation = currentOdometry.rotationMat.inverse().rotateBy(deltaRotation);
-        Rotation halfRotation = Rotation.fromRadians(deltaRotation.getRadians() / 2.0);
-        synchronized(this) {
-    		currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition.rotateBy(halfRotation), deltaRotation)); 
-    		vehicleHistory.add(new InterpolablePair<>(System.nanoTime(), currentOdometry));
-    		gyroHistory.add(new InterpolablePair<>(System.nanoTime(), driveBase.getGyroAngle()));       	
-        }
+		synchronized (this) {
+			deltaRotation = currentOdometry.rotationMat.inverse().rotateBy(deltaRotation);
+			Rotation halfRotation = Rotation.fromRadians(deltaRotation.getRadians() / 2.0);
+			currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition.rotateBy(halfRotation), deltaRotation));
+			vehicleHistory.add(new InterpolablePair<>(System.nanoTime(), currentOdometry));
+			gyroHistory.add(new InterpolablePair<>(System.nanoTime(), driveBase.getGyroAngle()));
+		}
 		oldDistance = currentDistance;
-	
-		
-		//System.out.println("Position: " + currentOdometry.translationMat.getX() + "   " + currentOdometry.translationMat.getY());
-		//System.out.println("Gyro: " + currentOdometry.rotationMat.getDegrees());
+
+		// System.out.println("Position: " + currentOdometry.translationMat.getX() + " " +
+		// currentOdometry.translationMat.getY());
+		// System.out.println("Gyro: " + currentOdometry.rotationMat.getDegrees());
 	}
 
 	/**
 	 *
 	 * @param offset
 	 */
-	public void setInitialRotation(Rotation offset) {
+	synchronized public void setInitialRotation(Rotation offset) {
 		this.rotationOffset = offset;
 	}
-	
-	public void setInitialTranslation(Translation2d offset) {
+
+	synchronized public void setInitialTranslation(Translation2d offset) {
 		this.translationOffset = offset;
 		resetOdometry();
 	}

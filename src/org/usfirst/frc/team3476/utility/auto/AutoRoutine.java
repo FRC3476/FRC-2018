@@ -8,23 +8,22 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class AutoRoutine implements Runnable {
 
 	private ArrayList<AutoCommand> routine = new ArrayList<AutoCommand>();
-	
-	synchronized public void addCommands(AutoCommand...commands) {
+
+	synchronized public void addCommands(AutoCommand... commands) {
 		routine.addAll(Arrays.asList(commands));
 	}
 
-	synchronized public void addRoutines(AutoRoutine...routines) {
-		for (AutoRoutine r : routines)
-		{
+	synchronized public void addRoutines(AutoRoutine... routines) {
+		for (AutoRoutine r : routines) {
 			routine.addAll(r.routine);
 		}
 	}
-	
+
 	@Override
 	synchronized public void run() {
-		for(AutoCommand command : routine) {
+		for (AutoCommand command : routine) {
 			command.run();
-			if(!DriverStation.getInstance().isAutonomous()){
+			if (!DriverStation.getInstance().isAutonomous()) {
 				break;
 			}
 		}

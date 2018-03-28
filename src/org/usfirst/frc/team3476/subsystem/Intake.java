@@ -9,65 +9,50 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Intake {
-	
+
 	private Solenoid intakeSolenoid30Psi;
 	private Solenoid intakeSolenoid60Psi;
 	private LazyTalonSRX intakeMotor1;
 	private LazyTalonSRX intakeMotor2;
 	private static Intake intakeInstance = new Intake();
 	private DigitalInput cubeSwitch = new DigitalInput(Constants.CubeSwitchId);
-	
-	public enum SolenoidState
-	{
-		OPEN,
-		CLAMP,
-		INTAKING
+
+	public enum SolenoidState {
+		OPEN, CLAMP, INTAKING
 	}
-	
-	public enum IntakeState
-	{
-		INTAKE,
-		OUTTAKE,
-		GRIP,
-		OPEN, 
-		OUTTAKE_FAST,
-		OUTTAKE_FASTEST,
-		INTAKE_OPEN
+
+	public enum IntakeState {
+		INTAKE, OUTTAKE, GRIP, OPEN, OUTTAKE_FAST, OUTTAKE_FASTEST, INTAKE_OPEN
 	}
-	
-	private Intake()
-	{
+
+	private Intake() {
 		intakeMotor1 = new LazyTalonSRX(Constants.Intake1Id);
 		intakeMotor2 = new LazyTalonSRX(Constants.Intake2Id);
 		intakeSolenoid30Psi = new Solenoid(Constants.IntakeSolenoid30PsiId);
 		intakeSolenoid60Psi = new Solenoid(Constants.IntakeSolenoid60PsiId);
 	}
-	
-	public static Intake getInstance()
-	{
+
+	public static Intake getInstance() {
 		return intakeInstance;
 	}
-	
-	public boolean getCubeSwitch()
-	{
+
+	public boolean getCubeSwitch() {
 		return !cubeSwitch.get();
 	}
-	
-	public void setIntake(IntakeState state)
-	{
-		switch(state)
-		{
+
+	public void setIntake(IntakeState state) {
+		switch (state) {
 		case INTAKE:
-		
+
 			intakeMotor1.set(ControlMode.PercentOutput, -.7);
 			intakeMotor2.set(ControlMode.PercentOutput, -.3);
 			/*
-			if(getCubeSwitch()){
-				setIntakeSolenoid(SolenoidState.CLAMP);
-			} else {
-				setIntakeSolenoid(SolenoidState.OPEN);
-			}
-			*/
+			 * if(getCubeSwitch()){
+			 * setIntakeSolenoid(SolenoidState.CLAMP);
+			 * } else {
+			 * setIntakeSolenoid(SolenoidState.OPEN);
+			 * }
+			 */
 			setIntakeSolenoid(SolenoidState.INTAKING);
 			break;
 		case OUTTAKE:
@@ -100,11 +85,9 @@ public class Intake {
 			break;
 		}
 	}
-	
-	private void setIntakeSolenoid(SolenoidState state)
-	{
-		switch(state)
-		{
+
+	private void setIntakeSolenoid(SolenoidState state) {
+		switch (state) {
 		case OPEN:
 			intakeSolenoid30Psi.set(true);
 			intakeSolenoid60Psi.set(true);
@@ -119,7 +102,7 @@ public class Intake {
 			break;
 		}
 	}
-	
+
 	public double getCurrent() {
 		return (intakeMotor1.getOutputCurrent() + intakeMotor2.getOutputCurrent()) / 2d;
 	}

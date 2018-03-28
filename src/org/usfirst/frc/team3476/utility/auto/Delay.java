@@ -2,16 +2,16 @@ package org.usfirst.frc.team3476.utility.auto;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class Delay extends AutoCommand{
+public class Delay extends AutoCommand {
 
 	private double seconds;
 	private double start;
-	public Delay(double seconds)
-	{
+
+	public Delay(double seconds) {
 		this.seconds = seconds;
 		this.setBlocking(true);
 	}
-	
+
 	@Override
 	public void start() {
 		Timer.delay(seconds);

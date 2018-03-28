@@ -28,15 +28,15 @@ public class OrangeUtility {
 				DriverStation.reportError("Motor " + talon.getDeviceID() + "current outside expected range.", false);
 				success = false;
 			}
-			if (sensorTalon != null)
-			{
+			if (sensorTalon != null) {
 				if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - expectedRPM) > Constants.ExpectedRPMTolerance) {
 					DriverStation.reportError("Motor " + talon.getDeviceID() + " rpm outside expected range.", false);
 					success = false;
 				}
 				if (Math.abs(sensorTalon.getSelectedSensorPosition(0)
 						- expectedPosition) > Constants.ExpectedPositionTolerance) {
-					DriverStation.reportError("Motor " + talon.getDeviceID() + "position outside expected range.", false);
+					DriverStation.reportError("Motor " + talon.getDeviceID()
+							+ "position outside expected range.", false);
 					success = false;
 				}
 			}

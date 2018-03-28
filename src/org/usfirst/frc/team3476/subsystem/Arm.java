@@ -32,9 +32,8 @@ public class Arm {
 	protected void setEncoderPosition(int position) {
 		armTalon.setSelectedSensorPosition(position, 0, 10);
 	}
-	
-	public int getEncoderPosition()
-	{
+
+	public int getEncoderPosition() {
 		return armTalon.getSelectedSensorPosition(0);
 	}
 
@@ -42,14 +41,12 @@ public class Arm {
 		armTalon.set(ControlMode.Position, angle * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
 				* Constants.SensorTicksPerMotorRotation);
 	}
-	
-	public void setSpeed(double speed)
-	{
+
+	public void setSpeed(double speed) {
 		armTalon.set(ControlMode.Velocity, speed);
 	}
-	
-	public double getSpeed()
-	{
+
+	public double getSpeed() {
 		return armTalon.getSelectedSensorVelocity(0);
 	}
 
@@ -70,15 +67,14 @@ public class Arm {
 	public boolean checkSubsytem() {
 		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM, Constants.ExpectedArmPosition, armTalon, armTalon);
 	}
-	
-	public void setEncoderFromPWM()
-	{
-		//Value becomes negative when we set it for some reason
-		armTalon.getSensorCollection().setQuadraturePosition(-(getPWMPosition() + Constants.PracticeBotArmAngleOffsetInTicks), 10);
+
+	public void setEncoderFromPWM() {
+		// Value becomes negative when we set it for some reason
+		armTalon.getSensorCollection().setQuadraturePosition(-(getPWMPosition()
+				+ Constants.PracticeBotArmAngleOffsetInTicks), 10);
 	}
-	
-	public int getPWMPosition()
-	{
+
+	public int getPWMPosition() {
 		int pwmValue = 4095 - armTalon.getSensorCollection().getPulseWidthPosition();
 		pwmValue -= Constants.PracticeBotArmTicksOffset;
 		pwmValue %= 4096;

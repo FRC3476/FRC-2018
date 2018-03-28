@@ -29,7 +29,7 @@ public class ThreadScheduler implements Runnable {
 	@Override
 	public void run() {
 		while (isRunning) {
-			long waitTime = Duration.ofMillis(5).toNanos();
+			long waitTime = Duration.ofMillis(1).toNanos();
 			if (!paused) {
 				synchronized (this) {
 					for (Schedule schedule : schedules) {
@@ -41,8 +41,8 @@ public class ThreadScheduler implements Runnable {
 		}
 	}
 
-	public void schedule(Threaded task, Duration period, ExecutorService thread) {
-		schedules.add(new Schedule(task, period.toNanos(), System.nanoTime(), thread));
+	public void schedule(Threaded task, ExecutorService thread) {
+		schedules.add(new Schedule(task, thread));
 	}
 
 	public void pause() {
@@ -59,27 +59,22 @@ public class ThreadScheduler implements Runnable {
 
 	private static class Schedule {
 		Threaded task;
-		public long taskPeriod, taskTime;
+		public long taskTime;
 		ExecutorService thread;
 
-		private Schedule(Threaded task, long taskPeriod, long taskTime, ExecutorService thread) {
+		private Schedule(Threaded task, ExecutorService thread) {
 			this.task = task;
-			this.taskPeriod = taskPeriod;
-			this.taskTime = taskTime;
 			this.thread = thread;
+			taskTime = System.nanoTime();
 		}
 
 		public void executeIfReady() {
 			if (task.isUpdated()) {
-				if (System.nanoTime() - taskTime > taskPeriod) {
+				if (System.nanoTime() - taskTime > task.getPeriod()) {
 					thread.submit(task);
 					taskTime = System.nanoTime();
 				}
 			}
-		}
-
-		public Threaded getTask() {
-			return task;
 		}
 	}
 }

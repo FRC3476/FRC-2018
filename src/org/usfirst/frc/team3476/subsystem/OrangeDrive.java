@@ -50,7 +50,6 @@ public class OrangeDrive extends Threaded {
 	private LazyTalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
 	private PurePursuitController autonomousDriver;
 	private volatile double driveMultiplier;
-	private DriveVelocity autoDriveVelocity;
 	private DriveState driveState;
 	private RateLimiter moveProfiler;
 	private Solenoid shifter;
@@ -257,7 +256,6 @@ public class OrangeDrive extends Threaded {
 
 		leftTalon.setSensorPhase(false);
 		rightTalon.setSensorPhase(false);
-
 	}
 
 	public void resetMotionProfile() {
@@ -272,7 +270,6 @@ public class OrangeDrive extends Threaded {
 		return (getLeftDistance() + getRightDistance()) / 2;
 	}
 
-	// TODO: rename
 	public Rotation getGyroAngle() {
 		// -180 through 180
 		return Rotation.fromDegrees(gyroSensor.getAngle());
@@ -324,16 +321,14 @@ public class OrangeDrive extends Threaded {
 		rightTalon.set(ControlMode.PercentOutput, setVelocity.rightWheelSpeed);
 	}
 
-	public void setWheelVelocity(DriveVelocity setVelocity) {
-		// inches per sec to rotations per min
+	private void setWheelVelocity(DriveVelocity setVelocity) {
 		if (Math.abs(setVelocity.leftWheelSpeed) > Constants.HighDriveSpeed
 				|| Math.abs(setVelocity.rightWheelSpeed) > Constants.HighDriveSpeed) {
 			DriverStation.getInstance();
 			DriverStation.reportError("Velocity set over " + Constants.HighDriveSpeed + " !", false);
 			return;
 		}
-		// positive deltaSpeed turns right by making left wheels faster than
-		// right
+		// inches per sec to rotations per min
 		double leftSetpoint = (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d;
 		double rightSetpoint = (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d;
 		leftTalon.set(ControlMode.Velocity, leftSetpoint);
@@ -362,8 +357,7 @@ public class OrangeDrive extends Threaded {
 	}
 
 	private synchronized void updateAutoPath() {
-		autoDriveVelocity = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
-		setWheelVelocity(autoDriveVelocity);
+		setWheelVelocity(autonomousDriver.calculate(RobotTracker.getInstance().getOdometry()));
 	}
 	
 	public synchronized void setFinished() {

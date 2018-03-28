@@ -2,8 +2,8 @@ package org.usfirst.frc.team3476.robot;
 
 public final class Constants {
 
-
-
+	public static final boolean LOGGING = false;
+	
 	// Other
 	public static final double SensorTicksPerMotorRotation = 4096;
 	public static final double ExpectedCurrentTolerance = 0;

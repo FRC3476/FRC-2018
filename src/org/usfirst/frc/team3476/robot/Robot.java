@@ -47,6 +47,9 @@ public class Robot extends IterativeRobot {
 	CameraServer camServer = CameraServer.getInstance();	
 	SendableChooser<String> posChooser = new SendableChooser<>();
 	SendableChooser<String> optionChooser = new SendableChooser<>();
+	SendableChooser<String> mInDbUsInEsS = new SendableChooser<>();
+	
+	boolean homed = false;
 
 	Path autoPath;
 
@@ -55,6 +58,8 @@ public class Robot extends IterativeRobot {
 		drive.setPeriod(Duration.ofMillis(5));
 		tracker.setPeriod(Duration.ofMillis(5));
 		elevarm.setPeriod(Duration.ofMillis(5));
+		mInDbUsInEsS.addDefault("Business", "Business");
+		mInDbUsInEsS.addObject("mInDbUsInEsS", "mInDbUsInEsS");
 		posChooser.addDefault("Left", "Left");
 		posChooser.addObject("Center", "Center");
 		posChooser.addObject("Right", "Right");
@@ -62,7 +67,6 @@ public class Robot extends IterativeRobot {
 		optionChooser.addObject("SWITCH", "SWITCH");
 		optionChooser.addObject("BOTH", "BOTH");
 		optionChooser.addObject("FORWARD", "FORWARD");
-		optionChooser.addObject("mInD bUsInEsS", "mInD bUsInEsS");
 		optionChooser.addObject("NONE", "NONE");
 		SmartDashboard.putData("Position", posChooser);
 		SmartDashboard.putData("Option", optionChooser);
@@ -77,31 +81,73 @@ public class Robot extends IterativeRobot {
 		tracker.resume();
 		String pos = posChooser.getSelected();
 		String option = optionChooser.getSelected();
+		String business = mInDbUsInEsS.getSelected();
+		
+		PathOption pOption = PathOption.NONE;
+		StartPosition sPos = StartPosition.CENTER;
+		boolean mind = false;
+		switch(business){
+		case "Business":
+			mind = false;
+			break;
+		case "mInDbUsInEsS":
+			mind = true;
+			break;
+		}
+		
 		switch(pos){
 		case "Left":
+			sPos = StartPosition.LEFT;
 			break;
 		case "Center":
+			sPos = StartPosition.CENTER;
 			break;
 		case "Right":
+			sPos = StartPosition.RIGHT;
 			break;
 		}
 		
 		switch(option){
 		case "SCALE":
+			pOption = PathOption.SCALE;
 			break;
 		case "SWITCH":
+			pOption = PathOption.SWITCH;
 			break;
 		case "BOTH":
+			pOption = PathOption.BOTH;
 			break;
 		case "FORWARD":
+			pOption = PathOption.FORWARD;
 			break;
 		case "mInD bUsInEsS":
+			pOption = PathOption.SCALE;
 			break;
 		case "NONE":
+			pOption = PathOption.NONE;
 			break;
 		}
 		
-		AutoRoutine routine = AutoRoutineGenerator.generate("ll", PathOption.SCALE, StartPosition.LEFT);
+		double start = Timer.getFPGATimestamp();
+		while (DriverStation.getInstance().getGameSpecificMessage().isEmpty() && Timer.getFPGATimestamp() - start < 1)
+		{
+			
+		}
+		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		if (gameData.isEmpty())
+		{
+			gameData = "rr";
+			if (pOption == PathOption.NONE)
+			{}
+			else if (sPos != StartPosition.CENTER)
+				pOption = PathOption.FORWARD;
+			else
+				pOption = PathOption.SWITCH;
+		}
+		System.out.println(pOption);
+		System.out.println(sPos);
+		
+		AutoRoutine routine = AutoRoutineGenerator.generate(gameData, pOption, sPos, mind);
 		new Thread(routine).start();
 	}
 
@@ -147,6 +193,7 @@ public class Robot extends IterativeRobot {
 		if (joystick.getRisingEdge(11))
 		{
 			elevarm.setElevatorGearbox(false);
+			elevarm.homeElevator();
 		}
 	
 		

@@ -10,7 +10,7 @@ import org.usfirst.frc.team3476.utility.math.Translation2d;
 public class AutoRoutineGenerator {
 	
 	private static Translation2d robotRightStartPosition = new Translation2d(20, -115);
-	private static Translation2d robotCenterStartPosition = new Translation2d(20, 0);
+	private static Translation2d robotCenterStartPosition = new Translation2d(20, -6);
 	private static Translation2d robotLeftStartPosition = new Translation2d(20, 115);
 	
 	private static Translation2d midFieldRightPosition = new Translation2d(240, -108);
@@ -22,8 +22,8 @@ public class AutoRoutineGenerator {
 	private static Translation2d midFieldRightLeadUp = new Translation2d(120, -108);
 	private static Translation2d midFieldLeftLeadUp = new Translation2d(120, 108);
 	
-	private static Translation2d rightScalePosition = new Translation2d(280, -94);
-	private static Translation2d leftScalePosition = new Translation2d(280, 94);
+	private static Translation2d rightScalePosition = new Translation2d(280, -102);
+	private static Translation2d leftScalePosition = new Translation2d(280, 102);
 	
 	private static Translation2d rightSwitchCubePositionFar = new Translation2d(232, -86);
 	private static Translation2d leftSwitchCubePositionFar = new Translation2d(232, 86);
@@ -103,7 +103,7 @@ public class AutoRoutineGenerator {
 	
 
 
-	public static AutoRoutine generate(String gameMsg, PathOption option, StartPosition position) {
+	public static AutoRoutine generate(String gameMsg, PathOption option, StartPosition position, boolean mindBusiness) {
 		AutoRoutine overallRoutine = new AutoRoutine();
 		Path initialPath;
 		initialDrive = new AutoRoutine();
@@ -135,8 +135,8 @@ public class AutoRoutineGenerator {
 						}
 						else
 						{
-							initialPath.addPoint(rightSwitchOuttakeLeadUpNear, shortDistanceSpeed);
-							initialPath.addPoint(rightSwitchOuttakePositionNear, switchSpeed);
+							//initialPath.addPoint(rightSwitchOuttakeLeadUpNear, shortDistanceSpeed);
+							//initialPath.addPoint(rightSwitchOuttakePositionNear, switchSpeed);
 						}
 						initialDrive.addCommands(new SetDrivePath(initialPath, false));
 						overallRoutine.addRoutines(initialDrive, placeCubeInSwitch);
@@ -150,6 +150,12 @@ public class AutoRoutineGenerator {
 						}
 						else
 						{
+							if (mindBusiness)
+							{
+								initialPath.addPoint(midFieldLeftPosition, longDistanceSpeed);
+								overallRoutine.addCommands(new SetDrivePath(initialPath, false));
+								break;
+							}
 							initialPath.addPoint(midFieldLeftPosition, shortDistanceSpeed);
 							initialPath.addPoint(midFieldRightPosition, midFieldSpeed);
 							initialPath.addPoint(rightScalePosition, scaleSpeed);
@@ -168,6 +174,12 @@ public class AutoRoutineGenerator {
 						initialPath.addPoint(midFieldLeftPosition, longDistanceSpeed);
 						if (scalePos == Position.RIGHT)
 						{
+							if (mindBusiness)
+							{
+								initialPath.addPoint(midFieldLeftPosition, longDistanceSpeed);
+								overallRoutine.addCommands(new SetDrivePath(initialPath, false));
+								break;
+							}
 							initialPath.addPoint(midFieldRightPosition, midFieldSpeed);
 							initialPath.addPoint(rightScalePosition, scaleSpeed);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
@@ -190,7 +202,6 @@ public class AutoRoutineGenerator {
 							overallRoutine.addRoutines(toMidFieldLeftReverse, getLeftSwitchCube);
 							overallRoutine.addCommands(new DriveToPoints(switchSpeed, false, leftSwitchOuttakePositionFar));
 						}
-						
 						overallRoutine.addRoutines(placeCubeInSwitch);
 						break;
 					case FORWARD:
@@ -239,8 +250,8 @@ public class AutoRoutineGenerator {
 					case SWITCH:
 						if (switchPos == Position.LEFT)
 						{
-							initialPath.addPoint(leftSwitchOuttakeLeadUpNear, shortDistanceSpeed);
-							initialPath.addPoint(leftSwitchOuttakePositionNear, switchSpeed);
+							//initialPath.addPoint(leftSwitchOuttakeLeadUpNear, shortDistanceSpeed);
+							//initialPath.addPoint(leftSwitchOuttakePositionNear, switchSpeed);
 						}
 						else
 						{
@@ -254,6 +265,12 @@ public class AutoRoutineGenerator {
 						initialPath.addPoint(midFieldRightLeadUp, longDistanceSpeed);
 						if (scalePos == Position.LEFT)
 						{
+							if (mindBusiness)
+							{
+								initialPath.addPoint(midFieldLeftPosition, longDistanceSpeed);
+								overallRoutine.addCommands(new SetDrivePath(initialPath, false));
+								break;
+							}
 							initialPath.addPoint(midFieldRightPosition, shortDistanceSpeed);
 							initialPath.addPoint(midFieldLeftPosition, midFieldSpeed);
 							initialPath.addPoint(leftScalePosition, scaleSpeed);
@@ -265,6 +282,13 @@ public class AutoRoutineGenerator {
 						}
 						initialDrive.addCommands(new SetDrivePath(initialPath, false));
 						overallRoutine.addRoutines(initialDrive, placeCubeOnScale);
+						if (scalePos == Position.RIGHT)
+						{
+							overallRoutine.addCommands(new DriveToPoints(reverseSpeed, true, midFieldRightBackUpPosition));
+							overallRoutine.addRoutines(getRightSwitchCube);
+							overallRoutine.addCommands(new SetArmAngle(80), new SetElevatorHeight(10), new DriveToPoints(reverseSpeed, true, midFieldRightBackUpPosition), new SetElevatorHeight(60), new DriveToPoints(scaleSpeed, false, midFieldRightPosition, rightScalePosition));
+							overallRoutine.addRoutines(placeCubeOnScale);
+						}
 						break;
 					case BOTH:
 						initialPath.addPoint(midFieldRightPosition, longDistanceSpeed);
@@ -276,6 +300,12 @@ public class AutoRoutineGenerator {
 						}
 						else
 						{
+							if (mindBusiness)
+							{
+								initialPath.addPoint(midFieldLeftPosition, longDistanceSpeed);
+								overallRoutine.addCommands(new SetDrivePath(initialPath, false));
+								break;
+							}
 							initialPath.addPoint(midFieldLeftPosition, midFieldSpeed);
 							initialPath.addPoint(leftScalePosition, scaleSpeed);
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));

@@ -326,6 +326,7 @@ public class Elevarm extends Threaded {
 	public void stopMovement() {
 		setArmPercentOutput(0);
 		setElevatorPercentOutput(0);
+		setClimberPercentOutput(0);
 	}
 	
 	public boolean checkArm() {

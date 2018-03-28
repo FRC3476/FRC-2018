@@ -123,6 +123,7 @@ public class Path {
 	private List<PathSegment> segments;
 	private Translation2d lastPoint;
 	private Rotation endAngle = null;
+	private volatile boolean isEmpty;
 
 	/**
 	 * Contains a list of points and can create path segments with them.
@@ -134,6 +135,7 @@ public class Path {
 	public Path(Translation2d start) {
 		segments = new ArrayList<PathSegment>();
 		lastPoint = start;
+		isEmpty = true;
 	}
 
 	/**
@@ -146,11 +148,13 @@ public class Path {
 	public void addPoint(double x, double y, double speed) {
 		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed));
 		lastPoint = new Translation2d(x, y);
+		isEmpty = false;
 	}
 	
 	public void addPoint(Translation2d point, double speed)
 	{
 		addPoint(point.getX(), point.getY(), speed);	
+		isEmpty = false;
 	}
 	
 	/**
@@ -165,6 +169,10 @@ public class Path {
 		endAngle = angle;
 	}
 
+
+	public boolean isEmpty(){
+		return isEmpty;
+	}
 	/**
 	 *
 	 */

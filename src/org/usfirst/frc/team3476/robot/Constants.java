@@ -23,7 +23,7 @@ public final class Constants {
 	public static final double kLeftHighP = 0.05;
 	public static final double kLeftHighI = 0;
 	public static final double kLeftHighD = 0.05;
-	public static final double kLeftHighF = 0.0414;
+	public static final double kLeftHighF = 0.04;
 	public static final double kLeftLowP = 0.1;
 	public static final double kLeftLowF = 0.05763730970902943999708309631717;
 	public static final double kLeftLowD = 0;
@@ -42,7 +42,7 @@ public final class Constants {
 
 	// Autonomous Driving
 	public static final double TrackRadius = 15.5;
-	public static final double WheelDiameter = 5.9;
+	public static final double WheelDiameter = 6;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 20;
 	public static final double MaxPathSpeed = 140;
@@ -66,11 +66,11 @@ public final class Constants {
 	public static final int Intake2Id = 23;
 
 	public static final int ElevatorMotorId = 24;
-	public static final int ElevatorSlaveMotorId = 26;
+	public static final int ElevatorSlaveMotorId = 25;
 	public static final int ArmId = 30;
 	
 	public static final int Climber1TalonId = 21;
-	public static final int Climber2TalonId = 25;
+	public static final int Climber2TalonId = 26;
 
 	// Elevator
 	public static final double ElevatorMinHeight = -0.5;
@@ -98,7 +98,7 @@ public final class Constants {
 	public static final double ArmIntakeDegrees = -22;
 	
 	
-	public static final int PracticeBotArmTicksOffset = 1216;
+	public static final int PracticeBotArmTicksOffset = 8 + 2352;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 

@@ -2,13 +2,14 @@ package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
+import org.usfirst.frc.team3476.utility.Threaded;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
-public class Intake {
+public class Intake extends Threaded {
 
 	private Solenoid intakeSolenoid30Psi;
 	private Solenoid intakeSolenoid60Psi;
@@ -23,7 +24,11 @@ public class Intake {
 		CLAMP,
 		INTAKING
 	}
-
+	
+	private enum IntakingState {
+		INTAKE, MANUAL
+	}
+	
 	public enum IntakeState {
 		INTAKE, OUTTAKE, GRIP, OPEN, OUTTAKE_FAST, OUTTAKE_FASTEST, INTAKE_OPEN
 	}
@@ -49,17 +54,8 @@ public class Intake {
 		switch(state)
 		{
 		case INTAKE:
-
-			intakeMotor1.set(ControlMode.PercentOutput, -.7);
-			intakeMotor2.set(ControlMode.PercentOutput, -.3);
-			/*
-			 * if(getCubeSwitch()){
-			 * setIntakeSolenoid(SolenoidState.CLAMP);
-			 * } else {
-			 * setIntakeSolenoid(SolenoidState.OPEN);
-			 * }
-			 */
 			setIntakeSolenoid(SolenoidState.INTAKING);
+			
 			break;
 		case OUTTAKE:
 			intakeMotor1.set(ControlMode.PercentOutput, .25);
@@ -115,5 +111,10 @@ public class Intake {
 
 	public boolean isFinished() {
 		return true;
+	}
+
+	@Override
+	public void update() {
+				
 	}
 }

@@ -69,11 +69,13 @@ public class Elevator {
 	}
 
 	public void setSpeed(double speed) {
-		elevatorTalon.set(ControlMode.Velocity, speed);
+		elevatorTalon.set(ControlMode.Velocity, speed * (1d / Constants.ElevatorInchesPerMotorRotation)
+				* Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getSpeed() {
-		return elevatorTalon.getSelectedSensorVelocity(0);
+		return elevatorTalon.getSelectedSensorVelocity(0) * (1d / Constants.SensorTicksPerMotorRotation)
+				* Constants.ElevatorInchesPerMotorRotation;
 	}
 
 	protected void setEncoderPosition(int position) {

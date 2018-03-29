@@ -62,6 +62,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Position", posChooser);
 		SmartDashboard.putData("Option", optionChooser);
 		SmartDashboard.putData("business", mInDbUsInEsS);
+		scheduler.schedule(drive, mainExecutor);
+		scheduler.schedule(tracker, mainExecutor);
+		scheduler.schedule(elevarm, mainExecutor);
 		camServer.startAutomaticCapture(0);
 		camServer.startAutomaticCapture(1);
 	}
@@ -161,6 +164,19 @@ public class Robot extends IterativeRobot {
 		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: "
 				+ elevarm.getTargetElevatorHeight());
 
+		if (joystick.getRisingEdge(9))
+		{
+			elevarm.setXRate(.1);
+		}
+		else if (joystick.getRisingEdge(10))
+		{
+			elevarm.setXRate(-.1);
+		}
+		else if (joystick.getFallingEdge(9) || joystick.getFallingEdge(10))
+		{
+			elevarm.setXRate(0);
+		}
+		
 		if (buttonBox.getRawButton(10)) {
 			elevarm.setClimberPercentOutput(.75);
 			elevarm.setElevatorGearbox(true);
@@ -205,9 +221,9 @@ public class Robot extends IterativeRobot {
 
 		double nudge = joystick.getRawAxis(1);
 		if (nudge > Constants.JoystickDeadzone) {
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge - Constants.JoystickDeadzone) * 5);
+			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge - Constants.JoystickDeadzone) * 5);
 		} else if (nudge < -Constants.JoystickDeadzone) {
-			elevarm.setElevatorHeight(elevarm.getElevatorHeight() - (nudge + Constants.JoystickDeadzone) * 5);
+			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge + Constants.JoystickDeadzone) * 5);
 		}
 
 		if (buttonBox.getRisingEdge(9)) {

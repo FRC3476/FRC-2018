@@ -12,7 +12,7 @@ public abstract class Threaded implements Runnable {
 	private boolean isUpdated = true;
 	private volatile boolean isPaused = false;
 	private double lastRuntime = 0;
-	private volatile long period;
+	private volatile long period = Duration.ofMillis(5).toNanos();
 
 	@Override
 	public void run() {

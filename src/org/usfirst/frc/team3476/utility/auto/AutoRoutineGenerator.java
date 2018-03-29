@@ -11,7 +11,7 @@ public class AutoRoutineGenerator {
 	
 	private static Translation2d robotRightStartPosition = new Translation2d(20, -115);
 	private static Translation2d robotCenterStartPosition = new Translation2d(20, -6);
-	private static Translation2d robotLeftStartPosition = new Translation2d(20, 115);
+	private static Translation2d robotLeftStartPosition = new Translation2d(20, 115);  
 	
 	private static Translation2d midFieldRightPosition = new Translation2d(240, -118);
 	private static Translation2d midFieldLeftPosition = new Translation2d(240, 108);

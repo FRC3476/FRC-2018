@@ -3,9 +3,12 @@
 package org.usfirst.frc.team3476.utility.control;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.usfirst.frc.team3476.robot.Constants;
+import org.usfirst.frc.team3476.utility.auto.AutoCommand;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
@@ -22,6 +25,8 @@ public class Path {
 
 		private Translation2d start, end, delta;
 		private double maxSpeed, deltaDist, deltaDistSquared;
+		
+		private ArrayList<AutoCommandTrigger> commands = new ArrayList<>();
 
 		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed) {
 			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
@@ -33,6 +38,16 @@ public class Path {
 			delta = start.inverse().translateBy(end);
 			deltaDist = Math.hypot(delta.getX(), delta.getY());
 			deltaDistSquared = Math.pow(deltaDist, 2);
+		}
+		private PathSegment(Translation2d start, Translation2d end, double maxSpeed, ArrayList<AutoCommandTrigger> commands) {
+			this(start, end, maxSpeed);
+			this.commands.addAll(commands);
+			Collections.sort(this.commands);
+		}
+		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed, ArrayList<AutoCommandTrigger> commands) {
+			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
+			this.commands.addAll(commands);
+			Collections.sort(this.commands);
 		}
 		
 		private Translation2d getStart() {
@@ -56,6 +71,13 @@ public class Path {
 					/ deltaDistSquared;
 			u = Math.max(Math.min(u, 1), 0);
 			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);
+		}
+		
+		private double getPercentageOnSegment(Translation2d Point) {
+			double u = ((point.getX() - start.getX()) * delta.getX() + (point.getY() - start.getY()) * delta.getY())
+					/ deltaDistSquared;
+			u = Math.max(Math.min(u, 1), 0);
+			return u;
 		}
 
 		/**
@@ -118,6 +140,26 @@ public class Path {
 		public Translation2d lookAheadPoint;
 		public Translation2d closestPoint;
 		public Translation2d currentSegEnd;
+	}
+	
+	public static class AutoCommandTrigger implements Comparable<AutoCommandTrigger>{
+		private double percentage;
+		private AutoCommand command;
+		
+		//Should not be blocking nerds
+		public AutoCommandTrigger(AutoCommand command, double percentage) {
+			this.command = command;
+			this.percentage = percentage;
+		}
+
+		@Override
+		public int compareTo(AutoCommandTrigger other) {
+			if (this.percentage > other.percentage)
+				return 1;
+			if (this.percentage < other.percentage)
+				return -1;
+			return -0;
+		}
 	}
 
 	private List<PathSegment> segments;
@@ -232,10 +274,22 @@ public class Path {
 			Translation2d closestNextToRobot = closestNextPoint.inverse().translateBy(pose);
 			double distToNext = Math.hypot(closestNextToRobot.getX(), closestNextToRobot.getY());
 			if (distToClosest > distToNext) {
-				segments.remove(0);
-				
+				//Run commands that didn't run yet in segments being deleted
+				while(!segments.get(0).commands.isEmpty()) {
+					segments.get(0).commands.remove(0).command.run();
+				}
+				segments.remove(0);				
 				closestPoint = closestNextPoint;
 				closestToRobot = closestNextToRobot;
+			} else {
+				break;
+			}
+		}
+		//Run commands when we zoom past
+		double percentage = segments.get(0).getPercentageOnSegment(pose);
+		while(!segments.get(0).commands.isEmpty()) {
+			if(segments.get(0).commands.get(0).percentage < percentage) {
+				segments.get(0).commands.remove(0).command.run();
 			} else {
 				break;
 			}

@@ -117,7 +117,7 @@ public class Elevarm extends Threaded {
 		double armSpeed = -xRate * 57.44645 / (Constants.ArmLength * Math.sin(Math.toRadians(arm.getAngle())));
 		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(arm.getAngle()));
 		
-		if (isValidPosition(getX() + xRate, getY()))
+		if (isValidAngleAndHeight(getArmAngle(), getElevatorHeight()) && !(Math.abs(getArmAngle()) < 5))
 		{
 			arm.setSpeed(armSpeed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
 				* Constants.SensorTicksPerMotorRotation);

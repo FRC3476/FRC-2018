@@ -4,7 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
-import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveVelocity;
+import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveSignal;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.UDP;
 import org.usfirst.frc.team3476.utility.control.Path.DrivingData;
@@ -47,23 +47,16 @@ public class PurePursuitController {
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized DriveVelocity calculate(RigidTransform robotPose) {
+	public synchronized AutoDriveSignal calculate(RigidTransform robotPose) {
 		if (isReversed) {
 			robotPose = new RigidTransform(robotPose.translationMat, robotPose.rotationMat.flip());
 		}
-
-		/*
-		 * Adaptive Lookahead
-		 */
-
-		// Motion Profiling
 		double lookAheadDist = OrangeUtility.coercedNormalize(speedProfiler.getLatestValue(), Constants.MinPathSpeed,
 		Constants.MaxPathSpeed, Constants.MinLookAheadDistance, Constants.MaxLookAheadDistance);
 		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, lookAheadDist);
 		
-		if(data.remainingDist < .5) { //If robot passes point, remaining distance is 0
-			OrangeDrive.getInstance().setFinished();
-			return new DriveVelocity(0, 0);
+		if(data.remainingDist == 0.0) { //If robot passes point, remaining distance is 0
+			return new AutoDriveSignal(new DriveSignal(0, 0), true);
 		}
 		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);	
 		if(robotSpeed < 20) {
@@ -115,7 +108,11 @@ public class PurePursuitController {
 		if (isReversed) {
 			robotSpeed *= -1;
 		}
-		return new DriveVelocity(robotSpeed + deltaSpeed, robotSpeed - deltaSpeed);
+		double maxSpeed = Math.abs(robotSpeed) + Math.abs(deltaSpeed);
+		if(maxSpeed > Constants.HighDriveSpeed) {
+			robotSpeed -= Math.copySign(robotSpeed, maxSpeed - Constants.HighDriveSpeed);
+		}
+		return new AutoDriveSignal(new DriveSignal(robotSpeed + deltaSpeed, robotSpeed - deltaSpeed), false);
 	}
 
 	private double getRadius(Translation2d robotToLookAheadPoint) {
@@ -137,5 +134,15 @@ public class PurePursuitController {
 	public void resetTime() {
 		// TODO: Big Bang
 		speedProfiler.reset();
+	}
+	
+	public static class AutoDriveSignal {
+		public DriveSignal command;
+		public boolean isDone;
+		
+		public AutoDriveSignal(DriveSignal command, boolean isDone) {
+			this.command = command;
+			this.isDone = isDone;
+		}
 	}
 }

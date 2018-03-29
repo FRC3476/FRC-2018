@@ -7,6 +7,7 @@ import org.usfirst.frc.team3476.utility.Threaded;
 import org.usfirst.frc.team3476.utility.control.Path;
 import org.usfirst.frc.team3476.utility.control.PurePursuitController;
 import org.usfirst.frc.team3476.utility.control.RateLimiter;
+import org.usfirst.frc.team3476.utility.control.PurePursuitController.AutoDriveSignal;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -23,14 +24,14 @@ public class OrangeDrive extends Threaded {
 		TELEOP, AUTO, DONE
 	}
 
-	public static class DriveVelocity {
+	public static class DriveSignal {
 		/*
 		 * Inches per second for speed
 		 */
 		public double rightWheelSpeed;
 		public double leftWheelSpeed;
 
-		public DriveVelocity(double left, double right) {
+		public DriveSignal(double left, double right) {
 			this.rightWheelSpeed = left;
 			this.leftWheelSpeed = right;
 		}
@@ -114,7 +115,7 @@ public class OrangeDrive extends Threaded {
 		if (drivePercentVbus) {
 			leftMotorSpeed = OrangeUtility.coerce(moveValue + rotateValue, 1, -1);
 			rightMotorSpeed = OrangeUtility.coerce(moveValue - rotateValue, 1, -1);
-			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		} else {
 			moveValue *= Constants.HighDriveSpeed;
 			rotateValue *= Constants.HighDriveSpeed;
@@ -127,7 +128,7 @@ public class OrangeDrive extends Threaded {
 			//leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
 			//rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
 
-			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
 
@@ -186,14 +187,14 @@ public class OrangeDrive extends Threaded {
 			rightMotorSpeed = -1.0;
 		}
 		if(drivePercentVbus){
-			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));			
+			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));			
 		} else {			
 			leftMotorSpeed *= driveMultiplier;
 			rightMotorSpeed *= driveMultiplier;
 			if(leftMotorSpeed == 0 && rightMotorSpeed == 0) {
-				setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));	
+				setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));	
 			}
-			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
 
@@ -226,14 +227,14 @@ public class OrangeDrive extends Threaded {
 			rightMotorSpeed = -1.0;
 		}		
 		if(drivePercentVbus){
-			setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));			
+			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));			
 		} else {			
 			leftMotorSpeed *= driveMultiplier;
 			rightMotorSpeed *= driveMultiplier;
 			if(leftMotorSpeed == 0 && rightMotorSpeed == 0) {
-				setWheelPower(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));	
+				setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));	
 			}
-			setWheelVelocity(new DriveVelocity(leftMotorSpeed, rightMotorSpeed));
+			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
 	
@@ -316,12 +317,12 @@ public class OrangeDrive extends Threaded {
 		rightSlaveTalon.setNeutralMode(mode);
 	}
 
-	private void setWheelPower(DriveVelocity setVelocity) {
+	private void setWheelPower(DriveSignal setVelocity) {
 		leftTalon.set(ControlMode.PercentOutput, setVelocity.leftWheelSpeed);
 		rightTalon.set(ControlMode.PercentOutput, setVelocity.rightWheelSpeed);
 	}
 
-	private void setWheelVelocity(DriveVelocity setVelocity) {
+	private void setWheelVelocity(DriveSignal setVelocity) {
 		if (Math.abs(setVelocity.leftWheelSpeed) > Constants.HighDriveSpeed
 				|| Math.abs(setVelocity.rightWheelSpeed) > Constants.HighDriveSpeed) {
 			DriverStation.getInstance();
@@ -340,8 +341,9 @@ public class OrangeDrive extends Threaded {
 	}
 
 	@Override
-	public synchronized void update() {
+	public synchronized void update() {		
 		if (driveState == DriveState.TELEOP) {
+			
 		} else {
 			updateAutoPath();
 		}
@@ -356,12 +358,14 @@ public class OrangeDrive extends Threaded {
 		}
 	}
 
-	private synchronized void updateAutoPath() {
-		setWheelVelocity(autonomousDriver.calculate(RobotTracker.getInstance().getOdometry()));
-	}
-	
-	public synchronized void setFinished() {
-		driveState = DriveState.DONE;
+	private void updateAutoPath() {
+		AutoDriveSignal signal = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
+		if(signal.isDone){
+			synchronized(this){
+				driveState = DriveState.DONE;				
+			}
+		}
+		setWheelVelocity(signal.command);
 	}
 
 	public void resetGyro() {

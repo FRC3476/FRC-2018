@@ -57,7 +57,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		drive.setPeriod(Duration.ofMillis(5));
 		tracker.setPeriod(Duration.ofMillis(5));
-		elevarm.setPeriod(Duration.ofMillis(5));
+		elevarm.setPeriod(Duration.ofMillis(20));
 		mInDbUsInEsS.addDefault("Business", "Business");
 		mInDbUsInEsS.addObject("mInDbUsInEsS", "mInDbUsInEsS");
 		posChooser.addDefault("Left", "Left");

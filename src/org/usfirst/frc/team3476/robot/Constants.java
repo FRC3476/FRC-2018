@@ -3,7 +3,7 @@ package org.usfirst.frc.team3476.robot;
 public final class Constants {
 
 	public static final boolean LOGGING = false;
-	
+
 	// Other
 	public static final double SensorTicksPerMotorRotation = 4096;
 	public static final double ExpectedCurrentTolerance = 0;
@@ -19,7 +19,7 @@ public final class Constants {
 	public static final double kRightLowP = 0.1;
 	public static final double kRightLowF = 0.05763730970902943999708309631717;
 	public static final double kRightLowD = 0.1;
-	
+
 	public static final double kLeftHighP = 0.05;
 	public static final double kLeftHighI = 0;
 	public static final double kLeftHighD = 0.05;
@@ -68,7 +68,7 @@ public final class Constants {
 	public static final int ElevatorMotorId = 24;
 	public static final int ElevatorSlaveMotorId = 25;
 	public static final int ArmId = 30;
-	
+
 	public static final int Climber1TalonId = 21;
 	public static final int Climber2TalonId = 26;
 
@@ -101,12 +101,10 @@ public final class Constants {
 	public static final int PracticeBotArmTicksOffset = 8 + 2352;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
-
 	public static final double JoystickDeadzone = .15;
-	
+
 	public static final int CubeSwitchId = 0;
 	public static final double ExpectedClimberCurrent = 0;
-
 
 	private Constants() {
 	}

@@ -89,9 +89,9 @@ public class Controller extends Joystick {
 		}
 		return false;
 	}
-	
+
 	public boolean getRisingEdge(int axis, double threshold) {
-		if(axis <= axisCount) {
+		if (axis <= axisCount) {
 			boolean oldVal = oldAxis[axis] > threshold;
 			boolean currentVal = super.getRawAxis(axis) > threshold;
 			if (oldVal == false && currentVal == true) {
@@ -99,12 +99,12 @@ public class Controller extends Joystick {
 			} else {
 				return false;
 			}
-		} 
+		}
 		return false;
 	}
-	
+
 	public boolean getFallingEdge(int axis, double threshold) {
-		if(axis <= axisCount) {
+		if (axis <= axisCount) {
 			boolean oldVal = oldAxis[axis] > threshold;
 			boolean currentVal = super.getRawAxis(axis) > threshold;
 			if (oldVal == true && currentVal == false) {
@@ -112,7 +112,7 @@ public class Controller extends Joystick {
 			} else {
 				return false;
 			}
-		} 
+		}
 		return false;
 	}
 
@@ -122,8 +122,7 @@ public class Controller extends Joystick {
 	boolean next = false;
 
 	public void update() {
-		if (Math.random() > .999 || next)
-		{
+		if (Math.random() > .999 || next) {
 			this.setRumble(RumbleType.kLeftRumble, 1);
 			this.setRumble(RumbleType.kRightRumble, 1);
 			if (next = true) {
@@ -137,7 +136,7 @@ public class Controller extends Joystick {
 		}
 		oldButtons = currentButtons;
 		currentButtons = DriverStation.getInstance().getStickButtons(getPort());
-		for(int i = 0; i < axisCount; i++){
+		for (int i = 0; i < axisCount; i++) {
 			oldAxis[i] = super.getRawAxis(i);
 		}
 	}

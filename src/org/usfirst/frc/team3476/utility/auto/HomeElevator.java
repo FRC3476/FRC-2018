@@ -6,7 +6,7 @@ public class HomeElevator extends AutoCommand {
 
 	@Override
 	public void start() {
-		Elevarm.getInstance().homeElevator();		
+		Elevarm.getInstance().homeElevator();
 		setBlocking(true);
 	}
 

@@ -1,5 +1,4 @@
 
-
 package org.usfirst.frc.team3476.utility.control;
 
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ public class Path {
 		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed) {
 			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
 		}
+
 		private PathSegment(Translation2d start, Translation2d end, double maxSpeed) {
 			this.start = start;
 			this.end = end;
@@ -39,6 +39,7 @@ public class Path {
 			deltaDist = Math.hypot(delta.getX(), delta.getY());
 			deltaDistSquared = Math.pow(deltaDist, 2);
 		}
+		
 		private PathSegment(Translation2d start, Translation2d end, double maxSpeed, ArrayList<AutoCommandTrigger> commands) {
 			this(start, end, maxSpeed);
 			this.commands.addAll(commands);
@@ -73,7 +74,7 @@ public class Path {
 			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);
 		}
 		
-		private double getPercentageOnSegment(Translation2d Point) {
+		private double getPercentageOnSegment(Translation2d point) {
 			double u = ((point.getX() - start.getX()) * delta.getX() + (point.getY() - start.getY()) * delta.getY())
 					/ deltaDistSquared;
 			u = Math.max(Math.min(u, 1), 0);
@@ -198,7 +199,7 @@ public class Path {
 		addPoint(point.getX(), point.getY(), speed);	
 		isEmpty = false;
 	}
-	
+
 	/**
 	 * Sets the desired angle for the robot to end in. It does this by placing
 	 * up to two points that have a 90 degree angle to allow the robot to
@@ -316,7 +317,7 @@ public class Path {
 					data.lookAheadPoint = segments.get(i).getPointByDistance(lookAheadDistance);
 					break;
 				}
-			}			
+			}
 		} else {
 			double distanceOnPath = segments.get(0).getDistance() - remainingSegDist + lookAheadDistance;
 			data.lookAheadPoint = segments.get(0).getPointByDistance(distanceOnPath);

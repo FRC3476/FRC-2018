@@ -68,12 +68,12 @@ public class OrangeDrive extends Threaded {
 		rightSlaveTalon = new LazyTalonSRX(Constants.RightSlaveDriveId);
 		rightSlave2Talon = new LazyTalonSRX(Constants.RightSlave2DriveId);
 		configMotors();
-		
+
 		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
 
 		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
-		
+
 		configHigh();
 	}
 
@@ -88,18 +88,18 @@ public class OrangeDrive extends Threaded {
 		leftTalon.config_kF(0, Constants.kLeftHighF, 10);
 		driveMultiplier = Constants.HighDriveSpeed;
 	}
-	
+
 	private void configLow() {
 		rightTalon.config_kP(0, Constants.kRightLowP, 10);
-		rightTalon.config_kF(0, Constants.kRightLowF, 10);	
+		rightTalon.config_kF(0, Constants.kRightLowF, 10);
 		leftTalon.config_kP(0, Constants.kLeftLowP, 10);
 		leftTalon.config_kF(0, Constants.kLeftLowF, 10);
-		driveMultiplier = Constants.LowDriveSpeed;	
+		driveMultiplier = Constants.LowDriveSpeed;
 	}
-	
+
 	public void arcadeDrive(double moveValue, double rotateValue) {
-		synchronized(this) {
-			driveState = DriveState.TELEOP;			
+		synchronized (this) {
+			driveState = DriveState.TELEOP;
 		}
 		moveValue = scaleJoystickValues(moveValue);
 		rotateValue = scaleJoystickValues(rotateValue);
@@ -125,8 +125,8 @@ public class OrangeDrive extends Threaded {
 			rightMotorSpeed = OrangeUtility.coerce(moveValue
 					- rotateValue, Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 
-			//leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
-			//rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
+			// leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
+			// rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
 
 			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
@@ -137,8 +137,8 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public void cheesyDrive(double moveValue, double rotateValue, boolean isQuickTurn) {
-		synchronized(this) {
-			driveState = DriveState.TELEOP;			
+		synchronized (this) {
+			driveState = DriveState.TELEOP;
 		}
 		moveValue = scaleJoystickValues(moveValue);
 		rotateValue = scaleJoystickValues(rotateValue);
@@ -199,16 +199,16 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public void orangeDrive(double moveValue, double rotateValue, boolean isQuickTurn) {
-		synchronized(this) {
-			driveState = DriveState.TELEOP;			
+		synchronized (this) {
+			driveState = DriveState.TELEOP;
 		}
 		moveValue = scaleJoystickValues(moveValue);
 		rotateValue = scaleJoystickValues(rotateValue);
-		//50 is min turn radius
+		// 50 is min turn radius
 		double radius = (1 / rotateValue) + Math.copySign(24, rotateValue);
 		double deltaSpeed = (Constants.TrackRadius * ((moveValue * driveMultiplier) / radius));
 		deltaSpeed /= driveMultiplier;
-		if(isQuickTurn){
+		if (isQuickTurn) {
 			deltaSpeed = rotateValue;
 		}
 		double leftMotorSpeed = moveValue + deltaSpeed;
@@ -237,7 +237,7 @@ public class OrangeDrive extends Threaded {
 			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
-	
+
 	private void configMotors() {
 		leftSlaveTalon.set(ControlMode.Follower, Constants.LeftMasterDriveId);
 		leftSlave2Talon.set(ControlMode.Follower, Constants.LeftMasterDriveId);
@@ -246,7 +246,7 @@ public class OrangeDrive extends Threaded {
 		setBrakeState(NeutralMode.Coast);
 		rightTalon.configNominalOutputForward(0.05, 10);
 		rightTalon.configNominalOutputReverse(-0.05, 10);
-		
+
 		leftTalon.setInverted(true);
 		leftSlaveTalon.setInverted(true);
 		leftSlave2Talon.setInverted(true);
@@ -278,27 +278,29 @@ public class OrangeDrive extends Threaded {
 
 	public double getLeftDistance() {
 		return leftTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
-				* Math.PI * 22d/62d / 3d;
+				* Math.PI * 22d / 62d / 3d;
 	}
 
 	public double getRightDistance() {
 		return rightTalon.getSelectedSensorPosition(0) / Constants.SensorTicksPerMotorRotation * Constants.WheelDiameter
-				* Math.PI * 22d/62d / 3d;
+				* Math.PI * 22d / 62d / 3d;
 	}
 
 	public double getSpeed() {
 		return ((leftTalon.getSelectedSensorVelocity(0) + rightTalon.getSelectedSensorVelocity(0))
 				/ Constants.SensorTicksPerMotorRotation) / 10 / 2 * Constants.WheelDiameter * Math.PI;
 	}
-	
+
 	public double getLeftSpeed() {
-		return leftTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI * 22d/62d / 3d;
+		return leftTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10
+				* Constants.WheelDiameter * Math.PI * 22d / 62d / 3d;
 	}
-	
+
 	public double getRightSpeed() {
-		return rightTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10 * Constants.WheelDiameter * Math.PI * 22d/62d / 3d;
+		return rightTalon.getSelectedSensorVelocity(0) / Constants.SensorTicksPerMotorRotation * 10
+				* Constants.WheelDiameter * Math.PI * 22d / 62d / 3d;
 	}
-	
+
 	public double scaleJoystickValues(double rawValue) {
 		return Math.copySign(OrangeUtility.coercedNormalize(Math.abs(rawValue), Constants.MinimumControllerInput, Constants.MaximumControllerInput, Constants.MinimumControllerOutput, Constants.MaximumControllerOutput), rawValue);
 	}
@@ -330,8 +332,10 @@ public class OrangeDrive extends Threaded {
 			return;
 		}
 		// inches per sec to rotations per min
-		double leftSetpoint = (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62d/22d) * 3d;
-		double rightSetpoint = (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)  * (62/22d) * 3d;
+		double leftSetpoint = (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
+				* (62d / 22d) * 3d;
+		double rightSetpoint = (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
+				* (62 / 22d) * 3d;
 		leftTalon.set(ControlMode.Velocity, leftSetpoint);
 		rightTalon.set(ControlMode.Velocity, rightSetpoint);
 	}
@@ -351,7 +355,7 @@ public class OrangeDrive extends Threaded {
 
 	public void setShiftState(boolean state) {
 		shifter.set(state);
-		if(state) {
+		if (state) {
 			configLow();
 		} else {
 			configHigh();
@@ -367,7 +371,7 @@ public class OrangeDrive extends Threaded {
 		}
 		setWheelVelocity(signal.command);
 	}
-
+	
 	public void resetGyro() {
 		gyroSensor.reset();
 	}
@@ -385,7 +389,7 @@ public class OrangeDrive extends Threaded {
 		configMotors();
 		return success;
 	}
-	
+
 	public void stopMovement() {
 		leftTalon.set(ControlMode.PercentOutput, 0);
 		rightTalon.set(ControlMode.PercentOutput, 0);

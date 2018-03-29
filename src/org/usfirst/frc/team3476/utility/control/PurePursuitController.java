@@ -58,53 +58,52 @@ public class PurePursuitController {
 		if(data.remainingDist == 0.0) { //If robot passes point, remaining distance is 0
 			return new AutoDriveSignal(new DriveSignal(0, 0), true);
 		}
-		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);	
-		if(robotSpeed < 20) {
+		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);
+		if (robotSpeed < 20) {
 			robotSpeed = 20;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
 		/*
-		TEST
-		Translation2d closestToEnd = data.currentSegEnd.translateBy(data.closestPoint.inverse());
-		double angleToPath = robotPose.rotationMat.inverse().rotateBy(closestToEnd.getAngleFromOffset(new Translation2d(0, 0))).getDegrees();
-		if(Math.abs(angleToPath) > 135) {
-			turnToHeading = true;
-		}
-		
-		if(turnToHeading) {
-			double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
-			double deltaSpeed = turnPID.update(angleToLookAhead);
-			if(turnPID.isDone()) {
-				turnToHeading = false;
-			} else {
-				return new DriveVelocity(deltaSpeed, deltaSpeed);				
-			}
-		}
-		*/
-		
+		 * TEST
+		 * Translation2d closestToEnd = data.currentSegEnd.translateBy(data.closestPoint.inverse());
+		 * double angleToPath = robotPose.rotationMat.inverse().rotateBy(closestToEnd.getAngleFromOffset(new
+		 * Translation2d(0, 0))).getDegrees();
+		 * if(Math.abs(angleToPath) > 135) {
+		 * turnToHeading = true;
+		 * }
+		 * if(turnToHeading) {
+		 * double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
+		 * double deltaSpeed = turnPID.update(angleToLookAhead);
+		 * if(turnPID.isDone()) {
+		 * turnToHeading = false;
+		 * } else {
+		 * return new DriveVelocity(deltaSpeed, deltaSpeed);
+		 * }
+		 * }
+		 */
+
 		double radius;
 		radius = getRadius(robotToLookAhead);
-		double delta =  (robotSpeed / radius);
+		double delta = (robotSpeed / radius);
 		double deltaSpeed = Constants.TrackRadius * delta;
-		
-		
+
 		JSONObject message = new JSONObject();
 		JSONArray pose = new JSONArray();
 		JSONArray lookAhead = new JSONArray();
 		JSONArray closest = new JSONArray();
 
-		if(Constants.LOGGING){
+		if (Constants.LOGGING) {
 			closest.add(data.closestPoint.getX());
-			closest.add(data.closestPoint.getY());		
+			closest.add(data.closestPoint.getY());
 			lookAhead.add(data.lookAheadPoint.getX());
 			lookAhead.add(data.lookAheadPoint.getY());
 			pose.add(robotPose.translationMat.getX());
 			pose.add(robotPose.translationMat.getY());
 			message.put("lookAhead", closest);
 			message.put("pose", pose);
-			UDP.getInstance().send("10.34.76.5", message.toJSONString(), 5801);		
+			UDP.getInstance().send("10.34.76.5", message.toJSONString(), 5801);
 		}
-		
+
 		if (isReversed) {
 			robotSpeed *= -1;
 		}

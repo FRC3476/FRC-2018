@@ -4,12 +4,12 @@ import org.usfirst.frc.team3476.subsystem.Intake;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 
 public class SetIntakeState extends AutoCommand {
-	
-	private IntakeState state;	
+
+	private IntakeState state;
+
 	public SetIntakeState(IntakeState state) {
 		this.state = state;
 	}
-	
 
 	@Override
 	public void start() {

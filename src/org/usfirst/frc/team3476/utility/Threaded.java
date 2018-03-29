@@ -16,7 +16,7 @@ public abstract class Threaded implements Runnable {
 
 	@Override
 	public void run() {
-		if(!isPaused) {
+		if (!isPaused) {
 			isUpdated = false;
 			double start = Timer.getFPGATimestamp();
 			update();
@@ -34,19 +34,19 @@ public abstract class Threaded implements Runnable {
 	public double getLastRuntime() {
 		return lastRuntime;
 	}
-	
+
 	public double getPeriod() {
 		return period;
 	}
-	
+
 	public void setPeriod(Duration duration) {
 		this.period = duration.getNano();
 	}
-	
+
 	public void pause() {
 		isPaused = true;
 	}
-	
+
 	public void resume() {
 		isPaused = false;
 	}

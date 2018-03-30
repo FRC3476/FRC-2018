@@ -49,6 +49,7 @@ public class Robot extends IterativeRobot {
 		drive.setPeriod(Duration.ofMillis(5));
 		tracker.setPeriod(Duration.ofMillis(5));
 		elevarm.setPeriod(Duration.ofMillis(20));
+		intake.setPeriod(Duration.ofMillis(20));
 		mInDbUsInEsS.addDefault("Business", "Business");
 		mInDbUsInEsS.addObject("mInDbUsInEsS", "mInDbUsInEsS");
 		posChooser.addDefault("Left", "Left");
@@ -62,6 +63,10 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Position", posChooser);
 		SmartDashboard.putData("Option", optionChooser);
 		SmartDashboard.putData("business", mInDbUsInEsS);
+		scheduler.schedule(drive, mainExecutor);
+		scheduler.schedule(tracker, mainExecutor);
+		scheduler.schedule(elevarm, mainExecutor);
+		scheduler.schedule(intake, mainExecutor);
 		camServer.startAutomaticCapture(0);
 		camServer.startAutomaticCapture(1);
 	}
@@ -157,9 +162,9 @@ public class Robot extends IterativeRobot {
 		joystick.update();
 
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-		System.out.println("Angle: " + elevarm.getArmAngle() + " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: "
-				+ elevarm.getTargetElevatorHeight());
+		//System.out.println("Angle: " + elevarm.getArmAngle() + " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: "
+		//		+ elevarm.getTargetElevatorHeight());
 
 		if (buttonBox.getRawButton(10)) {
 			elevarm.setClimberPercentOutput(.75);

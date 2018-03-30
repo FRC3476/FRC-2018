@@ -2,18 +2,24 @@ package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
+import org.usfirst.frc.team3476.utility.OrangeUtility;
+import org.usfirst.frc.team3476.utility.Threaded;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 
-public class Intake {
+public class Intake extends Threaded {
 
 	private Solenoid intakeSolenoid30Psi;
 	private Solenoid intakeSolenoid60Psi;
 	private LazyTalonSRX intakeMotor1;
 	private LazyTalonSRX intakeMotor2;
+	private IntakingState intakeState;
+	private BiasState biasState;
+	private double biasTimer;
 	private static Intake intakeInstance = new Intake();
 	//private DigitalInput cubeSwitch = new DigitalInput(Constants.CubeSwitchId);
 	
@@ -27,12 +33,22 @@ public class Intake {
 	public enum IntakeState {
 		INTAKE, OUTTAKE, GRIP, OPEN, OUTTAKE_FAST, OUTTAKE_FASTEST, INTAKE_OPEN
 	}
+	
+	private enum IntakingState {
+		INTAKE, MANUAL
+	}
+	
+	private enum BiasState {
+		LEFT, RIGHT
+	}
 
 	private Intake() {
 		intakeMotor1 = new LazyTalonSRX(Constants.Intake1Id);
 		intakeMotor2 = new LazyTalonSRX(Constants.Intake2Id);
 		intakeSolenoid30Psi = new Solenoid(Constants.IntakeSolenoid30PsiId);
 		intakeSolenoid60Psi = new Solenoid(Constants.IntakeSolenoid60PsiId);
+		intakeState = IntakingState.MANUAL;
+		biasState = biasState.LEFT;
 	}
 
 	public static Intake getInstance() {
@@ -49,16 +65,6 @@ public class Intake {
 		switch(state)
 		{
 		case INTAKE:
-
-			intakeMotor1.set(ControlMode.PercentOutput, -.7);
-			intakeMotor2.set(ControlMode.PercentOutput, -.3);
-			/*
-			 * if(getCubeSwitch()){
-			 * setIntakeSolenoid(SolenoidState.CLAMP);
-			 * } else {
-			 * setIntakeSolenoid(SolenoidState.OPEN);
-			 * }
-			 */
 			setIntakeSolenoid(SolenoidState.INTAKING);
 			break;
 		case OUTTAKE:
@@ -90,6 +96,16 @@ public class Intake {
 			intakeMotor2.set(ControlMode.PercentOutput, -.15);
 			break;
 		}
+		
+		if(state == IntakeState.INTAKE){
+			synchronized(this){
+				intakeState = IntakingState.INTAKE;
+			}
+		} else {
+			synchronized(this){
+				intakeState = IntakingState.MANUAL;
+			}
+		}
 	}
 
 	private void setIntakeSolenoid(SolenoidState state) {
@@ -115,5 +131,49 @@ public class Intake {
 
 	public boolean isFinished() {
 		return true;
+	}
+
+	@Override
+	public void update() {
+		IntakingState snapState;
+		synchronized(this) {
+			snapState = intakeState;			
+		}
+		
+		switch(snapState){
+			case INTAKE:
+				double currentRight = intakeMotor1.getOutputCurrent();
+				double currentLeft = intakeMotor2.getOutputCurrent();
+				System.out.println(currentLeft + "   " + currentRight);
+				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.3, 0.7);
+				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.3, 0.7);
+				double bias = 0;
+				if(getCurrent() > 20) {
+					bias = OrangeUtility.coercedNormalize(getCurrent(), 20, 40, 0.1, 0.3);
+					if(Timer.getFPGATimestamp() - biasTimer > 1) {
+						swapBias();
+						biasTimer = Timer.getFPGATimestamp();
+					}
+				} else {
+					biasTimer = Timer.getFPGATimestamp();
+				}
+				if(biasState == BiasState.RIGHT) {
+					bias *= -1;
+				}
+
+				intakeMotor1.set(ControlMode.PercentOutput, -powerRight + bias);
+				intakeMotor2.set(ControlMode.PercentOutput, -powerLeft - bias);
+				break;
+			case MANUAL:
+				break;
+		}
+	}
+	
+	synchronized private void swapBias(){
+		if(biasState == BiasState.LEFT) {
+			biasState = BiasState.RIGHT;
+		} else {
+			biasState = BiasState.LEFT;
+		}
 	}
 }

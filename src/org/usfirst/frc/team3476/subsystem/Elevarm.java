@@ -21,10 +21,10 @@ public class Elevarm extends Threaded {
 		POSITION, MANUAL
 	}
 
-	private volatile ElevatorState elevState = ElevatorState.MANUAL;
-	private volatile ArmState armState = ArmState.MANUAL;
+	private ElevatorState elevState = ElevatorState.MANUAL;
+	private ArmState armState = ArmState.MANUAL;
 	private RateLimiter elevatorLimiter, armLimiter;
-	private volatile double elevatorSetpoint, armSetpoint;
+	private double elevatorSetpoint, armSetpoint;
 
 	private boolean elevatorIntakePositionSet = false;
 
@@ -43,7 +43,7 @@ public class Elevarm extends Threaded {
 		return instance;
 	}
 
-	public void setElevatorHeight(double height) {
+	synchronized public void setElevatorHeight(double height) {
 		if (elevState != ElevatorState.HOMING && isValidAngleAndHeight(armSetpoint, height)) {
 			elevState = ElevatorState.POSITION;
 			resetMotionProfile();
@@ -62,12 +62,12 @@ public class Elevarm extends Threaded {
 		return elevator.getEncoderTicks();
 	}
 
-	public void setArmPercentOutput(double output) {
+	synchronized public void setArmPercentOutput(double output) {
 		armState = ArmState.MANUAL;
 		arm.setPercentOutput(output);
 	}
 
-	public void setElevatorPercentOutput(double output) {
+	synchronized public void setElevatorPercentOutput(double output) {
 		if (elevState != ElevatorState.HOMING) {
 			elevState = ElevatorState.MANUAL;
 			elevator.setPercentOutput(output);
@@ -86,7 +86,7 @@ public class Elevarm extends Threaded {
 		return elevatorSetpoint;
 	}
 
-	public void setArmAngle(double angle) {
+	synchronized public void setArmAngle(double angle) {
 		if (isValidAngleAndHeight(angle, elevatorSetpoint)) {
 			armState = ArmState.POSITION;
 			armSetpoint = angle;
@@ -103,7 +103,7 @@ public class Elevarm extends Threaded {
 		return arm.getAngle();
 	}
 
-	public double getTargetArmAngle() {
+	synchronized public double getTargetArmAngle() {
 		return armSetpoint;
 	}
 
@@ -171,7 +171,7 @@ public class Elevarm extends Threaded {
 		}
 	}
 
-	public void setElevarmIntakePosition() {
+	synchronized public void setElevarmIntakePosition() {
 		elevState = ElevatorState.INTAKE;
 	}
 
@@ -179,7 +179,7 @@ public class Elevarm extends Threaded {
 		elevator.shiftElevatorGearbox(engaged);
 	}
 
-	public void homeElevator() {
+	synchronized public void homeElevator() {
 		elevator.homeStartTime = System.currentTimeMillis();
 		elevState = ElevatorState.HOMING;
 	}
@@ -236,7 +236,11 @@ public class Elevarm extends Threaded {
 
 	@Override
 	public void update() {
-		switch (elevState) 	{
+		ElevatorState snapState;
+		synchronized(this) {
+			snapState = elevState;			
+		}
+		switch (snapState) 	{
 		case HOMING:
 			if (!isValidAngleAndHeight(arm.getAngle(), 0)) {
 				// setArmAngle(Constants.ArmHorizontalDegrees);
@@ -245,7 +249,9 @@ public class Elevarm extends Threaded {
 				System.out.println("	Angle: " + arm.getAngle() + " Setpoint: " + arm.getTargetAngle());
 				System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
 				System.out.println("------------------------------------------------------------");
-				elevState = ElevatorState.MANUAL;
+				synchronized(this){
+					elevState = ElevatorState.MANUAL;					
+				}
 				break;
 			}
 			elevator.setPercentOutput(-.2); // Some slow speed
@@ -253,7 +259,9 @@ public class Elevarm extends Threaded {
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition(0); // Sets encoder value to 0
 				System.out.println("ELEVATOR HOMED");
-				elevState = ElevatorState.MANUAL;
+				synchronized(this){
+					elevState = ElevatorState.MANUAL;					
+				}
 			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
 				System.out.println("------------------------------------------------------------");
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
@@ -262,7 +270,9 @@ public class Elevarm extends Threaded {
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
 						* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
-				elevState = ElevatorState.MANUAL;
+				synchronized(this){
+					elevState = ElevatorState.MANUAL;					
+				}
 			}
 			break;
 		case POSITION:

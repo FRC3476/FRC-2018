@@ -13,30 +13,36 @@ public class Elevarm extends Threaded {
 	Elevator elevator;
 	Arm arm;
 
-	public enum ElevatorState {
-		MANUAL, POSITION, HOMING, INTAKE
+	public enum ElevarmState {
+		HOMING, INTAKE, MANUAL
 	}
-	//Practice Robot
-	//Elevator
-	//P .1
-	//I .0001
-	//D .0001
-	//I Zone 1000
-	//Arm
-	//P .8
-	//I .0005
-	//D 0
-
-	private ElevatorState currentElevatorState = ElevatorState.MANUAL;
-	private RateLimiter elevatorLimiter;
-	private volatile double elevatorSetpoint;
 	
+	public enum ElevatorState {
+		MANUAL, POSITION, SPEED
+	}
+
+	public enum ArmState {
+		POSITION, MANUAL, SPEED
+	}
+
+	private ElevarmState elevarmState = ElevarmState.HOMING;
+	private ElevatorState elevState = ElevatorState.MANUAL;
+	private ArmState armState = ArmState.MANUAL;
+	private RateLimiter elevatorLimiter, armLimiter;
+	private volatile double elevatorSetpoint, armSetpoint, elevatorSpeedSetpoint, armSpeedSetpoint;
+	public static final double maxElevatorSpeed = 100, maxArmSpeed = 100;
+
 	private boolean elevatorIntakePositionSet = false;
 
 	private Elevarm() {
-		elevatorLimiter = new RateLimiter(1000, 120);
+		elevatorLimiter = new RateLimiter(1000, 250);
+		armLimiter = new RateLimiter(200, 300);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
+	}
+
+	public double getClimberCurrent() {
+		return elevator.getClimberCurrent();
 	}
 
 	public static Elevarm getInstance() {
@@ -44,17 +50,17 @@ public class Elevarm extends Threaded {
 	}
 
 	synchronized public void setElevatorHeight(double height) {
-		if (currentElevatorState != ElevatorState.HOMING && isValidPosition(arm.getTargetAngle(), height))
-		{
-			if(currentElevatorState != ElevatorState.POSITION){
-				currentElevatorState = ElevatorState.POSITION;
-				resetMotionProfile();
-			}
+		if (elevarmState != ElevarmState.HOMING && isValidAngleAndHeight(armSetpoint, height)) {
+			elevarmState = ElevarmState.MANUAL;
+			elevState = ElevatorState.POSITION;
 			elevatorSetpoint = height;
-		}
-		else
-		{
+		} else {
+			System.out.println(elevarmState == ElevarmState.HOMING);
+			System.out.println("------------------------------------------------------------");
 			System.out.println("Homing or Not Valid Position");
+			System.out.println("	Angle: " + arm.getAngle() + " Setpoint: " + arm.getTargetAngle());
+			System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
+			System.out.println("------------------------------------------------------------");
 		}
 	}
 
@@ -62,17 +68,18 @@ public class Elevarm extends Threaded {
 		return elevator.getEncoderTicks();
 	}
 
-	public void setArmPercentOutput(double output) {
-		arm.setPercentOutput(output);
+	synchronized public void setArmPercentOutput(double output) {
+		if (elevarmState != ElevarmState.HOMING) {
+			elevarmState = ElevarmState.MANUAL;
+			armState = ArmState.MANUAL;
+			arm.setPercentOutput(output);
+		}
 	}
 
-	public void setArmEncoderTicks(int position) {
-		arm.setEncoderPosition(position);
-	}
-
-	public void setElevatorPercentOutput(double output) {
-		if (currentElevatorState != ElevatorState.HOMING) {
-			currentElevatorState = ElevatorState.MANUAL;
+	synchronized public void setElevatorPercentOutput(double output) {
+		if (elevarmState != ElevarmState.HOMING) {
+			elevarmState = ElevarmState.MANUAL;
+			elevState = ElevatorState.MANUAL;
 			elevator.setPercentOutput(output);
 		}
 	}
@@ -85,16 +92,21 @@ public class Elevarm extends Threaded {
 		return elevator.getHeight();
 	}
 
-	public double getTargetElevatorHeight() {
-		return elevator.getTargetHeight();
+	synchronized public double getTargetElevatorHeight() {
+		return elevatorSetpoint;
 	}
 
-	public void setArmAngle(double angle) {
-		if (isValidPosition(angle, elevator.getTargetHeight()))
-		{
-			arm.setAngle(angle);
+	synchronized public void setArmAngle(double angle) {
+		if (elevarmState != ElevarmState.HOMING && isValidAngleAndHeight(angle, elevatorSetpoint)) {
+			elevarmState = ElevarmState.MANUAL;
+			armState = ArmState.POSITION;
+			armSetpoint = angle;
 		} else {
+			System.out.println("------------------------------------------------------------");
 			System.out.println("Collision detected. Arm not moving");
+			System.out.println("	Angle: " + arm.getAngle() + " Setpoint: " + angle);
+			System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevatorSetpoint);
+			System.out.println("------------------------------------------------------------");
 		}
 	}
 
@@ -102,8 +114,48 @@ public class Elevarm extends Threaded {
 		return arm.getAngle();
 	}
 
-	public double getTargetArmAngle() {
-		return arm.getTargetAngle();
+	synchronized public double getTargetArmAngle() {
+		return armSetpoint;
+	}
+	
+	public void setArmSpeed(double speed)
+	{
+		armState = ArmState.SPEED;
+		armSpeedSetpoint = speed;
+	}
+	
+	public void setElevatorSpeed(double speed)
+	{
+		elevState = ElevatorState.SPEED;
+		elevatorSpeedSetpoint = speed;
+	}
+	
+	public void setXRate(double xRate) {
+		double armSpeed = -xRate * 57.44645 / (Constants.ArmLength * Math.sin(Math.toRadians(arm.getAngle())));
+		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(arm.getAngle()));
+
+		if (armSpeed > 1000 || elevatorSpeed > 1000)
+		{
+			setArmSpeed(0);
+			setElevatorSpeed(0);
+			return;
+		}
+		
+		
+		if (isValidAngleAndHeight(getArmAngle(), getElevatorHeight()) && !(getArmAngle() < 1 && getArmAngle() > 1) &&
+				((Math.abs(getArmAngle()) < 8 && xRate < 0) || ((getArmAngle() > 80 || getArmAngle() < -45) && xRate > 0) || (getArmAngle() > -45 && getArmAngle() < -8) ||  (getArmAngle() > 8 && getArmAngle() < 80)))
+		{
+			setArmSpeed(armSpeed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
+					* Constants.SensorTicksPerMotorRotation);
+
+			setElevatorSpeed(elevatorSpeed * (1d / Constants.ElevatorInchesPerMotorRotation)
+					* Constants.SensorTicksPerMotorRotation);
+		} 
+		else
+		{
+			setArmSpeed(0);
+			setElevatorSpeed(0);
+		}
 	}
 
 	public void setOverallPosition(double distance, double height) {
@@ -118,8 +170,8 @@ public class Elevarm extends Threaded {
 		double armAngle2 = -Math.toDegrees(Math.asin(heightByArm / Constants.ArmLength));
 		double elevatorHeight2 = height + heightByArm;
 
-		boolean position1Valid = isValidPosition(armAngle1, elevatorHeight1);
-		boolean position2Valid = isValidPosition(armAngle2, elevatorHeight2);
+		boolean position1Valid = isValidAngleAndHeight(armAngle1, elevatorHeight1);
+		boolean position2Valid = isValidAngleAndHeight(armAngle2, elevatorHeight2);
 
 		if (position1Valid && position2Valid) {
 			double armTime1 = Math.abs(arm.getAngle() - armAngle1) * Constants.ArmSpeed;
@@ -146,22 +198,29 @@ public class Elevarm extends Threaded {
 			setElevatorHeight(elevatorHeight);
 			setArmAngle(armAngle);
 		} else {
-			System.out.println("Invalid Position. Not moving");
+			System.out.println("------------------------------------------------------------");
+			System.out.println("Invalid Position. Not Moving");
+			System.out.println("	Angle: " + arm.getAngle() + " Setpoint: " + armSetpoint);
+			System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevatorSetpoint);
+			System.out.println("------------------------------------------------------------");
 		}
 	}
-	
-	public void setElevarmIntakePosition()
-	{
-		currentElevatorState = ElevatorState.INTAKE;
+
+	synchronized public void setElevarmIntakePosition() {
+		if(elevarmState != ElevarmState.HOMING) {
+			elevarmState = ElevarmState.INTAKE;
+			armState = ArmState.POSITION;
+			elevState = ElevatorState.POSITION;
+		}
 	}
 
 	public void shiftElevatorGearbox(boolean engaged) {
 		elevator.shiftElevatorGearbox(engaged);
 	}
 
-	public void homeElevator() {
+	synchronized public void homeElevator() {
 		elevator.homeStartTime = System.currentTimeMillis();
-		currentElevatorState = ElevatorState.HOMING;
+		elevarmState = ElevarmState.HOMING;
 	}
 
 	public void prepClimb() {
@@ -170,7 +229,7 @@ public class Elevarm extends Threaded {
 		elevator.shiftElevatorGearbox(false);
 	}
 
-	public static boolean isValidPosition(double armAngle, double elevatorHeight) {
+	public static boolean isValidAngleAndHeight(double armAngle, double elevatorHeight) {
 		double x = Math.cos(Math.toRadians(armAngle)) * Constants.ArmLength;
 		double y = elevatorHeight + Math.sin(Math.toRadians(armAngle)) * Constants.ArmLength;
 		boolean armLow = armAngle < Constants.ArmLowerAngleLimit;
@@ -178,17 +237,31 @@ public class Elevarm extends Threaded {
 		boolean elevatorLow = elevatorHeight < Constants.ElevatorMinHeight;
 		boolean elevatorHigh = elevatorHeight > Constants.ElevatorMaxHeight;
 		boolean hittingElevator = (x < 14 && y < -10);
-		if (armLow || armHigh || elevatorLow || elevatorHigh || hittingElevator)
+		if (armLow || armHigh || elevatorLow || elevatorHigh || hittingElevator) {
 			return false;
+		}
 		return true;
 	}
-	
-	public double getDistance()
-	{
+
+	public static boolean isValidPosition(double x, double y) {
+		double armAngle = Math.toDegrees(Math.acos(x / Constants.ArmLength));
+		double elevatorHeight = y - Math.sin(Math.toRadians(armAngle)) * Constants.ArmLength;
+		return isValidAngleAndHeight(armAngle, elevatorHeight);
+	}
+
+	public void setClimberPercentOutput(double output) {
+		elevator.setClimberPercentOutput(output);
+	}
+
+	public void setElevatorGearbox(boolean on) {
+		elevator.setElevatorGearbox(on);
+	}
+
+	public double getX() {
 		return Math.cos(Math.toRadians(getArmAngle())) * Constants.ArmLength;
 	}
-	public double getHeight()
-	{
+
+	public double getY() {
 		return getElevatorHeight() + Math.sin(Math.toRadians(getArmAngle())) * Constants.ArmLength;
 	}
 
@@ -202,13 +275,28 @@ public class Elevarm extends Threaded {
 
 	@Override
 	public void update() {
-		switch (currentElevatorState) {
+		ElevatorState snapElevState;
+		ElevarmState snapElevarmState;
+		double snapElevSetpoint;
+		double snapArmSetpoint;
+		synchronized(this) {
+			snapElevState = elevState;
+			snapElevarmState = elevarmState;
+			snapElevSetpoint = elevatorSetpoint;
+			snapArmSetpoint = armSetpoint;
+		}
+		
+		switch (snapElevarmState) 	{
 		case HOMING:
-			if (!isValidPosition(arm.getAngle(), 0)) {
-				//setArmAngle(Constants.ArmHorizontalDegrees);
+			if (!isValidAngleAndHeight(arm.getAngle(), 0)) {
+				// setArmAngle(Constants.ArmHorizontalDegrees);
+				System.out.println("------------------------------------------------------------");
 				System.out.println("CAN'T HOME. INVALID POSITION");
-				synchronized(this) {
-					currentElevatorState = ElevatorState.MANUAL;					
+				System.out.println("	Angle: " + arm.getAngle() + " Setpoint: " + arm.getTargetAngle());
+				System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
+				System.out.println("------------------------------------------------------------");
+				synchronized(this){
+					elevState = ElevatorState.MANUAL;					
 				}
 				break;
 			}
@@ -217,31 +305,63 @@ public class Elevarm extends Threaded {
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition(0); // Sets encoder value to 0
 				System.out.println("ELEVATOR HOMED");
-				synchronized(this) {
-					currentElevatorState = ElevatorState.MANUAL;					
+				synchronized(this){
+					elevState = ElevatorState.MANUAL;					
 				}
 			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
+				System.out.println("------------------------------------------------------------");
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
+				System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
+				System.out.println("------------------------------------------------------------");
 				elevator.setPercentOutput(0);
 				elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
 						* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
-				synchronized(this) {
-					currentElevatorState = ElevatorState.MANUAL;					
+				synchronized(this){
+					elevState = ElevatorState.MANUAL;					
 				}
 			}
 			break;
-		case POSITION:
-			double setpoint = elevatorLimiter.update(elevatorSetpoint);
-			elevator.setHeight(setpoint);
-			break;
 		case INTAKE:
-			elevator.setHeight(elevatorLimiter.update(Constants.ElevatorDownHeight));
-			if (elevator.getHeight() < 20)
-			{
-				arm.setAngle(-18);
+			synchronized(this) {				
+				elevatorSetpoint = Constants.ElevatorDownHeight;
+				if (elevator.getHeight() < 20) {
+					armSetpoint = Constants.ArmIntakeDegrees;
+				}
 			}
 			break;
 		case MANUAL:
+			break;
+		}
+		
+		switch(snapElevState) {
+			case POSITION:
+				double setpoint = elevatorLimiter.update(snapElevSetpoint);
+				elevator.setHeight(setpoint);
+				break;
+			case SPEED:
+				/*
+				 * TODO: FIX it. it's trash
+				 */
+				if (elevatorSpeedSetpoint > maxElevatorSpeed)
+					elevatorSpeedSetpoint = maxElevatorSpeed;
+				elevator.setSpeed(elevatorSpeedSetpoint);
+				break;
+			case MANUAL:
+				elevatorLimiter.update(elevator.getHeight());
+				break;
+		}
+
+		switch (armState) {
+		case POSITION:
+			arm.setAngle(armLimiter.update(snapArmSetpoint));
+			break;
+		case SPEED:
+			if (armSpeedSetpoint > maxArmSpeed)
+				armSpeedSetpoint = maxArmSpeed;
+			arm.setSpeed(armSpeedSetpoint);
+			break;
+		case MANUAL:
+			armLimiter.update(arm.getAngle());
 			break;
 		}
 	}
@@ -255,37 +375,46 @@ public class Elevarm extends Threaded {
 		Timer.delay(0.75);
 		return elevator.checkSubystem();
 	}
-	
+
 	public void stopMovement() {
 		setArmPercentOutput(0);
 		setElevatorPercentOutput(0);
+		setClimberPercentOutput(0);
 	}
-	
+
 	public boolean checkArm() {
 		setElevatorHeight((Constants.ElevatorUpHeight + Constants.ElevatorDownHeight) / 2d); // Move elevator out of the
-																							// way before testing
+																								// way before testing
 		Timer.delay(0.75);
 		return arm.checkSubsytem();
 	}
-	
-	public void configArmEncoder()
-	{
+
+	public boolean checkClimber() {
+		return elevator.checkClimber();
+	}
+
+	public void configArmEncoder() {
 		arm.setEncoderFromPWM();
 		System.out.println("Arm Encoder Set");
 	}
 
-	public int getArmPWMPosition()
-	{
+	public int getArmPWMPosition() {
 		return arm.getPWMPosition();
 	}
-	
-	public int getArmEncoderPosition()
-	{
+
+	public int getArmEncoderPosition() {
 		return arm.getEncoderPosition();
 	}
-	
-	public void resetMotionProfile() {
+
+	synchronized public void resetMotionProfile() {
 		elevatorLimiter.reset();
-		elevatorLimiter.setLatestValue(elevator.getHeight()); // reset elevator setpoint
+		armLimiter.reset();
+		elevarmState = ElevarmState.MANUAL;
+		armState = ArmState.MANUAL;
+		elevState = ElevatorState.MANUAL;
+	}
+
+	synchronized public boolean isHomed() {
+		return elevarmState != ElevarmState.HOMING;
 	}
 }

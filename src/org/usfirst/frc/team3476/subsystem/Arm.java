@@ -19,6 +19,9 @@ public class Arm {
 		armTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		setEncoderFromPWM();
 		armTalon.setInverted(true);
+		armTalon.config_kP(0, 6, 10);
+		armTalon.config_kI(0, 0.0, 10);
+		armTalon.config_kD(0, 2, 10);
 	}
 
 	protected static Arm getInstance() {
@@ -32,15 +35,24 @@ public class Arm {
 	protected void setEncoderPosition(int position) {
 		armTalon.setSelectedSensorPosition(position, 0, 10);
 	}
-	
-	public int getEncoderPosition()
-	{
+
+	public int getEncoderPosition() {
 		return armTalon.getSelectedSensorPosition(0);
 	}
 
 	protected void setAngle(double angle) {
 		armTalon.set(ControlMode.Position, angle * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
 				* Constants.SensorTicksPerMotorRotation);
+	}
+
+	public void setSpeed(double speed) {
+		armTalon.set(ControlMode.Velocity, speed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
+				* Constants.SensorTicksPerMotorRotation);
+	}
+
+	public double getSpeed() {
+		return armTalon.getSelectedSensorVelocity(0) * 360 * (1d / Constants.SensorTicksPerMotorRotation)
+				* Constants.ArmRotationsPerMotorRotation;
 	}
 
 	public double getAngle() {
@@ -60,15 +72,14 @@ public class Arm {
 	public boolean checkSubsytem() {
 		return OrangeUtility.checkMotors(0.05, Constants.ExpectedArmCurrent, Constants.ExpectedArmRPM, Constants.ExpectedArmPosition, armTalon, armTalon);
 	}
-	
-	public void setEncoderFromPWM()
-	{
-		//Value becomes negative when we set it for some reason
-		armTalon.getSensorCollection().setQuadraturePosition(-(getPWMPosition() + Constants.PracticeBotArmAngleOffsetInTicks), 10);
+
+	public void setEncoderFromPWM() {
+		// Value becomes negative when we set it for some reason
+		armTalon.getSensorCollection().setQuadraturePosition(-(getPWMPosition()
+				+ Constants.PracticeBotArmAngleOffsetInTicks), 10);
 	}
-	
-	public int getPWMPosition()
-	{
+
+	public int getPWMPosition() {
 		int pwmValue = 4095 - armTalon.getSensorCollection().getPulseWidthPosition();
 		pwmValue -= Constants.PracticeBotArmTicksOffset;
 		pwmValue %= 4096;

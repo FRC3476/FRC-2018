@@ -28,14 +28,17 @@ public class OrangeUtility {
 				DriverStation.reportError("Motor " + talon.getDeviceID() + "current outside expected range.", false);
 				success = false;
 			}
-			if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - expectedRPM) > Constants.ExpectedRPMTolerance) {
-				DriverStation.reportError("Motor " + talon.getDeviceID() + " current outside expected range.", false);
-				success = false;
-			}
-			if (Math.abs(sensorTalon.getSelectedSensorPosition(0)
-					- expectedPosition) > Constants.ExpectedPositionTolerance) {
-				DriverStation.reportError("Motor " + talon.getDeviceID() + "current outside expected range.", false);
-				success = false;
+			if (sensorTalon != null) {
+				if (Math.abs(sensorTalon.getSelectedSensorVelocity(0) - expectedRPM) > Constants.ExpectedRPMTolerance) {
+					DriverStation.reportError("Motor " + talon.getDeviceID() + " rpm outside expected range.", false);
+					success = false;
+				}
+				if (Math.abs(sensorTalon.getSelectedSensorPosition(0)
+						- expectedPosition) > Constants.ExpectedPositionTolerance) {
+					DriverStation.reportError("Motor " + talon.getDeviceID()
+							+ "position outside expected range.", false);
+					success = false;
+				}
 			}
 
 			System.out.println("Motor ID: " + talon.getDeviceID());
@@ -238,7 +241,7 @@ public class OrangeUtility {
 			return maxOutput;
 		}
 		double norm = (Math.abs(rawValue) - minInput) / (maxInput - minInput);
-		norm = Math.copySign(norm * (maxOutput - minOutput), rawValue);
+		norm = Math.copySign(norm * (maxOutput - minOutput), rawValue) + minOutput;
 		return norm;
 	}
 

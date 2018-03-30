@@ -1,9 +1,9 @@
 
-
 package org.usfirst.frc.team3476.utility.control;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.usfirst.frc.team3476.robot.Constants;
@@ -24,10 +24,13 @@ public class Path {
 
 		private Translation2d start, end, delta;
 		private double maxSpeed, deltaDist, deltaDistSquared;
+		
+		private ArrayList<AutoCommandTrigger> commands = new ArrayList<>();
 
 		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed) {
 			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
 		}
+
 		private PathSegment(Translation2d start, Translation2d end, double maxSpeed) {
 			this.start = start;
 			this.end = end;
@@ -35,6 +38,17 @@ public class Path {
 			delta = start.inverse().translateBy(end);
 			deltaDist = Math.hypot(delta.getX(), delta.getY());
 			deltaDistSquared = Math.pow(deltaDist, 2);
+		}
+		
+		private PathSegment(Translation2d start, Translation2d end, double maxSpeed, ArrayList<AutoCommandTrigger> commands) {
+			this(start, end, maxSpeed);
+			this.commands.addAll(commands);
+			Collections.sort(this.commands);
+		}
+		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed, ArrayList<AutoCommandTrigger> commands) {
+			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
+			this.commands.addAll(commands);
+			Collections.sort(this.commands);
 		}
 		
 		private Translation2d getStart() {
@@ -58,6 +72,13 @@ public class Path {
 					/ deltaDistSquared;
 			u = Math.max(Math.min(u, 1), 0);
 			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);
+		}
+		
+		private double getPercentageOnSegment(Translation2d point) {
+			double u = ((point.getX() - start.getX()) * delta.getX() + (point.getY() - start.getY()) * delta.getY())
+					/ deltaDistSquared;
+			u = Math.max(Math.min(u, 1), 0);
+			return u;
 		}
 
 		/**
@@ -119,11 +140,33 @@ public class Path {
 		public double remainingDist, maxSpeed;
 		public Translation2d lookAheadPoint;
 		public Translation2d closestPoint;
+		public Translation2d currentSegEnd;
+	}
+	
+	public static class AutoCommandTrigger implements Comparable<AutoCommandTrigger>{
+		private double percentage;
+		private AutoCommand command;
+		
+		//Should not be blocking nerds
+		public AutoCommandTrigger(AutoCommand command, double percentage) {
+			this.command = command;
+			this.percentage = percentage;
+		}
+
+		@Override
+		public int compareTo(AutoCommandTrigger other) {
+			if (this.percentage > other.percentage)
+				return 1;
+			if (this.percentage < other.percentage)
+				return -1;
+			return -0;
+		}
 	}
 
 	private List<PathSegment> segments;
 	private Translation2d lastPoint;
 	private Rotation endAngle = null;
+	private volatile boolean isEmpty;
 
 	/**
 	 * Contains a list of points and can create path segments with them.
@@ -135,6 +178,7 @@ public class Path {
 	public Path(Translation2d start) {
 		segments = new ArrayList<PathSegment>();
 		lastPoint = start;
+		isEmpty = true;
 	}
 
 	/**
@@ -147,13 +191,15 @@ public class Path {
 	public void addPoint(double x, double y, double speed) {
 		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed));
 		lastPoint = new Translation2d(x, y);
+		isEmpty = false;
 	}
 	
 	public void addPoint(Translation2d point, double speed)
 	{
 		addPoint(point.getX(), point.getY(), speed);	
+		isEmpty = false;
 	}
-	
+
 	/**
 	 * Sets the desired angle for the robot to end in. It does this by placing
 	 * up to two points that have a 90 degree angle to allow the robot to
@@ -166,6 +212,10 @@ public class Path {
 		endAngle = angle;
 	}
 
+
+	public boolean isEmpty(){
+		return isEmpty;
+	}
 	/**
 	 *
 	 */
@@ -225,14 +275,28 @@ public class Path {
 			Translation2d closestNextToRobot = closestNextPoint.inverse().translateBy(pose);
 			double distToNext = Math.hypot(closestNextToRobot.getX(), closestNextToRobot.getY());
 			if (distToClosest > distToNext) {
-				segments.remove(0);
+				//Run commands that didn't run yet in segments being deleted
+				while(!segments.get(0).commands.isEmpty()) {
+					segments.get(0).commands.remove(0).command.run();
+				}
+				segments.remove(0);				
 				closestPoint = closestNextPoint;
 				closestToRobot = closestNextToRobot;
 			} else {
 				break;
 			}
 		}
+		//Run commands when we zoom past
+		double percentage = segments.get(0).getPercentageOnSegment(pose);
+		while(!segments.get(0).commands.isEmpty()) {
+			if(segments.get(0).commands.get(0).percentage < percentage) {
+				segments.get(0).commands.remove(0).command.run();
+			} else {
+				break;
+			}
+		}
 		data.closestPoint = closestPoint;
+		data.currentSegEnd = segments.get(0).getEnd();
 		Translation2d closestToEnd = closestPoint.inverse().translateBy(segments.get(0).getEnd());
 		Translation2d closestToStart = segments.get(0).getStart().inverse().translateBy(closestPoint);
 
@@ -244,20 +308,19 @@ public class Path {
 			data.remainingDist += segments.get(i).getDistance();
 		}
 		if (lookAheadDistance > remainingSegDist && segments.size() > 1) {
-			while (lookAheadDistance > remainingSegDist && segments.size() > 1) {
-				lookAheadDistance -= remainingSegDist;
-				for (int i = 1; i < segments.size(); i++) {
-					if (lookAheadDistance > segments.get(i).getDistance()) {
-						lookAheadDistance -= segments.get(i).getDistance();
-					} else {
-						data.lookAheadPoint = segments.get(i).getPointByDistance(lookAheadDistance);
-						break;
-					}
+			lookAheadDistance -= remainingSegDist;
+			PathSegment lastSegment;
+			for (int i = 1; i < segments.size(); i++) {
+				if (lookAheadDistance > segments.get(i).getDistance() && i != (segments.size() - 1)) {
+					lookAheadDistance -= segments.get(i).getDistance();
+				} else {
+					data.lookAheadPoint = segments.get(i).getPointByDistance(lookAheadDistance);
+					break;
 				}
 			}
 		} else {
-			lookAheadDistance += Math.hypot(closestToStart.getX(), closestToStart.getY());
-			data.lookAheadPoint = segments.get(0).getPointByDistance(lookAheadDistance);
+			double distanceOnPath = segments.get(0).getDistance() - remainingSegDist + lookAheadDistance;
+			data.lookAheadPoint = segments.get(0).getPointByDistance(distanceOnPath);
 		}
 		/*
 		 * UDPServer.getInstance().send(data.lookAheadPoint.getX() + "," +

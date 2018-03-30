@@ -141,7 +141,6 @@ public class Translation2d implements Interpolable<Translation2d> {
 	 * 		Translated point
 	 */
 	public Translation2d translateBy(Translation2d delta) {
-
 		return new Translation2d(x + delta.getX(), y + delta.getY());
 	}
 

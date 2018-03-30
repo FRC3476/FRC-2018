@@ -1,5 +1,7 @@
 package org.usfirst.frc.team3476.utility;
 
+import java.time.Duration;
+
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -7,16 +9,20 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public abstract class Threaded implements Runnable {
 
-	private volatile boolean isUpdated = true;
-	private volatile double lastRuntime = 0;
+	private boolean isUpdated = true;
+	private volatile boolean isPaused = false;
+	private double lastRuntime = 0;
+	private volatile long period = Duration.ofMillis(5).toNanos();
 
 	@Override
 	public void run() {
-		isUpdated = false;
-		double start = Timer.getFPGATimestamp();
-		update();
-		lastRuntime = Timer.getFPGATimestamp() - start;
-		isUpdated = true;
+		if (!isPaused) {
+			isUpdated = false;
+			double start = Timer.getFPGATimestamp();
+			update();
+			lastRuntime = Timer.getFPGATimestamp() - start;
+			isUpdated = true;
+		}
 	}
 
 	public abstract void update();
@@ -27,5 +33,21 @@ public abstract class Threaded implements Runnable {
 
 	public double getLastRuntime() {
 		return lastRuntime;
+	}
+
+	public double getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(Duration duration) {
+		this.period = duration.getNano();
+	}
+
+	public void pause() {
+		isPaused = true;
+	}
+
+	public void resume() {
+		isPaused = false;
 	}
 }

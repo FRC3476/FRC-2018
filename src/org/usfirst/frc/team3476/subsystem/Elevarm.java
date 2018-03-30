@@ -14,17 +14,18 @@ public class Elevarm extends Threaded {
 	Arm arm;
 
 	public enum ElevatorState {
-		MANUAL, POSITION, HOMING, INTAKE
+		MANUAL, POSITION, HOMING, INTAKE, SPEED
 	}
 
 	public enum ArmState {
-		POSITION, MANUAL
+		POSITION, MANUAL, SPEED
 	}
 
 	private ElevatorState elevState = ElevatorState.MANUAL;
 	private ArmState armState = ArmState.MANUAL;
 	private RateLimiter elevatorLimiter, armLimiter;
-	private double elevatorSetpoint, armSetpoint;
+	private volatile double elevatorSetpoint, armSetpoint, elevatorSpeedSetpoint, armSpeedSetpoint;
+	public static final double maxElevatorSpeed = 100, maxArmSpeed = 100;
 
 	private boolean elevatorIntakePositionSet = false;
 
@@ -106,20 +107,43 @@ public class Elevarm extends Threaded {
 	synchronized public double getTargetArmAngle() {
 		return armSetpoint;
 	}
-
+	
+	public void setArmSpeed(double speed)
+	{
+		armState = ArmState.SPEED;
+		armSpeedSetpoint = speed;
+	}
+	
+	public void setElevatorSpeed(double speed)
+	{
+		elevState = ElevatorState.SPEED;
+		elevatorSpeedSetpoint = speed;
+	}
 	public void setXRate(double xRate) {
 		double armSpeed = -xRate * 57.44645 / (Constants.ArmLength * Math.sin(Math.toRadians(arm.getAngle())));
 		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(arm.getAngle()));
 
-		if (isValidPosition(getX() + xRate, getY())) {
-			arm.setSpeed(armSpeed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
+		if (armSpeed > 1000 || elevatorSpeed > 1000)
+		{
+			setArmSpeed(0);
+			setElevatorSpeed(0);
+			return;
+		}
+		
+		
+		if (isValidAngleAndHeight(getArmAngle(), getElevatorHeight()) && !(getArmAngle() < 1 && getArmAngle() > 1) &&
+				((Math.abs(getArmAngle()) < 8 && xRate < 0) || ((getArmAngle() > 80 || getArmAngle() < -45) && xRate > 0) || (getArmAngle() > -45 && getArmAngle() < -8) ||  (getArmAngle() > 8 && getArmAngle() < 80)))
+		{
+			setArmSpeed(armSpeed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
 					* Constants.SensorTicksPerMotorRotation);
 
-			elevator.setSpeed(elevatorSpeed * (1d / Constants.ElevatorInchesPerMotorRotation)
+			setElevatorSpeed(elevatorSpeed * (1d / Constants.ElevatorInchesPerMotorRotation)
 					* Constants.SensorTicksPerMotorRotation);
-		} else {
-			arm.setSpeed(0);
-			elevator.setSpeed(0);
+		} 
+		else
+		{
+			setArmSpeed(0);
+			setElevatorSpeed(0);
 		}
 	}
 
@@ -279,6 +303,11 @@ public class Elevarm extends Threaded {
 			double setpoint = elevatorLimiter.update(elevatorSetpoint);
 			elevator.setHeight(setpoint);
 			break;
+		case SPEED:
+			if (elevatorSpeedSetpoint > maxElevatorSpeed)
+				elevatorSpeedSetpoint = maxElevatorSpeed;
+			elevator.setSpeed(elevatorSpeedSetpoint);
+			break;
 		case INTAKE:
 			elevator.setHeight(elevatorLimiter.update(Constants.ElevatorDownHeight));
 			if (elevator.getHeight() < 20) {
@@ -292,6 +321,11 @@ public class Elevarm extends Threaded {
 		switch (armState) {
 		case POSITION:
 			arm.setAngle(armLimiter.update(armSetpoint));
+			break;
+		case SPEED:
+			if (armSpeedSetpoint > maxArmSpeed)
+				armSpeedSetpoint = maxArmSpeed;
+			arm.setSpeed(armSpeedSetpoint);
 			break;
 		case MANUAL:
 			break;

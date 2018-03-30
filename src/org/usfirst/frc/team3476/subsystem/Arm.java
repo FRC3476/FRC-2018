@@ -46,11 +46,13 @@ public class Arm {
 	}
 
 	public void setSpeed(double speed) {
-		armTalon.set(ControlMode.Velocity, speed);
+		armTalon.set(ControlMode.Velocity, speed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
+				* Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getSpeed() {
-		return armTalon.getSelectedSensorVelocity(0);
+		return armTalon.getSelectedSensorVelocity(0) * 360 * (1d / Constants.SensorTicksPerMotorRotation)
+				* Constants.ArmRotationsPerMotorRotation;
 	}
 
 	public double getAngle() {

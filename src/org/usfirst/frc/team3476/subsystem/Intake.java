@@ -29,13 +29,13 @@ public class Intake extends Threaded {
 		CLAMP,
 		INTAKING
 	}
-
-	public enum IntakeState {
-		INTAKE, OUTTAKE, GRIP, OPEN, OUTTAKE_FAST, OUTTAKE_FASTEST, INTAKE_OPEN
-	}
 	
 	private enum IntakingState {
 		INTAKE, MANUAL
+	}
+	
+	public enum IntakeState {
+		INTAKE, OUTTAKE, GRIP, OPEN, OUTTAKE_FAST, OUTTAKE_FASTEST, INTAKE_OPEN
 	}
 	
 	private enum BiasState {
@@ -66,6 +66,7 @@ public class Intake extends Threaded {
 		{
 		case INTAKE:
 			setIntakeSolenoid(SolenoidState.INTAKING);
+			
 			break;
 		case OUTTAKE:
 			intakeMotor1.set(ControlMode.PercentOutput, .25);

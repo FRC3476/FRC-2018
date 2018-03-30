@@ -39,7 +39,7 @@ public class Intake extends Threaded {
 	}
 	
 	private enum BiasState {
-		LEFT, RIGHT
+		REVERSE, NORMAL
 	}
 
 	private Intake() {
@@ -48,7 +48,7 @@ public class Intake extends Threaded {
 		intakeSolenoid30Psi = new Solenoid(Constants.IntakeSolenoid30PsiId);
 		intakeSolenoid60Psi = new Solenoid(Constants.IntakeSolenoid60PsiId);
 		intakeState = IntakingState.MANUAL;
-		biasState = biasState.LEFT;
+		biasState = biasState.REVERSE;
 	}
 
 	public static Intake getInstance() {
@@ -65,8 +65,7 @@ public class Intake extends Threaded {
 		switch(state)
 		{
 		case INTAKE:
-			setIntakeSolenoid(SolenoidState.INTAKING);
-			
+			setIntakeSolenoid(SolenoidState.INTAKING);			
 			break;
 		case OUTTAKE:
 			intakeMotor1.set(ControlMode.PercentOutput, .25);
@@ -101,6 +100,7 @@ public class Intake extends Threaded {
 		if(state == IntakeState.INTAKE){
 			synchronized(this){
 				intakeState = IntakingState.INTAKE;
+				biasState = BiasState.NORMAL;
 			}
 		} else {
 			synchronized(this){
@@ -149,21 +149,22 @@ public class Intake extends Threaded {
 				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.3, 0.7);
 				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.3, 0.7);
 				double bias = 0;
-				if(getCurrent() > 20) {
-					bias = OrangeUtility.coercedNormalize(getCurrent(), 20, 40, 0.1, 0.3);
-					if(Timer.getFPGATimestamp() - biasTimer > 1) {
+				if(getCurrent() > 10) {
+					//bias = OrangeUtility.coercedNormalize(getCurrent(), 10, 40, 0.0, 0.3);
+					if(Timer.getFPGATimestamp() - biasTimer > 0.5) {
 						swapBias();
 						biasTimer = Timer.getFPGATimestamp();
 					}
 				} else {
 					biasTimer = Timer.getFPGATimestamp();
 				}
-				if(biasState == BiasState.RIGHT) {
-					bias *= -1;
+				if(biasState == BiasState.NORMAL) {
+					intakeMotor1.set(ControlMode.PercentOutput, -powerRight + bias);
+					intakeMotor2.set(ControlMode.PercentOutput, -powerLeft - bias);
+				} else {
+					intakeMotor1.set(ControlMode.PercentOutput, -powerRight - bias);
+					intakeMotor2.set(ControlMode.PercentOutput, -(-powerLeft - bias));
 				}
-
-				intakeMotor1.set(ControlMode.PercentOutput, -powerRight + bias);
-				intakeMotor2.set(ControlMode.PercentOutput, -powerLeft - bias);
 				break;
 			case MANUAL:
 				break;
@@ -171,10 +172,10 @@ public class Intake extends Threaded {
 	}
 	
 	synchronized private void swapBias(){
-		if(biasState == BiasState.LEFT) {
-			biasState = BiasState.RIGHT;
+		if(biasState == BiasState.REVERSE) {
+			biasState = BiasState.NORMAL;
 		} else {
-			biasState = BiasState.LEFT;
+			biasState = BiasState.REVERSE;
 		}
 	}
 }

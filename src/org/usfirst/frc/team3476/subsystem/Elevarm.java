@@ -18,11 +18,11 @@ public class Elevarm extends Threaded {
 	}
 	
 	public enum ElevatorState {
-		MANUAL, POSITION, SPEED
+		MANUAL, POSITION
 	}
 
 	public enum ArmState {
-		POSITION, MANUAL, SPEED
+		MANUAL, POSITION
 	}
 
 	private ElevarmState elevarmState = ElevarmState.HOMING;
@@ -126,59 +126,57 @@ public class Elevarm extends Threaded {
 		return armSetpoint;
 	}
 	
-	public void setArmSpeed(double speed)
-	{
-		armState = ArmState.SPEED;
-		armSpeedSetpoint = speed;
-	}
-	
-	public void setElevatorSpeed(double speed)
-	{
-		elevState = ElevatorState.SPEED;
-		elevatorSpeedSetpoint = speed;
-	}
-	
 	public void setXRate(double xRate) {
-		double armSpeed = -xRate * 57.44645 / (Constants.ArmLength * Math.sin(Math.toRadians(arm.getAngle())));
-		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(arm.getAngle()));
+		double armSpeed = -xRate * 57.44645 / (Constants.ArmLength * Math.sin(Math.toRadians(getArmAngle())));
+		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(getArmAngle()));
 
-		if (armSpeed > 10000 || elevatorSpeed > 10000)
+		if (armSpeed > 10000 || elevatorSpeed > 10000 || getArmAngle() < 45 || getArmAngle() > 80 || getElevatorHeight() < 10 || getElevatorHeight() > 60) //If we fix the math, get rid of this. Otherwise, this prevents near zero angles from messing everything up
 		{
-			//setArmSpeed(0);
-			//setElevatorSpeed(0);
-			setArmAngle(getArmAngle());
-			setElevatorHeight(getElevatorHeight());
-			return;
+			armSpeed = 0;
+			elevatorSpeed = 0;
 		}
 		
+		if (elevatorSpeed > 0)
+			setElevatorHeight(Constants.ElevatorMaxHeight);
+		else
+			setElevatorHeight(Constants.ElevatorMinHeight);
 		
-		if (isValidAngleAndHeight(getArmAngle(), getElevatorHeight()) && !(getArmAngle() < 1 && getArmAngle() > 1) &&
+		if (armSpeed > 0)
+			setArmAngle(Constants.ArmUpperAngleLimit);
+		else
+			setArmAngle(Constants.ArmLowerAngleLimit);
+		
+		if (Math.abs(armSpeed) > Constants.ArmVelocityLimit)
+		{
+			elevatorSpeed = elevatorSpeed * Constants.ArmVelocityLimit / armSpeed;
+			armSpeed = Constants.ArmVelocityLimit;
+		}
+		if (Math.abs(elevatorSpeed) > Constants.ElevatorVelocityLimit)
+		{
+			armSpeed = armSpeed * Constants.ElevatorVelocityLimit / elevatorSpeed;
+			elevatorSpeed = Constants.ElevatorVelocityLimit;
+		}
+		
+		System.out.println("Elevator Speed: " + elevatorSpeed);
+		System.out.println("Arm Speed: " + armSpeed);
+		
+ 		elevatorLimiter.setMaxAccel(Math.abs(elevatorSpeed));
+		armLimiter.setAccValue(Math.abs(armSpeed));
+
+		/*if (isValidAngleAndHeight(getArmAngle(), getElevatorHeight()) && !(getArmAngle() < 1 && getArmAngle() > 1) &&
 				((Math.abs(getArmAngle()) < 8 && xRate < 0) || ((getArmAngle() > 80 || getArmAngle() < -45) && xRate > 0) || (getArmAngle() > -45 && getArmAngle() < -8) ||  (getArmAngle() > 8 && getArmAngle() < 80)))
 		{
-			if (xRate > 0)
-				setArmAngle(0);
-			else if (xRate < 0)
-			{
-				if (getArmAngle() >= 0)
-					setArmAngle(Constants.ArmUpperAngleLimit);
-				else
-					setArmAngle(Constants.ArmLowerAngleLimit);
-			}
-			/*
-			 * setArmSpeed(armSpeed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
-					* Constants.SensorTicksPerMotorRotation);
-
-			setElevatorSpeed(elevatorSpeed * (1d / Constants.ElevatorInchesPerMotorRotation)
-					* Constants.SensorTicksPerMotorRotation);
-			*/
+			
+			if (elevatorSpeed <= Constants.ElevatorVelocityLimit)
+				elevatorLimiter.setMaxAccel(Math.abs(elevatorSpeed));
+			if (armSpeed <= Constants.ArmVelocityLimit);
+				armLimiter.setAccValue(Math.abs(armSpeed));
 		} 
 		else
 		{
-			//setArmSpeed(0);
-			//setElevatorSpeed(0);
 			setArmAngle(getArmAngle());
 			setElevatorHeight(getElevatorHeight());
-		}
+		}*/
 	}
 
 	public void setOverallPosition(double distance, double height) {
@@ -314,50 +312,50 @@ public class Elevarm extends Threaded {
 		}
 		
 		switch (snapElevarmState) 	{
-		case HOMING:
-			if (!isValidAngleAndHeight(arm.getAngle(), 0)) {
-				// setArmAngle(Constants.ArmHorizontalDegrees);
-				System.out.println("------------------------------------------------------------");
-				System.out.println("CAN'T HOME. INVALID POSITION");
-				System.out.println("	Angle: " + arm.getAngle() + " Setpoint: " + arm.getTargetAngle());
-				System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
-				System.out.println("------------------------------------------------------------");
-				synchronized(this){
-					elevarmState = ElevarmState.MANUAL;					
+			case HOMING:
+				if (!isValidAngleAndHeight(arm.getAngle(), 0)) {
+					// setArmAngle(Constants.ArmHorizontalDegrees);
+					System.out.println("------------------------------------------------------------");
+					System.out.println("CAN'T HOME. INVALID POSITION");
+					System.out.println("	Angle: " + arm.getAngle() + " Setpoint: " + arm.getTargetAngle());
+					System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
+					System.out.println("------------------------------------------------------------");
+					synchronized(this){
+						elevarmState = ElevarmState.MANUAL;					
+					}
+					break;
+				}
+				elevator.setPercentOutput(-.2); // Some slow speed
+				if (elevator.getOutputCurrent() > Constants.ElevatorStallCurrent) {
+					elevator.setPercentOutput(0);
+					elevator.setEncoderPosition(0); // Sets encoder value to 0
+					System.out.println("ELEVATOR HOMED");
+					synchronized(this){
+						elevarmState = ElevarmState.MANUAL;					
+					}
+				} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
+					System.out.println("------------------------------------------------------------");
+					System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
+					System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
+					System.out.println("------------------------------------------------------------");
+					elevator.setPercentOutput(0);
+					elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
+							* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
+					synchronized(this){
+						elevarmState = ElevarmState.MANUAL;					
+					}
 				}
 				break;
-			}
-			elevator.setPercentOutput(-.2); // Some slow speed
-			if (elevator.getOutputCurrent() > Constants.ElevatorStallCurrent) {
-				elevator.setPercentOutput(0);
-				elevator.setEncoderPosition(0); // Sets encoder value to 0
-				System.out.println("ELEVATOR HOMED");
-				synchronized(this){
-					elevarmState = ElevarmState.MANUAL;					
+			case INTAKE:
+				synchronized(this) {				
+					elevatorSetpoint = Constants.ElevatorDownHeight;
+					if (elevator.getHeight() < 20) {
+						armSetpoint = Constants.ArmIntakeDegrees;
+					}
 				}
-			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
-				System.out.println("------------------------------------------------------------");
-				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
-				System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
-				System.out.println("------------------------------------------------------------");
-				elevator.setPercentOutput(0);
-				elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
-						* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
-				synchronized(this){
-					elevarmState = ElevarmState.MANUAL;					
-				}
-			}
-			break;
-		case INTAKE:
-			synchronized(this) {				
-				elevatorSetpoint = Constants.ElevatorDownHeight;
-				if (elevator.getHeight() < 20) {
-					armSetpoint = Constants.ArmIntakeDegrees;
-				}
-			}
-			break;
-		case MANUAL:
-			break;
+				break;
+			case MANUAL:
+				break;
 		}
 		
 		switch(snapElevState) {
@@ -365,31 +363,18 @@ public class Elevarm extends Threaded {
 				double setpoint = elevatorLimiter.update(snapElevSetpoint);
 				elevator.setHeight(setpoint);
 				break;
-			case SPEED:
-				/*
-				 * TODO: FIX it. it's trash
-				 */
-				if (elevatorSpeedSetpoint > maxElevatorSpeed)
-					elevatorSpeedSetpoint = maxElevatorSpeed;
-				elevator.setSpeed(elevatorSpeedSetpoint);
-				break;
 			case MANUAL:
 				elevatorLimiter.update(elevator.getHeight());
 				break;
 		}
 
 		switch (snapArmState) {
-		case POSITION:
-			arm.setAngle(armLimiter.update(snapArmSetpoint));
-			break;
-		case SPEED:
-			if (armSpeedSetpoint > maxArmSpeed)
-				armSpeedSetpoint = maxArmSpeed;
-			arm.setSpeed(armSpeedSetpoint);
-			break;
-		case MANUAL:
-			armLimiter.update(arm.getAngle());
-			break;
+			case POSITION:
+				arm.setAngle(armLimiter.update(snapArmSetpoint));
+				break;
+			case MANUAL:
+				armLimiter.update(arm.getAngle());
+				break;
 		}
 	}
 

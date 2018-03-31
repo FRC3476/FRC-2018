@@ -168,18 +168,6 @@ public class Robot extends IterativeRobot {
 		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		
-		/*if (joystick.getRisingEdge(9))
-		{
-			elevarm.setXRate(.1);
-		}
-		else if (joystick.getRisingEdge(10))
-		{
-			elevarm.setXRate(-.1);
-		}
-		else if (joystick.getFallingEdge(9) || joystick.getFallingEdge(10))
-		{
-			elevarm.setXRate(0);
-		}*/
 		
 		
 		
@@ -260,7 +248,24 @@ public class Robot extends IterativeRobot {
 			elevarm.homeElevator();
 		}
 
-		if (buttonBox.getRisingEdge(5))
+		
+		if (joystick.getRisingEdge(9))
+		{
+			elevarm.setXRate(.01);
+		}
+		else if (joystick.getRisingEdge(10))
+		{
+			elevarm.setXRate(-.01);
+		}
+		else if (joystick.getFallingEdge(9) || joystick.getFallingEdge(10))
+		{
+			elevarm.setXRate(0);
+			elevarm.resetRateLimits();
+			elevarm.stopMovement();
+			elevarm.setArmAngle(elevarm.getArmAngle());
+			elevarm.setElevatorHeight(elevarm.getElevatorHeight());
+		}
+		else if (buttonBox.getRisingEdge(5))
 		{
 			elevarm.setElevarmIntakePosition();
 		}

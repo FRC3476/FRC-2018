@@ -111,6 +111,9 @@ public final class Constants {
 	public static final int CubeSwitchId = 0;
 	public static final double ExpectedClimberCurrent = 0;
 
+	public static final double ElevatorMaxCurrent = 25;
+	public static final double ArmMaxCurrent = 15;
+
 	private Constants() {
 	}
 }

@@ -1,6 +1,7 @@
 package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
+import org.usfirst.frc.team3476.utility.RunningAverageQueue;
 import org.usfirst.frc.team3476.utility.Threaded;
 import org.usfirst.frc.team3476.utility.control.RateLimiter;
 
@@ -18,13 +19,16 @@ public class Elevarm extends Threaded {
 	}
 	
 	public enum ElevatorState {
-		MANUAL, POSITION
+		MANUAL, POSITION, SPEED
 	}
 
 	public enum ArmState {
-		MANUAL, POSITION
+		MANUAL, POSITION, SPEED
 	}
 
+	private RunningAverageQueue elevatorCurrent = new RunningAverageQueue(10);
+	private RunningAverageQueue armCurrent = new RunningAverageQueue(10);
+	
 	private ElevarmState elevarmState = ElevarmState.HOMING;
 	private ElevatorState elevState = ElevatorState.MANUAL;
 	private ArmState armState = ArmState.MANUAL;
@@ -130,12 +134,18 @@ public class Elevarm extends Threaded {
 		double armSpeed = -xRate * 57.44645 / (Constants.ArmLength * Math.sin(Math.toRadians(getArmAngle())));
 		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(getArmAngle()));
 
-		if (armSpeed > 10000 || elevatorSpeed > 10000 || getArmAngle() < 45 || getArmAngle() > 80 || getElevatorHeight() < 10 || getElevatorHeight() > 60) //If we fix the math, get rid of this. Otherwise, this prevents near zero angles from messing everything up
+		if (armSpeed > 1000 || elevatorSpeed > 1000 ||
+				getArmAngle() < 45 || getArmAngle() > 80 ||
+				getElevatorHeight() < 10 || getElevatorHeight() > 60 ||
+				(xRate > 0 && elevatorSpeed > 0 && getArmAngle() < 2) ||
+				(xRate > 0 && elevatorSpeed < 0 && getArmAngle() > -2)
+				) //If we fix the math, get rid of this. Otherwise, this prevents near zero angles from messing everything up
 		{
 			armSpeed = 0;
 			elevatorSpeed = 0;
 		}
 		
+		//Set correct setpoint for arm and elevator to move to
 		if (elevatorSpeed > 0)
 			setElevatorHeight(Constants.ElevatorMaxHeight);
 		else
@@ -146,6 +156,8 @@ public class Elevarm extends Threaded {
 		else
 			setArmAngle(Constants.ArmLowerAngleLimit);
 		
+		
+		//Scale back speeds if too fast
 		if (Math.abs(armSpeed) > Constants.ArmVelocityLimit)
 		{
 			elevatorSpeed = elevatorSpeed * Constants.ArmVelocityLimit / armSpeed;
@@ -157,26 +169,8 @@ public class Elevarm extends Threaded {
 			elevatorSpeed = Constants.ElevatorVelocityLimit;
 		}
 		
-		System.out.println("Elevator Speed: " + elevatorSpeed);
-		System.out.println("Arm Speed: " + armSpeed);
-		
- 		elevatorLimiter.setMaxAccel(Math.abs(elevatorSpeed));
-		armLimiter.setAccValue(Math.abs(armSpeed));
-
-		/*if (isValidAngleAndHeight(getArmAngle(), getElevatorHeight()) && !(getArmAngle() < 1 && getArmAngle() > 1) &&
-				((Math.abs(getArmAngle()) < 8 && xRate < 0) || ((getArmAngle() > 80 || getArmAngle() < -45) && xRate > 0) || (getArmAngle() > -45 && getArmAngle() < -8) ||  (getArmAngle() > 8 && getArmAngle() < 80)))
-		{
-			
-			if (elevatorSpeed <= Constants.ElevatorVelocityLimit)
-				elevatorLimiter.setMaxAccel(Math.abs(elevatorSpeed));
-			if (armSpeed <= Constants.ArmVelocityLimit);
-				armLimiter.setAccValue(Math.abs(armSpeed));
-		} 
-		else
-		{
-			setArmAngle(getArmAngle());
-			setElevatorHeight(getElevatorHeight());
-		}*/
+ 		elevatorSpeedSetpoint = elevatorSpeed;
+		armSpeedSetpoint = armSpeed;
 	}
 
 	public void setOverallPosition(double distance, double height) {
@@ -311,6 +305,15 @@ public class Elevarm extends Threaded {
 			snapArmSetpoint = armSetpoint;
 		}
 		
+		elevatorCurrent.push(getElevatorOutputCurrent());
+		armCurrent.push(getArmOutputCurrent());
+		
+		if (elevatorCurrent.getAverage() > Constants.ElevatorMaxCurrent)
+			setElevatorPercentOutput(0);
+		
+		if (armCurrent.getAverage() > Constants.ArmMaxCurrent)
+			setArmPercentOutput(0);
+		
 		switch (snapElevarmState) 	{
 			case HOMING:
 				if (!isValidAngleAndHeight(arm.getAngle(), 0)) {
@@ -359,9 +362,12 @@ public class Elevarm extends Threaded {
 		}
 		
 		switch(snapElevState) {
+			case SPEED:
+				elevatorLimiter.setMaxAccel(elevatorSpeedSetpoint);
+				elevator.setHeight(elevatorLimiter.update(snapElevSetpoint));
+				break;
 			case POSITION:
-				double setpoint = elevatorLimiter.update(snapElevSetpoint);
-				elevator.setHeight(setpoint);
+				elevator.setHeight(elevatorLimiter.update(snapElevSetpoint));
 				break;
 			case MANUAL:
 				elevatorLimiter.update(elevator.getHeight());
@@ -369,6 +375,10 @@ public class Elevarm extends Threaded {
 		}
 
 		switch (snapArmState) {
+			case SPEED:
+				armLimiter.setMaxAccel(armSpeedSetpoint);
+				arm.setAngle(armLimiter.update(snapArmSetpoint));
+				break;
 			case POSITION:
 				arm.setAngle(armLimiter.update(snapArmSetpoint));
 				break;

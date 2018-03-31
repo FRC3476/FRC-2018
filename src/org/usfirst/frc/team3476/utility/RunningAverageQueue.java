@@ -1,24 +1,6 @@
 package org.usfirst.frc.team3476.utility;
 
-public class RunningAverageQueue {
-	public static void main(String[] args)
-	{
-		RunningAverageQueue q = new RunningAverageQueue(20);
-		for (int i = 0; i < 20; i++)
-			q.push(1);
-		q.print();
-		System.out.println(q.getAverage());
-		for (int i = 0; i < 10; i++)
-			q.push(3);
-		q.print();
-		System.out.println(q.getAverage());
-		
-		for (int i = 7; i < 14; i++)
-			q.push(i * i);
-		q.print();
-		System.out.println(q.getAverage());
-	}
-	
+public class RunningAverageQueue {	
 	private int end;
 	private final int size;
 	private double[] data;

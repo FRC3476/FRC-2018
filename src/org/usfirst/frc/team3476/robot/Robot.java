@@ -337,6 +337,7 @@ public class Robot extends IterativeRobot {
 		elevarm.configArmEncoder();
 		drive.stopMovement();
 		elevarm.stopMovement();
+		elevarm.resetRateLimits();
 	}
 
 	@Override

@@ -145,18 +145,30 @@ public class Intake extends Threaded {
 			case INTAKE:
 				double currentRight = intakeMotor1.getOutputCurrent();
 				double currentLeft = intakeMotor2.getOutputCurrent();
-				System.out.println(currentLeft + "   " + currentRight);
+				//System.out.println(currentLeft + "   " + currentRight);
 				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.3, 0.7);
 				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.3, 0.7);
 				double bias = 0;
 				if(getCurrent() > 10) {
-					//bias = OrangeUtility.coercedNormalize(getCurrent(), 10, 40, 0.0, 0.3);
-					if(Timer.getFPGATimestamp() - biasTimer > 0.5) {
+					bias = OrangeUtility.coercedNormalize(getCurrent(), 10, 40, 0.0, 0.3);
+					/*
+					if(Timer.getFPGATimestamp() - biasTimer > 1) {
 						swapBias();
 						biasTimer = Timer.getFPGATimestamp();
+					}*/
+					if(biasState == BiasState.NORMAL && Timer.getFPGATimestamp() - biasTimer > 1) {
+						biasState = BiasState.REVERSE;
+						biasTimer = Timer.getFPGATimestamp();
+						System.out.println("its a reverse");
+					} 
+					if(biasState == BiasState.REVERSE && Timer.getFPGATimestamp() - biasTimer > 0.5) {
+						biasState = BiasState.NORMAL;
+						biasTimer = Timer.getFPGATimestamp();
+						System.out.println("its a normal");
 					}
 				} else {
 					biasTimer = Timer.getFPGATimestamp();
+					biasState = BiasState.NORMAL;					
 				}
 				if(biasState == BiasState.NORMAL) {
 					intakeMotor1.set(ControlMode.PercentOutput, -powerRight + bias);
@@ -174,8 +186,10 @@ public class Intake extends Threaded {
 	synchronized private void swapBias(){
 		if(biasState == BiasState.REVERSE) {
 			biasState = BiasState.NORMAL;
+			System.out.println("Normal");
 		} else {
 			biasState = BiasState.REVERSE;
+			System.out.println("Reverse");
 		}
 	}
 }

@@ -166,7 +166,7 @@ public class Robot extends IterativeRobot {
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawButton(5));
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		
 		/*if (joystick.getRisingEdge(9))
 		{
@@ -244,15 +244,15 @@ public class Robot extends IterativeRobot {
 		{
 			drive.setShiftState(false);
 		}
-		/*double nudge = joystick.getRawAxis(1);
+		double nudge = joystick.getRawAxis(1);
 		if (nudge > Constants.JoystickDeadzone)
 		{
-			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge - Constants.JoystickDeadzone));
+			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge - Constants.JoystickDeadzone) / 5);
 		}
 		else if (nudge < -Constants.JoystickDeadzone)
 		{
-			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge + Constants.JoystickDeadzone));
-		}*/
+			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge + Constants.JoystickDeadzone) / 5);
+		}
 		
 		
 		if (buttonBox.getRisingEdge(9))

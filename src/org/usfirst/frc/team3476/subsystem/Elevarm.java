@@ -221,6 +221,8 @@ public class Elevarm extends Threaded {
 	synchronized public void homeElevator() {
 		elevator.homeStartTime = System.currentTimeMillis();
 		elevarmState = ElevarmState.HOMING;
+		elevState = ElevatorState.MANUAL;
+		armState = ArmState.MANUAL;
 	}
 
 	public void prepClimb() {
@@ -276,11 +278,13 @@ public class Elevarm extends Threaded {
 	@Override
 	public void update() {
 		ElevatorState snapElevState;
+		ArmState snapArmState;
 		ElevarmState snapElevarmState;
 		double snapElevSetpoint;
 		double snapArmSetpoint;
 		synchronized(this) {
 			snapElevState = elevState;
+			snapArmState = armState;
 			snapElevarmState = elevarmState;
 			snapElevSetpoint = elevatorSetpoint;
 			snapArmSetpoint = armSetpoint;
@@ -296,7 +300,7 @@ public class Elevarm extends Threaded {
 				System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
 				System.out.println("------------------------------------------------------------");
 				synchronized(this){
-					elevState = ElevatorState.MANUAL;					
+					elevarmState = ElevarmState.MANUAL;					
 				}
 				break;
 			}
@@ -306,7 +310,7 @@ public class Elevarm extends Threaded {
 				elevator.setEncoderPosition(0); // Sets encoder value to 0
 				System.out.println("ELEVATOR HOMED");
 				synchronized(this){
-					elevState = ElevatorState.MANUAL;					
+					elevarmState = ElevarmState.MANUAL;					
 				}
 			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
 				System.out.println("------------------------------------------------------------");
@@ -317,7 +321,7 @@ public class Elevarm extends Threaded {
 				elevator.setEncoderPosition((int) (Constants.ElevatorMinHeight
 						* (1 / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation));
 				synchronized(this){
-					elevState = ElevatorState.MANUAL;					
+					elevarmState = ElevarmState.MANUAL;					
 				}
 			}
 			break;
@@ -351,7 +355,7 @@ public class Elevarm extends Threaded {
 				break;
 		}
 
-		switch (armState) {
+		switch (snapArmState) {
 		case POSITION:
 			arm.setAngle(armLimiter.update(snapArmSetpoint));
 			break;

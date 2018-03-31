@@ -83,6 +83,8 @@ public final class Constants {
 	public static final double ExpectedElevatorPosition = 0;
 	public static final double ElevatorDownHeight = .5; // Should be the proper position for getting cubes
 	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
+	public static final double ElevatorVelocityLimit = 1000;
+	public static final double ElevatorAccelerationLimit = 250;
 
 	// Arm
 	public static final double ArmLowerAngleLimit = -55;
@@ -96,6 +98,9 @@ public final class Constants {
 	public static final double ArmHorizontalDegrees = 0;
 	public static final double ArmDownDegrees = -55;
 	public static final double ArmIntakeDegrees = -22;
+	public static final double ArmVelocityLimit = 200;
+	public static final double ArmAccelerationLimit = 300;
+	
 	
 	
 	public static final int PracticeBotArmTicksOffset = 1259;

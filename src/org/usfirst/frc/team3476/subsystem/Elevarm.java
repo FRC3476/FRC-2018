@@ -30,8 +30,8 @@ public class Elevarm extends Threaded {
 	private boolean elevatorIntakePositionSet = false;
 
 	private Elevarm() {
-		elevatorLimiter = new RateLimiter(1000, 250);
-		armLimiter = new RateLimiter(200, 300);
+		elevatorLimiter = new RateLimiter(Constants.ElevatorVelocityLimit, Constants.ElevatorVelocityLimit);
+		armLimiter = new RateLimiter(Constants.ArmVelocityLimit, Constants.ArmAccelerationLimit);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}
@@ -42,6 +42,14 @@ public class Elevarm extends Threaded {
 
 	public static Elevarm getInstance() {
 		return instance;
+	}
+	
+	public void resetRateLimits()
+	{
+		elevatorLimiter.setMaxAccel(Constants.ElevatorVelocityLimit);
+		elevatorLimiter.setMaxJerk(Constants.ElevatorAccelerationLimit);
+		armLimiter.setMaxAccel(Constants.ArmVelocityLimit);
+		armLimiter.setMaxJerk(Constants.ArmAccelerationLimit);
 	}
 
 	public void setElevatorHeight(double height) {
@@ -123,10 +131,12 @@ public class Elevarm extends Threaded {
 		double armSpeed = -xRate * 57.44645 / (Constants.ArmLength * Math.sin(Math.toRadians(arm.getAngle())));
 		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(arm.getAngle()));
 
-		if (armSpeed > 1000 || elevatorSpeed > 1000)
+		if (armSpeed > 10000 || elevatorSpeed > 10000)
 		{
-			setArmSpeed(0);
-			setElevatorSpeed(0);
+			//setArmSpeed(0);
+			//setElevatorSpeed(0);
+			setArmAngle(getArmAngle());
+			setElevatorHeight(getElevatorHeight());
 			return;
 		}
 		
@@ -134,16 +144,29 @@ public class Elevarm extends Threaded {
 		if (isValidAngleAndHeight(getArmAngle(), getElevatorHeight()) && !(getArmAngle() < 1 && getArmAngle() > 1) &&
 				((Math.abs(getArmAngle()) < 8 && xRate < 0) || ((getArmAngle() > 80 || getArmAngle() < -45) && xRate > 0) || (getArmAngle() > -45 && getArmAngle() < -8) ||  (getArmAngle() > 8 && getArmAngle() < 80)))
 		{
-			setArmSpeed(armSpeed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
+			if (xRate > 0)
+				setArmAngle(0);
+			else if (xRate < 0)
+			{
+				if (getArmAngle() >= 0)
+					setArmAngle(Constants.ArmUpperAngleLimit);
+				else
+					setArmAngle(Constants.ArmLowerAngleLimit);
+			}
+			/*
+			 * setArmSpeed(armSpeed * (1d / 360) * (1d / Constants.ArmRotationsPerMotorRotation)
 					* Constants.SensorTicksPerMotorRotation);
 
 			setElevatorSpeed(elevatorSpeed * (1d / Constants.ElevatorInchesPerMotorRotation)
 					* Constants.SensorTicksPerMotorRotation);
+			*/
 		} 
 		else
 		{
-			setArmSpeed(0);
-			setElevatorSpeed(0);
+			//setArmSpeed(0);
+			//setElevatorSpeed(0);
+			setArmAngle(getArmAngle());
+			setElevatorHeight(getElevatorHeight());
 		}
 	}
 

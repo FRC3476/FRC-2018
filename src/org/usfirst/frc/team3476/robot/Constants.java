@@ -2,7 +2,7 @@ package org.usfirst.frc.team3476.robot;
 
 public final class Constants {
 
-	public static final boolean LOGGING = false;
+	public static final boolean LOGGING = true;
 
 	// Other
 	public static final double SensorTicksPerMotorRotation = 4096;
@@ -12,18 +12,18 @@ public final class Constants {
 	// Driving
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
-	public static final double kRightHighP = 0.05;
+	public static final double kRightHighP = 0.15;
 	public static final double kRightHighI = 0;
-	public static final double kRightHighD = 0.05;
-	public static final double kRightHighF = 0.04;
+	public static final double kRightHighD = 0.5;
+	public static final double kRightHighF = 0.035;
 	public static final double kRightLowP = 0.1;
 	public static final double kRightLowF = 0.05763730970902943999708309631717;
 	public static final double kRightLowD = 0.1;
 
-	public static final double kLeftHighP = 0.05;
+	public static final double kLeftHighP = 0.15;
 	public static final double kLeftHighI = 0;
-	public static final double kLeftHighD = 0.05;
-	public static final double kLeftHighF = 0.04;
+	public static final double kLeftHighD = 0.5;
+	public static final double kLeftHighF = 0.035;
 	public static final double kLeftLowP = 0.1;
 	public static final double kLeftLowF = 0.05763730970902943999708309631717;
 	public static final double kLeftLowD = 0;
@@ -41,12 +41,12 @@ public final class Constants {
 	public static final double MaxAcceleration = 1000;
 
 	// Autonomous Driving
-	public static final double TrackRadius = 15.5;
+	public static final double TrackRadius = 14.9;
 	public static final double WheelDiameter = 6;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 20;
 	public static final double MaxPathSpeed = 140;
-	public static final double MinLookAheadDistance = 18;
+	public static final double MinLookAheadDistance = 14;
 	public static final double MaxLookAheadDistance = 30;
 
 	// CAN IDs
@@ -98,7 +98,7 @@ public final class Constants {
 	public static final double ArmIntakeDegrees = -22;
 	
 	
-	public static final int PracticeBotArmTicksOffset = 1860;
+	public static final int PracticeBotArmTicksOffset = 2461;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 	public static final double JoystickDeadzone = .15;

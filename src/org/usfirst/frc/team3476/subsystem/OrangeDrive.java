@@ -82,10 +82,12 @@ public class OrangeDrive extends Threaded {
 		rightTalon.config_kI(0, Constants.kRightHighI, 10);
 		rightTalon.config_kD(0, Constants.kRightHighD, 10);
 		rightTalon.config_kF(0, Constants.kRightHighF, 10);
+		rightTalon.configClosedloopRamp(12d/200d, 10);
 		leftTalon.config_kP(0, Constants.kLeftHighP, 10);
 		leftTalon.config_kI(0, Constants.kLeftHighI, 10);
 		leftTalon.config_kD(0, Constants.kRightHighD, 10);
 		leftTalon.config_kF(0, Constants.kLeftHighF, 10);
+		leftTalon.configClosedloopRamp(12d/200d, 10);
 		driveMultiplier = Constants.HighDriveSpeed;
 	}
 
@@ -331,6 +333,7 @@ public class OrangeDrive extends Threaded {
 			DriverStation.reportError("Velocity set over " + Constants.HighDriveSpeed + " !", false);
 			return;
 		}
+		//System.out.println("Left: " + setVelocity.leftWheelSpeed + " Speed:" + getLeftSpeed());
 		// inches per sec to rotations per min
 		double leftSetpoint = (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
 				* (62d / 22d) * 3d;

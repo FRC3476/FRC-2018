@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.auto.AutoCommand;
+import org.usfirst.frc.team3476.utility.auto.AutoRoutine;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
@@ -25,7 +26,7 @@ public class Path {
 		private Translation2d start, end, delta;
 		private double maxSpeed, deltaDist, deltaDistSquared;
 		
-		private ArrayList<AutoCommandTrigger> commands = new ArrayList<>();
+		private ArrayList<AutoRoutineTrigger> commands = new ArrayList<>();
 
 		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed) {
 			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
@@ -40,17 +41,11 @@ public class Path {
 			deltaDistSquared = Math.pow(deltaDist, 2);
 		}
 		
-		private PathSegment(Translation2d start, Translation2d end, double maxSpeed, ArrayList<AutoCommandTrigger> commands) {
-			this(start, end, maxSpeed);
-			this.commands.addAll(commands);
+		public void addAutoRoutineTrigger(AutoRoutineTrigger routine) {
+			this.commands.add(routine);
 			Collections.sort(this.commands);
 		}
-		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed, ArrayList<AutoCommandTrigger> commands) {
-			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
-			this.commands.addAll(commands);
-			Collections.sort(this.commands);
-		}
-		
+	
 		private Translation2d getStart() {
 			return start;
 		}
@@ -143,18 +138,18 @@ public class Path {
 		public Translation2d currentSegEnd;
 	}
 	
-	public static class AutoCommandTrigger implements Comparable<AutoCommandTrigger>{
+	public static class AutoRoutineTrigger implements Comparable<AutoRoutineTrigger>{
 		private double percentage;
-		private AutoCommand command;
+		private AutoRoutine routine;
 		
 		//Should not be blocking nerds
-		public AutoCommandTrigger(AutoCommand command, double percentage) {
-			this.command = command;
+		public AutoRoutineTrigger(AutoRoutine routine, double percentage) {
+			this.routine = routine;
 			this.percentage = percentage;
 		}
 
 		@Override
-		public int compareTo(AutoCommandTrigger other) {
+		public int compareTo(AutoRoutineTrigger other) {
 			if (this.percentage > other.percentage)
 				return 1;
 			if (this.percentage < other.percentage)
@@ -200,6 +195,14 @@ public class Path {
 		isEmpty = false;
 	}
 
+	public void addRoutineToCurrentSegment(AutoRoutine routine, double percentage){
+		segments.get(segments.size() - 1).addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
+	}
+	public void addCommandToCurrentSegment(AutoCommand command, double percentage){
+		AutoRoutine routine = new AutoRoutine();
+		routine.addCommands(command);
+		segments.get(segments.size() - 1).addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
+	}
 	/**
 	 * Sets the desired angle for the robot to end in. It does this by placing
 	 * up to two points that have a 90 degree angle to allow the robot to
@@ -277,7 +280,7 @@ public class Path {
 			if (distToClosest > distToNext) {
 				//Run commands that didn't run yet in segments being deleted
 				while(!segments.get(0).commands.isEmpty()) {
-					segments.get(0).commands.remove(0).command.run();
+					segments.get(0).commands.remove(0).routine.run();
 				}
 				segments.remove(0);				
 				closestPoint = closestNextPoint;
@@ -289,8 +292,8 @@ public class Path {
 		//Run commands when we zoom past
 		double percentage = segments.get(0).getPercentageOnSegment(pose);
 		while(!segments.get(0).commands.isEmpty()) {
-			if(segments.get(0).commands.get(0).percentage < percentage) {
-				segments.get(0).commands.remove(0).command.run();
+			if(segments.get(0).commands.get(0).percentage <= percentage) {
+				segments.get(0).commands.remove(0).routine.run();
 			} else {
 				break;
 			}

@@ -30,11 +30,10 @@ public class PurePursuitController {
 		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 		turnPID.setTolerance(1);
 		speedProfiler = new RateLimiter(200, 1000);
-		/*
 		if(robotPath.isEmpty()){
-			OrangeDrive.getInstance().setFinished();
+			
 		}
-		*/
+		
 	}
 
 	/**
@@ -99,7 +98,8 @@ public class PurePursuitController {
 			lookAhead.add(data.lookAheadPoint.getY());
 			pose.add(robotPose.translationMat.getX());
 			pose.add(robotPose.translationMat.getY());
-			message.put("lookAhead", closest);
+			message.put("closest", closest);
+			message.put("lookAhead", lookAhead);
 			message.put("pose", pose);
 			UDP.getInstance().send("10.34.76.5", message.toJSONString(), 5801);
 		}
@@ -125,6 +125,7 @@ public class PurePursuitController {
 		Translation2d lookAheadPointToRobot = robotPose.translationMat.inverse().translateBy(lookAheadPoint);
 		lookAheadPointToRobot = lookAheadPointToRobot.rotateBy(robotPose.rotationMat.inverse());
 		return lookAheadPointToRobot;
+		
 	}
 
 	/**

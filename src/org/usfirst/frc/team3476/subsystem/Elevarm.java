@@ -50,6 +50,7 @@ public class Elevarm extends Threaded {
 	}
 
 	synchronized public void setElevatorHeight(double height) {
+		/*
 		if (elevarmState != ElevarmState.HOMING && isValidAngleAndHeight(armSetpoint, height)) {
 			elevarmState = ElevarmState.EXTERNAL;
 			elevState = ElevatorState.POSITION;
@@ -62,6 +63,7 @@ public class Elevarm extends Threaded {
 			System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());
 			System.out.println("------------------------------------------------------------");
 		}
+		*/
 	}
 
 	public int getElevatorEncoderTicks() {
@@ -97,6 +99,7 @@ public class Elevarm extends Threaded {
 	}
 
 	synchronized public void setArmAngle(double angle) {
+		/*
 		if (elevarmState != ElevarmState.HOMING && isValidAngleAndHeight(angle, elevatorSetpoint)) {
 			elevarmState = ElevarmState.EXTERNAL;
 			armState = ArmState.POSITION;
@@ -108,6 +111,7 @@ public class Elevarm extends Threaded {
 			System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevatorSetpoint);
 			System.out.println("------------------------------------------------------------");
 		}
+		*/
 	}
 
 	public double getArmAngle() {
@@ -312,7 +316,7 @@ public class Elevarm extends Threaded {
 				synchronized(this){
 					elevarmState = ElevarmState.EXTERNAL;					
 				}
-			} else if (System.currentTimeMillis() - elevator.homeStartTime > 3000) {
+			} else if (System.currentTimeMillis() - elevator.homeStartTime > 1500) {
 				System.out.println("------------------------------------------------------------");
 				System.out.println("FAILED TO HOME. USING CURRENT POSITION AS HOME");
 				System.out.println("	Height: " + elevator.getHeight() + " Setpoint: " + elevator.getTargetHeight());

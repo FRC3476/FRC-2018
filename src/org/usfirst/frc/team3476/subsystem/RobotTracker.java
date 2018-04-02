@@ -48,11 +48,21 @@ public class RobotTracker extends Threaded {
 	}
 
 	/**
-	 * Integrates the encoders and gyro to figure out robot position. A constant curvature is assumed.
+	 * Integrates the encoders and gyro to figure out robot position. A constant curvature is assumed
 	 */
 	@Override
 	public void update() {
-		currentDistance = driveBase.getDistance();
+		double leftDist = driveBase.getLeftDistance();
+		double rightDist = driveBase.getRightDistance();
+		/*
+		 * Solve problem where Talon returns 0 for distance due to an error
+		 * This causes an abnormal deltaPosition
+		 */
+		if(leftDist != 0 && rightDist != 0) {
+			currentDistance = (leftDist + rightDist) / 2;
+		} else {
+			return;
+		}
 		deltaDistance = currentDistance - oldDistance;
 		Translation2d deltaPosition = new Translation2d(deltaDistance, 0);
 		Rotation deltaRotation = driveBase.getGyroAngle().inverse().rotateBy(rotationOffset);

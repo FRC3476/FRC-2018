@@ -108,8 +108,8 @@ public class PurePursuitController {
 			robotSpeed *= -1;
 		}
 		double maxSpeed = Math.abs(robotSpeed) + Math.abs(deltaSpeed);
-		if(maxSpeed > Constants.HighDriveSpeed) {
-			robotSpeed -= Math.copySign(robotSpeed, maxSpeed - Constants.HighDriveSpeed);
+		if(maxSpeed > Constants.MaxPathSpeed) {
+			robotSpeed -= Math.copySign(maxSpeed - Constants.MaxPathSpeed, robotSpeed);
 		}
 		return new AutoDriveSignal(new DriveSignal(robotSpeed + deltaSpeed, robotSpeed - deltaSpeed), false);
 	}

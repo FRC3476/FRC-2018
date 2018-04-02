@@ -271,6 +271,7 @@ public class Path {
 	public DrivingData getLookAheadPoint(Translation2d pose, double lookAheadDistance) {
 		DrivingData data = new DrivingData();
 		Translation2d closestPoint = segments.get(0).getClosestPoint(pose);
+		
 		Translation2d closestToRobot = closestPoint.inverse().translateBy(pose);
 		while (segments.size() > 1) {
 			double distToClosest = Math.hypot(closestToRobot.getX(), closestToRobot.getY());

@@ -76,7 +76,16 @@ public class OrangeDrive extends Threaded {
 
 		configHigh();
 	}
-
+	private void configAuto() {
+		rightTalon.config_kP(0, Constants.kRightAutoP, 10);
+		rightTalon.config_kD(0, Constants.kRightAutoD, 10);
+		rightTalon.config_kF(0, Constants.kRightAutoF, 10);
+		leftTalon.config_kP(0, Constants.kLeftAutoP, 10);
+		leftTalon.config_kD(0, Constants.kRightAutoD, 10);
+		leftTalon.config_kF(0, Constants.kLeftAutoF, 10);
+		driveMultiplier = Constants.HighDriveSpeed;
+	}
+	
 	private void configHigh() {
 		rightTalon.config_kP(0, Constants.kRightHighP, 10);
 		rightTalon.config_kI(0, Constants.kRightHighI, 10);
@@ -311,6 +320,7 @@ public class OrangeDrive extends Threaded {
 		driveState = DriveState.AUTO;
 		autonomousDriver = new PurePursuitController(autoPath, isReversed);
 		autonomousDriver.resetTime();
+		configAuto();
 		updateAutoPath();
 	}
 
@@ -319,6 +329,8 @@ public class OrangeDrive extends Threaded {
 		rightTalon.setNeutralMode(mode);
 		leftSlaveTalon.setNeutralMode(mode);
 		rightSlaveTalon.setNeutralMode(mode);
+		leftSlave2Talon.setNeutralMode(mode);
+		rightSlave2Talon.setNeutralMode(mode);
 	}
 
 	private void setWheelPower(DriveSignal setVelocity) {
@@ -371,6 +383,7 @@ public class OrangeDrive extends Threaded {
 			synchronized(this){
 				driveState = DriveState.DONE;				
 			}
+			configHigh();
 		}
 		setWheelVelocity(signal.command);
 	}
@@ -401,5 +414,15 @@ public class OrangeDrive extends Threaded {
 
 	synchronized public boolean isFinished() {
 		return driveState == DriveState.DONE;
+	}
+	
+	public void clearStickyFaults() {
+		leftTalon.clearStickyFaults(10);
+		leftSlaveTalon.clearStickyFaults(10);
+		leftSlave2Talon.clearStickyFaults(10); 
+		rightTalon.clearStickyFaults(10);
+		rightSlaveTalon.clearStickyFaults(10);
+		rightSlave2Talon.clearStickyFaults(10); 
+		
 	}
 }

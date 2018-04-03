@@ -43,6 +43,7 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> posChooser = new SendableChooser<>();
 	SendableChooser<String> optionChooser = new SendableChooser<>();
 	SendableChooser<String> mInDbUsInEsS = new SendableChooser<>();
+	SendableChooser<String> evilChooser = new SendableChooser<>();
 
 	@Override
 	public void robotInit() {
@@ -60,6 +61,8 @@ public class Robot extends IterativeRobot {
 		optionChooser.addObject("BOTH", "BOTH");
 		optionChooser.addObject("FORWARD", "FORWARD");
 		optionChooser.addObject("NONE", "NONE");
+		evilChooser.addDefault("good", "good");
+		evilChooser.addObject("bad", "bad");
 		SmartDashboard.putData("Position", posChooser);
 		SmartDashboard.putData("Option", optionChooser);
 		SmartDashboard.putData("business", mInDbUsInEsS);
@@ -80,10 +83,21 @@ public class Robot extends IterativeRobot {
 		String pos = posChooser.getSelected();
 		String option = optionChooser.getSelected();
 		String business = mInDbUsInEsS.getSelected();
+		String good = evilChooser.getSelected();
 
 		PathOption pOption = PathOption.NONE;
 		StartPosition sPos = StartPosition.CENTER;
 		boolean mind = false;
+		boolean isGood = true;
+		
+		switch(good) {
+			case "good":
+				isGood = true;
+				break;
+			case "bad":
+				isGood = false;
+				break;
+		}
 		switch (business) {
 		case "Business":
 			mind = false;
@@ -139,7 +153,7 @@ public class Robot extends IterativeRobot {
 				pOption = PathOption.SWITCH;
 			}
 		}
-		AutoRoutine routine = AutoRoutineGenerator.generate(gameData, pOption, sPos, mind);
+		AutoRoutine routine = AutoRoutineGenerator.generate(gameData, pOption, sPos, mind, isGood);
 		new Thread(routine).start();
 	}
 
@@ -366,6 +380,10 @@ public class Robot extends IterativeRobot {
 		}
 		if (buttonBox.getRisingEdge(3)) {
 			elevarm.checkClimber();
+		}
+		
+		if(xbox.getRisingEdge(5)){
+			drive.clearStickyFaults();
 		}
 	}
 }

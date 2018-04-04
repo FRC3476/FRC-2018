@@ -28,10 +28,10 @@ public final class Constants {
 	public static final double kLeftLowF = 0.05763730970902943999708309631717;
 	public static final double kLeftLowD = 0;
 
-	public static final double kRightAutoP = 0.1;
+	public static final double kRightAutoP = 0.12;
 	public static final double kRightAutoD = 0.7;
 	public static final double kRightAutoF = 0.035;
-	public static final double kLeftAutoP = 0.1;
+	public static final double kLeftAutoP = 0.12;
 	public static final double kLeftAutoD = 0.7;
 	public static final double kLeftAutoF = 0.035;
 	public static final double TeleopAccLimit = 120;

@@ -147,8 +147,8 @@ public class Intake extends Threaded {
 				double currentRight = intakeMotor1.getOutputCurrent();
 				double currentLeft = intakeMotor2.getOutputCurrent();
 				System.out.println(currentLeft + "   " + currentRight);
-				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.25, 0.9);
-				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.25, 0.9);
+				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.2, 1);
+				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.2, 1);
 				double bias = 0;
 				if(!DriverStation.getInstance().isAutonomous()) {
 					if(getCurrent() > 10) {

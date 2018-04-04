@@ -83,7 +83,9 @@ public class OrangeDrive extends Threaded {
 		leftTalon.config_kP(0, Constants.kLeftAutoP, 10);
 		leftTalon.config_kD(0, Constants.kRightAutoD, 10);
 		leftTalon.config_kF(0, Constants.kLeftAutoF, 10);
-		driveMultiplier = Constants.HighDriveSpeed;
+		driveMultiplier = Constants.HighDriveSpeed; 
+		rightTalon.configClosedloopRamp(12d/200d, 10);
+		leftTalon.configClosedloopRamp(12d/200d, 10);
 	}
 	
 	private void configHigh() {

@@ -66,6 +66,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Position", posChooser);
 		SmartDashboard.putData("Option", optionChooser);
 		SmartDashboard.putData("business", mInDbUsInEsS);
+		SmartDashboard.putData("Good", evilChooser);
 		scheduler.schedule(drive, mainExecutor);
 		scheduler.schedule(tracker, mainExecutor);
 		scheduler.schedule(elevarm, mainExecutor);

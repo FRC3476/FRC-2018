@@ -29,7 +29,7 @@ public class PurePursuitController {
 		turnPID.setInputRange(180, -180);
 		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 		turnPID.setTolerance(1);
-		speedProfiler = new RateLimiter(100, 1000);
+		speedProfiler = new RateLimiter(200, 2000);
 		if(robotPath.isEmpty()){
 			
 		}

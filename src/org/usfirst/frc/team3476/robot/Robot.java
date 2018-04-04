@@ -251,11 +251,11 @@ public class Robot extends IterativeRobot {
 		
 		if (joystick.getRisingEdge(9))
 		{
-			elevarm.setXRate(.01);
+			elevarm.setXRate(.00001);
 		}
 		else if (joystick.getRisingEdge(10))
 		{
-			elevarm.setXRate(-.01);
+			elevarm.setXRate(-.00001);
 		}
 		else if (joystick.getFallingEdge(9) || joystick.getFallingEdge(10))
 		{
@@ -265,6 +265,7 @@ public class Robot extends IterativeRobot {
 			elevarm.setArmAngle(elevarm.getArmAngle());
 			elevarm.setElevatorHeight(elevarm.getElevatorHeight());
 		}
+		
 		else if (buttonBox.getRisingEdge(5))
 		{
 			elevarm.setElevarmIntakePosition();

@@ -131,7 +131,7 @@ public class Elevarm extends Threaded {
 	}
 	
 	public void setXRate(double xRate) {
-		double armSpeed = -xRate * 57.44645 / (Constants.ArmLength * Math.sin(Math.toRadians(getArmAngle())));
+		double armSpeed = -xRate * (180d / Math.PI) / (Constants.ArmLength * Math.sin(Math.toRadians(getArmAngle())));
 		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(getArmAngle()));
 
 		if (armSpeed > 1000 || elevatorSpeed > 1000 ||
@@ -147,14 +147,19 @@ public class Elevarm extends Threaded {
 		
 		//Set correct setpoint for arm and elevator to move to
 		if (elevatorSpeed > 0)
-			setElevatorHeight(Constants.ElevatorMaxHeight);
+			setElevatorHeight((getElevatorHeight() + 22) > Constants.ElevatorMaxHeight ? Constants.ElevatorMaxHeight : getElevatorHeight() + 22);
 		else
-			setElevatorHeight(Constants.ElevatorMinHeight);
+			setElevatorHeight((getElevatorHeight() - 22) < Constants.ElevatorMinHeight ? Constants.ElevatorMinHeight : getElevatorHeight() - 22);
 		
-		if (armSpeed > 0)
-			setArmAngle(Constants.ArmUpperAngleLimit);
+		if (xRate > 0)
+			setArmAngle(0);
 		else
-			setArmAngle(Constants.ArmLowerAngleLimit);
+		{
+			if (getArmAngle() >= 0)
+				setArmAngle(Constants.ArmUpperAngleLimit);
+			else
+				setArmAngle(Constants.ArmLowerAngleLimit);
+		}
 		
 		
 		//Scale back speeds if too fast
@@ -168,6 +173,9 @@ public class Elevarm extends Threaded {
 			armSpeed = armSpeed * Constants.ElevatorVelocityLimit / elevatorSpeed;
 			elevatorSpeed = Constants.ElevatorVelocityLimit;
 		}
+		
+		System.out.println("Elevator Speed: " + elevatorSpeed);
+		System.out.println("Arm Speed: " + armSpeed);
 		
  		elevatorSpeedSetpoint = elevatorSpeed;
 		armSpeedSetpoint = armSpeed;
@@ -389,7 +397,8 @@ public class Elevarm extends Threaded {
 	}
 
 	public boolean checkSubsystem() {
-		return checkElevator() && checkArm();
+		boolean arm = checkArm();
+		return checkElevator() && arm;
 	}
 
 	public boolean checkElevator() {

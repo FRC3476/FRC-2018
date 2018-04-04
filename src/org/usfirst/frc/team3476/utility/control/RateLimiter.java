@@ -161,6 +161,7 @@ public class RateLimiter {
 	 */
 	public void setMaxAccel(double maxAccel) {
 		this.maxAccel = maxAccel;
+		accValue = OrangeUtility.coerce(accValue, maxAccel, -maxAccel);
 	}
 
 	/**

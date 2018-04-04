@@ -103,7 +103,7 @@ public final class Constants {
 	
 	
 	
-	public static final int PracticeBotArmTicksOffset = 2663;
+	public static final int PracticeBotArmTicksOffset = 1352;
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 	public static final double JoystickDeadzone = .15;

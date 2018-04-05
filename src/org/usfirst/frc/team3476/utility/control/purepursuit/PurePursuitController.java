@@ -1,13 +1,16 @@
-package org.usfirst.frc.team3476.utility.control;
+package org.usfirst.frc.team3476.utility.control.purepursuit;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
+import org.usfirst.frc.team3476.subsystem.OrangeDrive.AutoDriveSignal;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveSignal;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.UDP;
-import org.usfirst.frc.team3476.utility.control.Path.DrivingData;
+import org.usfirst.frc.team3476.utility.control.RateLimiter;
+import org.usfirst.frc.team3476.utility.control.SynchronousPid;
+import org.usfirst.frc.team3476.utility.control.purepursuit.Path.DrivingData;
 import org.usfirst.frc.team3476.utility.math.RigidTransform;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
@@ -136,13 +139,4 @@ public class PurePursuitController {
 		speedProfiler.reset();
 	}
 	
-	public static class AutoDriveSignal {
-		public DriveSignal command;
-		public boolean isDone;
-		
-		public AutoDriveSignal(DriveSignal command, boolean isDone) {
-			this.command = command;
-			this.isDone = isDone;
-		}
-	}
 }

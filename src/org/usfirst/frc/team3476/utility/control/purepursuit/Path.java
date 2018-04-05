@@ -1,5 +1,5 @@
 
-package org.usfirst.frc.team3476.utility.control;
+package org.usfirst.frc.team3476.utility.control.purepursuit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +26,6 @@ public class Path {
 		private Translation2d start, end, delta;
 		private double maxSpeed, deltaDist, deltaDistSquared;
 		
-		private ArrayList<AutoRoutineTrigger> commands = new ArrayList<>();
 
 		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed) {
 			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
@@ -39,11 +38,6 @@ public class Path {
 			delta = start.inverse().translateBy(end);
 			deltaDist = Math.hypot(delta.getX(), delta.getY());
 			deltaDistSquared = Math.pow(deltaDist, 2);
-		}
-		
-		public void addAutoRoutineTrigger(AutoRoutineTrigger routine) {
-			this.commands.add(routine);
-			Collections.sort(this.commands);
 		}
 	
 		private Translation2d getStart() {
@@ -161,6 +155,9 @@ public class Path {
 	private List<PathSegment> segments;
 	private Translation2d lastPoint;
 	private Rotation endAngle = null;
+	private double totalDist;
+	private double finishedDist;
+	private ArrayList<AutoRoutineTrigger> commands = new ArrayList<>();
 	private volatile boolean isEmpty;
 
 	/**
@@ -174,6 +171,8 @@ public class Path {
 		segments = new ArrayList<PathSegment>();
 		lastPoint = start;
 		isEmpty = true;
+		totalDist = 0;
+		finishedDist = 0;
 	}
 
 	/**
@@ -184,7 +183,9 @@ public class Path {
 	 * @param speed
 	 */
 	public void addPoint(double x, double y, double speed) {
-		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed));
+		PathSegment newSegment = new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed);
+		segments.add(newSegment);
+		totalDist += newSegment.deltaDist;
 		lastPoint = new Translation2d(x, y);
 		isEmpty = false;
 	}
@@ -195,14 +196,7 @@ public class Path {
 		isEmpty = false;
 	}
 
-	public void addRoutineToCurrentSegment(AutoRoutine routine, double percentage){
-		segments.get(segments.size() - 1).addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
-	}
-	public void addCommandToCurrentSegment(AutoCommand command, double percentage){
-		AutoRoutine routine = new AutoRoutine();
-		routine.addCommands(command);
-		segments.get(segments.size() - 1).addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
-	}
+	
 	/**
 	 * Sets the desired angle for the robot to end in. It does this by placing
 	 * up to two points that have a 90 degree angle to allow the robot to
@@ -259,6 +253,19 @@ public class Path {
 				+ segments.get(segments.size()).getEnd().getY());
 	}
 
+	public void addRoutine(AutoRoutine routine, double percentage){
+		addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
+	}
+	public void addCommand(AutoCommand command, double percentage){
+		AutoRoutine routine = new AutoRoutine();
+		routine.addCommands(command);
+		addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
+	}
+
+	public void addAutoRoutineTrigger(AutoRoutineTrigger routine) {
+		this.commands.add(routine);
+		Collections.sort(this.commands);
+	}
 	/**
 	 * TODO: Explain what's goin on in this function. Review with uncool kids(mentor)
 	 *
@@ -280,9 +287,7 @@ public class Path {
 			double distToNext = Math.hypot(closestNextToRobot.getX(), closestNextToRobot.getY());
 			if (distToClosest > distToNext) {
 				//Run commands that didn't run yet in segments being deleted
-				while(!segments.get(0).commands.isEmpty()) {
-					segments.get(0).commands.remove(0).routine.run();
-				}
+				finishedDist += segments.get(0).deltaDist;
 				segments.remove(0);				
 				closestPoint = closestNextPoint;
 				closestToRobot = closestNextToRobot;
@@ -291,10 +296,11 @@ public class Path {
 			}
 		}
 		//Run commands when we zoom past
-		double percentage = segments.get(0).getPercentageOnSegment(pose);
-		while(!segments.get(0).commands.isEmpty()) {
-			if(segments.get(0).commands.get(0).percentage <= percentage) {
-				segments.get(0).commands.remove(0).routine.run();
+		double traveledDist = (segments.get(0).getPercentageOnSegment(pose) * segments.get(0).deltaDist + finishedDist);
+		double percentage = traveledDist / totalDist;
+		while(!commands.isEmpty()) {
+			if(commands.get(0).percentage <= percentage) {
+				commands.remove(0).routine.run();
 			} else {
 				break;
 			}

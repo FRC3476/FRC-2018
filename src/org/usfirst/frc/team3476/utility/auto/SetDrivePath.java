@@ -1,7 +1,7 @@
 package org.usfirst.frc.team3476.utility.auto;
 
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
-import org.usfirst.frc.team3476.utility.control.Path;
+import org.usfirst.frc.team3476.utility.control.purepursuit.Path;
 
 public class SetDrivePath extends AutoCommand {
 

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team3476.utility.control.purepursuit;
+package org.usfirst.frc.team3476.utility.control.motion;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -10,7 +10,7 @@ import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.UDP;
 import org.usfirst.frc.team3476.utility.control.RateLimiter;
 import org.usfirst.frc.team3476.utility.control.SynchronousPid;
-import org.usfirst.frc.team3476.utility.control.purepursuit.Path.DrivingData;
+import org.usfirst.frc.team3476.utility.control.motion.Path.DrivingData;
 import org.usfirst.frc.team3476.utility.math.RigidTransform;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 

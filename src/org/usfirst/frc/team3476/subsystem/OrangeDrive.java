@@ -5,8 +5,8 @@ import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.Threaded;
 import org.usfirst.frc.team3476.utility.control.RateLimiter;
-import org.usfirst.frc.team3476.utility.control.purepursuit.Path;
-import org.usfirst.frc.team3476.utility.control.purepursuit.PurePursuitController;
+import org.usfirst.frc.team3476.utility.control.motion.Path;
+import org.usfirst.frc.team3476.utility.control.motion.PurePursuitController;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;

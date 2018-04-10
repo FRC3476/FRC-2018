@@ -5,7 +5,7 @@ import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.subsystem.Intake;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
-import org.usfirst.frc.team3476.utility.control.purepursuit.Path;
+import org.usfirst.frc.team3476.utility.control.motion.Path;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 public class AutoRoutineGenerator {

@@ -36,7 +36,7 @@ public class Elevarm extends Threaded {
 
 	private Elevarm() {
 		elevatorLimiter = new RateLimiter(1000, 250);
-		armLimiter = new RateLimiter(200, 300);
+		armLimiter = new RateLimiter(200, 400);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}

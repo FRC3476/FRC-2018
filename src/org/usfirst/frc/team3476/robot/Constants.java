@@ -28,10 +28,10 @@ public final class Constants {
 	public static final double kLeftLowF = 0.05763730970902943999708309631717;
 	public static final double kLeftLowD = 0;
 
-	public static final double kRightAutoP = 0.1;
+	public static final double kRightAutoP = 0.12;
 	public static final double kRightAutoD = 0.7;
 	public static final double kRightAutoF = 0.035;
-	public static final double kLeftAutoP = 0.1;
+	public static final double kLeftAutoP = 0.12;
 	public static final double kLeftAutoD = 0.7;
 	public static final double kLeftAutoF = 0.035;
 	public static final double TeleopAccLimit = 120;
@@ -92,22 +92,21 @@ public final class Constants {
 	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
 
 	// Arm
-	public static final double ArmLowerAngleLimit = -37;
+	public static final double ArmLowerAngleLimit = -36;
 	public static final double ArmUpperAngleLimit = 100;
-	public static final double ArmRotationsPerMotorRotation = 1;
+	public static final double ArmRotationsPerMotorRotation = 1 / 1.5; 
 	public static final double ArmSpeed = 0; // Degrees Per Second
 	public static final double ArmLength = 18.6; // Inches
 	public static final double ExpectedArmCurrent = 0; //
 	public static final double ExpectedArmRPM = 0;
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
-	public static final double ArmDownDegrees = -37;
+	public static final double ArmDownDegrees = -36;
 	public static final double ArmIntakeDegrees = -20;
 	
-	
-	public static final int PracticeBotArmTicksOffset = 2489;
-	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * /* (1 / ArmRotationsPerMotorRotation) */ (SensorTicksPerMotorRotation));
-
+	public static final int PracticeBotArmTicksOffset = 2465;
+	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) /** (1 / ArmRotationsPerMotorRotation)*/ * (SensorTicksPerMotorRotation));
+ 
 	public static final double JoystickDeadzone = .15;
 
 	public static final int CubeSwitchId = 0;

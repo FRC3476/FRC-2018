@@ -101,8 +101,10 @@ public class Intake extends Threaded {
 			case INTAKE:
 				double currentRight = intakeMotor1.getOutputCurrent();
 				double currentLeft = intakeMotor2.getOutputCurrent();
-				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.25, 0.9);
-				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.25, 0.9);
+				//System.out.println(currentLeft + "   " + currentRight);
+				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.2, 1);
+				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.2, 1);
+				double bias = 0;
 				if(!DriverStation.getInstance().isAutonomous()) {
 					if(getCurrent() > 10) {						
 						if(biasState == BiasState.NORMAL && Timer.getFPGATimestamp() - biasTimer > 0.8) {
@@ -129,12 +131,20 @@ public class Intake extends Threaded {
 				}
 				break;
 			case OUTTAKE:
+				intakeMotor1.set(ControlMode.PercentOutput, .25);
+				intakeMotor2.set(ControlMode.PercentOutput, .25);
 				break;
 			case OUTTAKE_FAST:
+				intakeMotor1.set(ControlMode.PercentOutput, .5);
+				intakeMotor2.set(ControlMode.PercentOutput, .5);
 				break;
 			case OUTTAKE_FASTEST:
+				intakeMotor1.set(ControlMode.PercentOutput, 1);
+				intakeMotor2.set(ControlMode.PercentOutput, 1);
 				break;
 			case NEUTRAL:
+				intakeMotor1.set(ControlMode.PercentOutput, 0);
+				intakeMotor2.set(ControlMode.PercentOutput, 0);
 				break;
 		}
 	}

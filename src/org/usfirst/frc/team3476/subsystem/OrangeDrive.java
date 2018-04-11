@@ -107,7 +107,9 @@ public class OrangeDrive extends Threaded {
 		leftTalon.config_kP(0, Constants.kLeftAutoP, 10);
 		leftTalon.config_kD(0, Constants.kRightAutoD, 10);
 		leftTalon.config_kF(0, Constants.kLeftAutoF, 10);
-		driveMultiplier = Constants.HighDriveSpeed;
+		driveMultiplier = Constants.HighDriveSpeed; 
+		rightTalon.configClosedloopRamp(12d/200d, 10);
+		leftTalon.configClosedloopRamp(12d/200d, 10);
 	}
 	
 	private void configHigh() {
@@ -347,6 +349,11 @@ public class OrangeDrive extends Threaded {
 		rightSlaveTalon.setNeutralMode(mode);
 		leftSlave2Talon.setNeutralMode(mode);
 		rightSlave2Talon.setNeutralMode(mode);
+	}
+	
+	public double getVoltage()
+	{
+		return (leftTalon.getMotorOutputVoltage() + rightTalon.getMotorOutputVoltage() + leftSlaveTalon.getMotorOutputVoltage() + rightSlaveTalon.getMotorOutputVoltage() + rightSlave2Talon.getMotorOutputVoltage() + leftSlave2Talon.getMotorOutputVoltage()) / 6;
 	}
 
 	private void setWheelPower(DriveSignal setVelocity) {

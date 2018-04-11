@@ -2,3 +2,5 @@ bin/*
 /bin/
 *.class
 *.jar
+*.idea
+*.iml

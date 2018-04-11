@@ -334,6 +334,11 @@ public class OrangeDrive extends Threaded {
 		leftSlave2Talon.setNeutralMode(mode);
 		rightSlave2Talon.setNeutralMode(mode);
 	}
+	
+	public double getVoltage()
+	{
+		return (leftTalon.getMotorOutputVoltage() + rightTalon.getMotorOutputVoltage() + leftSlaveTalon.getMotorOutputVoltage() + rightSlaveTalon.getMotorOutputVoltage() + rightSlave2Talon.getMotorOutputVoltage() + leftSlave2Talon.getMotorOutputVoltage()) / 6;
+	}
 
 	private void setWheelPower(DriveSignal setVelocity) {
 		leftTalon.set(ControlMode.PercentOutput, setVelocity.leftWheelSpeed);

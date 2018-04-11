@@ -62,7 +62,17 @@ public class Intake extends Threaded {
 	}
 	*/
 	public void setIntake(IntakeState state)
-	{
+	{		
+		if(state == IntakeState.INTAKE || state == IntakeState.INTAKE_OPEN){
+			synchronized(this){
+				intakeState = IntakingState.INTAKE;
+				biasState = BiasState.NORMAL;
+			}
+		} else {
+			synchronized(this){
+				intakeState = IntakingState.MANUAL;
+			}
+		}
 		switch(state)
 		{
 		case INTAKE:
@@ -93,20 +103,7 @@ public class Intake extends Threaded {
 			break;
 		case INTAKE_OPEN:
 			setIntakeSolenoid(SolenoidState.OPEN);
-			intakeMotor1.set(ControlMode.PercentOutput, -.15);
-			intakeMotor2.set(ControlMode.PercentOutput, -.15);
 			break;
-		}
-		
-		if(state == IntakeState.INTAKE){
-			synchronized(this){
-				intakeState = IntakingState.INTAKE;
-				biasState = BiasState.NORMAL;
-			}
-		} else {
-			synchronized(this){
-				intakeState = IntakingState.MANUAL;
-			}
 		}
 	}
 
@@ -146,7 +143,7 @@ public class Intake extends Threaded {
 			case INTAKE:
 				double currentRight = intakeMotor1.getOutputCurrent();
 				double currentLeft = intakeMotor2.getOutputCurrent();
-				System.out.println(currentLeft + "   " + currentRight);
+				//System.out.println(currentLeft + "   " + currentRight);
 				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.2, 1);
 				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.2, 1);
 				double bias = 0;

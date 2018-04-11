@@ -131,6 +131,8 @@ public class Elevarm extends Threaded {
 	}
 	
 	public void setXRate(double xRate) {
+		elevState = ElevatorState.SPEED;
+		armState = ArmState.SPEED;
 		double armSpeed = -xRate * (180d / Math.PI) / (Constants.ArmLength * Math.sin(Math.toRadians(getArmAngle())));
 		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(getArmAngle()));
 
@@ -146,6 +148,7 @@ public class Elevarm extends Threaded {
 		}
 		
 		//Set correct setpoint for arm and elevator to move to
+		
 		if (elevatorSpeed > 0)
 			setElevatorHeight((getElevatorHeight() + 22) > Constants.ElevatorMaxHeight ? Constants.ElevatorMaxHeight : getElevatorHeight() + 22);
 		else
@@ -174,14 +177,14 @@ public class Elevarm extends Threaded {
 			elevatorSpeed = Constants.ElevatorVelocityLimit;
 		}
 		
-		System.out.println("Elevator Speed: " + elevatorSpeed);
-		System.out.println("Arm Speed: " + armSpeed);
-		
  		elevatorSpeedSetpoint = elevatorSpeed;
 		armSpeedSetpoint = armSpeed;
 	}
 
 	public void setOverallPosition(double distance, double height) {
+		armState = ArmState.POSITION;
+		elevState = ElevatorState.POSITION;
+		
 		double armAngle = arm.getAngle();
 		double elevatorHeight = elevator.getHeight();
 
@@ -373,6 +376,7 @@ public class Elevarm extends Threaded {
 			case SPEED:
 				elevatorLimiter.setMaxAccel(elevatorSpeedSetpoint);
 				elevator.setHeight(elevatorLimiter.update(snapElevSetpoint));
+				//elevator.setSpeed(elevatorSpeedSetpoint);
 				break;
 			case POSITION:
 				elevator.setHeight(elevatorLimiter.update(snapElevSetpoint));
@@ -386,6 +390,7 @@ public class Elevarm extends Threaded {
 			case SPEED:
 				armLimiter.setMaxAccel(armSpeedSetpoint);
 				arm.setAngle(armLimiter.update(snapArmSetpoint));
+				//arm.setSpeed(armSpeedSetpoint);
 				break;
 			case POSITION:
 				arm.setAngle(armLimiter.update(snapArmSetpoint));

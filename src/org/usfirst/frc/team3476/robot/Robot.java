@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import org.usfirst.frc.team3476.subsystem.Elevarm;
 import org.usfirst.frc.team3476.subsystem.Intake;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
+import org.usfirst.frc.team3476.subsystem.Intake.SolenoidState;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.utility.Controller;
@@ -15,8 +16,12 @@ import org.usfirst.frc.team3476.utility.auto.AutoRoutine;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.PathOption;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.StartPosition;
+import org.usfirst.frc.team3476.utility.control.motion.BezierCurve;
+import org.usfirst.frc.team3476.utility.control.motion.BezierCurve.BezierPoint;
+import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -44,6 +49,7 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> optionChooser = new SendableChooser<>();
 	SendableChooser<String> mInDbUsInEsS = new SendableChooser<>();
 	SendableChooser<String> evilChooser = new SendableChooser<>();
+	DigitalInput dio = new DigitalInput(1);
 
 	@Override
 	public void robotInit() {
@@ -70,7 +76,7 @@ public class Robot extends IterativeRobot {
 		scheduler.schedule(tracker, mainExecutor);
 		scheduler.schedule(elevarm, mainExecutor);
 		scheduler.schedule(intake, mainExecutor);
-		
+
 		camServer.startAutomaticCapture(0);
 		camServer.startAutomaticCapture(1);
 	}
@@ -89,8 +95,8 @@ public class Robot extends IterativeRobot {
 		StartPosition sPos = StartPosition.CENTER;
 		boolean mind = false;
 		boolean isGood = true;
-		
-		switch(good) {
+
+		switch (good) {
 			case "good":
 				isGood = true;
 				break;
@@ -99,45 +105,45 @@ public class Robot extends IterativeRobot {
 				break;
 		}
 		switch (business) {
-		case "Business":
-			mind = false;
-			break;
-		case "mInDbUsInEsS":
-			mind = true;
-			break;
+			case "Business":
+				mind = false;
+				break;
+			case "mInDbUsInEsS":
+				mind = true;
+				break;
 		}
 
 		switch (pos) {
-		case "Left":
-			sPos = StartPosition.LEFT;
-			break;
-		case "Center":
-			sPos = StartPosition.CENTER;
-			break;
-		case "Right":
-			sPos = StartPosition.RIGHT;
-			break;
+			case "Left":
+				sPos = StartPosition.LEFT;
+				break;
+			case "Center":
+				sPos = StartPosition.CENTER;
+				break;
+			case "Right":
+				sPos = StartPosition.RIGHT;
+				break;
 		}
 
 		switch (option) {
-		case "SCALE":
-			pOption = PathOption.SCALE;
-			break;
-		case "SWITCH":
-			pOption = PathOption.SWITCH;
-			break;
-		case "BOTH":
-			pOption = PathOption.BOTH;
-			break;
-		case "FORWARD":
-			pOption = PathOption.FORWARD;
-			break;
-		case "mInD bUsInEsS":
-			pOption = PathOption.SCALE;
-			break;
-		case "NONE":
-			pOption = PathOption.NONE;
-			break;
+			case "SCALE":
+				pOption = PathOption.SCALE;
+				break;
+			case "SWITCH":
+				pOption = PathOption.SWITCH;
+				break;
+			case "BOTH":
+				pOption = PathOption.BOTH;
+				break;
+			case "FORWARD":
+				pOption = PathOption.FORWARD;
+				break;
+			case "mInD bUsInEsS":
+				pOption = PathOption.SCALE;
+				break;
+			case "NONE":
+				pOption = PathOption.NONE;
+				break;
 		}
 		double start = Timer.getFPGATimestamp();
 		while (DriverStation.getInstance().getGameSpecificMessage().isEmpty() && Timer.getFPGATimestamp() - start < 1) {
@@ -173,152 +179,117 @@ public class Robot extends IterativeRobot {
 		xbox.update();
 		buttonBox.update();
 		joystick.update();
-		
-		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-		//drive.setWheelVelocity(new DriveVelocity(20, 20));
+
+		// drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4),
+		// xbox.getRawAxis(2) > .3);
+		// drive.setWheelVelocity(new DriveVelocity(20, 20));
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawButton(10));
-		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-		
-		/*if (joystick.getRisingEdge(9))
-		{
-			elevarm.setXRate(.1);
-		}
-		else if (joystick.getRisingEdge(10))
-		{
-			elevarm.setXRate(-.1);
-		}
-		else if (joystick.getFallingEdge(9) || joystick.getFallingEdge(10))
-		{
-			elevarm.setXRate(0);
-		}*/
-		
-		
-		
-		
-		if (buttonBox.getRawButton(10))
-		{
+		// drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		System.out.println("Angle: " + elevarm.getArmAngle() + " Setpoint: " + elevarm.getTargetArmAngle());
+		// System.out.println("Height: " + elevarm.getElevatorHeight() + "
+		// Setpoint: " + elevarm.getTargetElevatorHeight());
+
+		/*
+		 * if (joystick.getRisingEdge(9)) { elevarm.setXRate(.1); } else if
+		 * (joystick.getRisingEdge(10)) { elevarm.setXRate(-.1); } else if
+		 * (joystick.getFallingEdge(9) || joystick.getFallingEdge(10)) {
+		 * elevarm.setXRate(0); }
+		 */
+
+		if (buttonBox.getRawButton(10)) {
 			elevarm.setClimberPercentOutput(.75);
 			elevarm.setElevatorGearbox(true);
 			elevarm.setElevatorPercentOutput(0);
 			System.out.println("Climber: " + elevarm.getClimberCurrent());
-		}
-		else
-		{
+		} else {
 			elevarm.setClimberPercentOutput(0);
 		}
-		
-		if (joystick.getRisingEdge(11))
-		{
+
+		if (joystick.getRisingEdge(11)) {
 			elevarm.setElevatorGearbox(false);
 			elevarm.homeElevator();
 		}
-	
-		
-		if (joystick.getRawButton(3) || xbox.getRawButton(6))
-		{
+
+		if (joystick.getRawButton(3) || xbox.getRawButton(6)) {
 			/*
-			if (intake.getCubeSwitch())
-			{
-				xbox.setRumble(RumbleType.kLeftRumble, 1);
-				xbox.setRumble(RumbleType.kRightRumble, 1);
+			 * if (intake.getCubeSwitch()) {
+			 * xbox.setRumble(RumbleType.kLeftRumble, 1);
+			 * xbox.setRumble(RumbleType.kRightRumble, 1); } else {
+			 * xbox.setRumble(RumbleType.kLeftRumble, 0);
+			 * xbox.setRumble(RumbleType.kRightRumble, 0); }
+			 */
+			intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
+		} else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .9) {
+			intake.setIntake(IntakeState.OUTTAKE_FAST, SolenoidState.CLAMP);
+		} else if (joystick.getRawButton(4) || xbox.getRawAxis(3) > .05) {
+			intake.setIntake(IntakeState.OUTTAKE, SolenoidState.CLAMP);
+		} else if (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3) {
+			if (!dio.get()) {
+				intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
+				time2 = Timer.getFPGATimestamp();
+			} else {
+				if (Timer.getFPGATimestamp() - time2 < 1) {
+					intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
+				} else {
+					intake.setIntake(IntakeState.INTAKE, SolenoidState.OPEN);
+				}
 			}
-			else
-			{
-				xbox.setRumble(RumbleType.kLeftRumble, 0);
-				xbox.setRumble(RumbleType.kRightRumble, 0);
-			}
-			*/
-			intake.setIntake(IntakeState.INTAKE);
+		} else {
+			intake.setIntake(IntakeState.NEUTRAL, SolenoidState.CLAMP);
 		}
-		else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .9)
-		{
-			intake.setIntake(IntakeState.OUTTAKE_FAST);
-		}
-		else if (joystick.getRawButton(4) || xbox.getRawAxis(3) > .05)
-		{
-			intake.setIntake(IntakeState.OUTTAKE);
-		}
-		else if (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)
-		{
-			intake.setIntake(IntakeState.OPEN);
-		}
-		else
-		{
-			intake.setIntake(IntakeState.GRIP);
-		}
-		
-		if (xbox.getRisingEdge(5))
-		{
+
+		if (xbox.getRisingEdge(5)) {
 			drive.setShiftState(true);
 		}
-		if (xbox.getFallingEdge(5))
-		{
+		if (xbox.getFallingEdge(5)) {
 			drive.setShiftState(false);
 		}
 		double nudge = joystick.getRawAxis(1);
-		if (nudge > Constants.JoystickDeadzone)
-		{
+		if (nudge > Constants.JoystickDeadzone) {
 			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge - Constants.JoystickDeadzone) / 5);
-		}
-		else if (nudge < -Constants.JoystickDeadzone)
-		{
+		} else if (nudge < -Constants.JoystickDeadzone) {
 			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge + Constants.JoystickDeadzone) / 5);
 		}
-		
-		if (buttonBox.getRisingEdge(9))
-		{
+
+		if (buttonBox.getRisingEdge(9)) {
 			elevarm.homeElevator();
 		}
-		if (buttonBox.getRisingEdge(5))
-		{
+		if (buttonBox.getRisingEdge(5)) {
 			elevarm.setElevarmIntakePosition();
-		}
-		else if (buttonBox.getRisingEdge(6))
-		{
-			elevarm.setArmAngle(80); //Switch Position - once PID is tuned better, make angle more vertical
+		} else if (buttonBox.getRisingEdge(6)) {
+			elevarm.setArmAngle(80); // Switch Position - once PID is tuned
+										// better, make angle more vertical
 			elevarm.setElevatorHeight(10);
-		}
-		else if (buttonBox.getRisingEdge(7))
-		{
-			elevarm.setArmAngle(80); //Scale Position
+		} else if (buttonBox.getRisingEdge(7)) {
+			elevarm.setArmAngle(80); // Scale Position
 			elevarm.setElevatorHeight(50);
-		}
-		else if (buttonBox.getRisingEdge(8))
-		{
-			elevarm.setArmAngle(80); //Scale Horizontal Arm
+		} else if (buttonBox.getRisingEdge(8)) {
+			elevarm.setArmAngle(80); // Scale Horizontal Arm
 			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
-		}
-		else if (buttonBox.getRisingEdge(4))
-		{
+		} else if (buttonBox.getRisingEdge(4)) {
 			if (elevarm.getElevatorHeight() < 58)
 				elevarm.setArmAngle(25);
 			else
 				elevarm.setArmAngle(60);
-		}
-		else if (buttonBox.getRisingEdge(3))
-		{
+		} else if (buttonBox.getRisingEdge(3)) {
 			elevarm.setElevatorHeight(56.5);
 			elevarm.setArmAngle(80);
 		}
-		
-		if (buttonBox.getPOV() == 0)
-		{
-			//elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getHeight());
+
+		if (buttonBox.getPOV() == 0) {
+			// elevarm.setOverallPosition(elevarm.getDistance() + 1,
+			// elevarm.getHeight());
 			elevarm.setArmAngle(elevarm.getArmAngle() - 3);
-		}
-		else if (buttonBox.getPOV() == 180)
-		{
-			//elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
+		} else if (buttonBox.getPOV() == 180) {
+			// elevarm.setOverallPosition(elevarm.getDistance() - 1,
+			// elevarm.getHeight());
 			elevarm.setArmAngle(elevarm.getArmAngle() + 3);
 		}
-		if(joystick.getRawButton(7) && joystick.getRawButton(8)){
+		if (joystick.getRawButton(7) && joystick.getRawButton(8)) {
 			System.out.println("Forks");
 			fork.set(true);
 		}
-		
-		
+
 	}
 
 	@Override
@@ -336,6 +307,16 @@ public class Robot extends IterativeRobot {
 	public void testInit() {
 		drive.stopMovement();
 		elevarm.stopMovement();
+
+		double start = System.currentTimeMillis();
+		BezierCurve curve = new BezierCurve(
+				new BezierPoint(new Translation2d(0, 0), new Translation2d(0, 0), new Translation2d(5, 0), 10));
+		curve.addPoints(
+				new BezierPoint(new Translation2d(5, 0), new Translation2d(10, 0), new Translation2d(10, 5), 10));
+		curve.addPoints(
+				new BezierPoint(new Translation2d(10, 5), new Translation2d(10, 10), new Translation2d(10, 15), 10));
+		curve.computePath(0.01);
+		System.out.println(System.currentTimeMillis() - start);
 	}
 
 	public void configSubsytems() {
@@ -346,6 +327,8 @@ public class Robot extends IterativeRobot {
 		drive.stopMovement();
 		elevarm.stopMovement();
 	}
+
+	double time, time2;
 
 	@Override
 	public void testPeriodic() {
@@ -381,9 +364,12 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(3)) {
 			elevarm.checkClimber();
 		}
-		
-		if(xbox.getRisingEdge(5)){
-			drive.clearStickyFaults();
+
+		if (xbox.getRisingEdge(5)) {
+			elevarm.setElevatorPercentOutput(0.15);
+		}
+		if (xbox.getFallingEdge(5)) {
+			elevarm.setElevatorPercentOutput(0);
 		}
 	}
 }

@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.usfirst.frc.team3476.utility.control.motion.BezierCurve;
 
 public class TCP extends Threaded {
 	private class ConnectionHandler extends Threaded {
@@ -39,6 +40,9 @@ public class TCP extends Threaded {
 				try {
 					inStream.read(buffer);
 					rawMessage = new String(buffer, "UTF-8");
+					JSONObject message = (JSONObject) JSONValue.parse(rawMessage);
+					BezierCurve parsedCurve = BezierCurve.parseJson(message);
+					
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -48,7 +52,6 @@ public class TCP extends Threaded {
 				// Do whatever with message
 			}
 			try {
-				clientSocket.close();
 				inStream.close();
 				connections.remove(clientSocket.getInetAddress().getHostName() + clientSocket.getPort());
 			} catch (IOException e) {
@@ -69,7 +72,6 @@ public class TCP extends Threaded {
 	private HashMap<String, Socket> connections;
 
 	private TCP() {
-
 		try {
 			listener = new ServerSocket(5800);
 		} catch (SocketException e) {

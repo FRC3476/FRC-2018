@@ -3,6 +3,7 @@ package org.usfirst.frc.team3476.utility.control.motion;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 public class BezierCurve {
@@ -37,7 +38,7 @@ public class BezierCurve {
 			double startSpeed = points.get(0).speed;
 			double endSpeed = points.get(1).speed;
 			double diffSpeed = startSpeed - endSpeed;
-			for(int i = 0; i < points.size() - 1; i++) {
+			for(int i = 1; i < points.size() - 1; i++) {
 				BezierPoint firstPoint = points.get(i - 1);
 				BezierPoint secondPoint = points.get(i);
 				Segment firstSeg = new Segment(firstPoint.start, firstPoint.nextTangent, 0);
@@ -61,5 +62,10 @@ public class BezierCurve {
 			//Print error
 			return null;
 		}
+	}
+	
+	public static BezierCurve parseJson(JSONObject json) {
+		
+		return new BezierCurve(null);
 	}
 }

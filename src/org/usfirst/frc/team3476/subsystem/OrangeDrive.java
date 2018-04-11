@@ -5,6 +5,7 @@ import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.Threaded;
 import org.usfirst.frc.team3476.utility.control.RateLimiter;
+import org.usfirst.frc.team3476.utility.control.SynchronousPid;
 import org.usfirst.frc.team3476.utility.control.motion.Path;
 import org.usfirst.frc.team3476.utility.control.motion.PurePursuitController;
 import org.usfirst.frc.team3476.utility.math.Rotation;
@@ -21,7 +22,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class OrangeDrive extends Threaded {
 	
 	public enum DriveState {
-		TELEOP, PUREPURSUIT, PATHFINDER, DONE
+		TELEOP, PUREPURSUIT, TURN, DONE
 	}
 
 	public static class DriveSignal {
@@ -68,9 +69,10 @@ public class OrangeDrive extends Threaded {
 	private ADXRS450_Gyro gyroSensor = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	private LazyTalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
 	private PurePursuitController autonomousDriver;
+	private SynchronousPid turnPID;
 	private volatile double driveMultiplier;
 	private DriveState driveState;
-	private RateLimiter moveProfiler;
+	private RateLimiter moveProfiler, turnProfiler;
 	private Solenoid shifter;
 
 	private OrangeDrive() {
@@ -89,8 +91,12 @@ public class OrangeDrive extends Threaded {
 
 		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
-
+		
+		turnPID = new SynchronousPid(0, 0, 0, 0);
+		turnPID.setTolerance(1);
+		
 		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
+		turnProfiler = new RateLimiter(100);
 
 		configHigh();
 	}
@@ -381,9 +387,33 @@ public class OrangeDrive extends Threaded {
 		case PUREPURSUIT:
 			updatePurePursuit();
 			break;
-		case PATHFINDER:
-			updatePathFinder();
+		case TURN:
+			updateTurn();
 			break;
+		}
+	}
+	
+	public void setRotation(Rotation angle) {
+		synchronized(this) {
+			turnPID.setSetpoint(angle.getDegrees());
+		}
+		configHigh();
+	}
+	
+	private void updateTurn() {
+		double heading = getGyroAngle().getDegrees();
+		double deltaSpeed;
+		
+		synchronized(this) {
+			deltaSpeed = turnPID.update(heading);
+		}
+		if(turnPID.isDone()) {
+			setWheelVelocity(new DriveSignal(0, 0));
+			synchronized(this) {
+				driveState = DriveState.DONE;
+			}
+		} else {
+			setWheelVelocity(new DriveSignal(deltaSpeed, -deltaSpeed));
 		}
 	}
 
@@ -405,10 +435,6 @@ public class OrangeDrive extends Threaded {
 			configHigh();
 		}
 		setWheelVelocity(signal.command);
-	}
-	
-	private void updatePathFinder() {
-		
 	}
 	
 	public void resetGyro() {

@@ -22,6 +22,8 @@ public class Arm {
 		armTalon.config_kP(0, 6, 10);
 		armTalon.config_kI(0, 0.0, 10);
 		armTalon.config_kD(0, 2, 10);
+		armTalon.setSensorPhase(false);
+		armTalon.setInverted(false);
 	}
 
 	protected static Arm getInstance() {
@@ -75,12 +77,12 @@ public class Arm {
 
 	public void setEncoderFromPWM() {
 		// Value becomes negative when we set it for some reason
-		armTalon.getSensorCollection().setQuadraturePosition(-(getPWMPosition()
-				+ Constants.PracticeBotArmAngleOffsetInTicks), 10);
+		armTalon.getSensorCollection().setQuadraturePosition(getPWMPosition()
+				+ Constants.PracticeBotArmAngleOffsetInTicks, 10);
 	}
 
 	public int getPWMPosition() {
-		int pwmValue = 4095 - armTalon.getSensorCollection().getPulseWidthPosition();
+		int pwmValue = armTalon.getSensorCollection().getPulseWidthPosition();
 		pwmValue -= Constants.PracticeBotArmTicksOffset;
 		pwmValue %= 4096;
 		pwmValue = (pwmValue < 0 ? pwmValue + 4096 : pwmValue);

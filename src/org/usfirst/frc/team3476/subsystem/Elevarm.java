@@ -77,11 +77,9 @@ public class Elevarm extends Threaded {
 	}
 
 	synchronized public void setElevatorPercentOutput(double output) {
-		System.out.println(elevarmState);
 		if (elevarmState != ElevarmState.HOMING) {
 			elevarmState = ElevarmState.EXTERNAL;
 			elevState = ElevatorState.MANUAL;
-			System.out.println("working");
 			elevator.setPercentOutput(output);
 		}
 	}

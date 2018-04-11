@@ -183,7 +183,7 @@ public class OrangeDrive extends Threaded {
 			if (moveValue < 0.2) {
 				quickStopAccumulator = 0.9 * quickStopAccumulator + 0.1 * rotateValue * 2;
 			}
-			angularPower = rotateValue * 0.8;
+			angularPower = rotateValue * 0.6;
 		} else {
 			overPower = 0;
 			angularPower = Math.abs(moveValue) * rotateValue - quickStopAccumulator;

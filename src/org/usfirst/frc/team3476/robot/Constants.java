@@ -94,11 +94,8 @@ public final class Constants {
 	public static final double ElevatorAccelerationLimit = 250;
 
 	// Arm
-<<<<<<< .merge_file_a06352
 	public static final double ArmLowerAngleLimit = -37;
-=======
-	public static final double ArmLowerAngleLimit = -36;
->>>>>>> .merge_file_a03772
+
 	public static final double ArmUpperAngleLimit = 100;
 	public static final double ArmRotationsPerMotorRotation = 1 / 1.5; 
 	public static final double ArmSpeed = 0; // Degrees Per Second
@@ -107,7 +104,6 @@ public final class Constants {
 	public static final double ExpectedArmRPM = 0;
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
-<<<<<<< .merge_file_a06352
 	public static final double ArmDownDegrees = -37;
 	public static final double ArmIntakeDegrees = -20;
 	public static final double ArmVelocityLimit = 200;
@@ -115,12 +111,6 @@ public final class Constants {
 	
 	public static final int PracticeBotArmTicksOffset = 1623;
 
-=======
-	public static final double ArmDownDegrees = -36;
-	public static final double ArmIntakeDegrees = -20;
-	
-	public static final int PracticeBotArmTicksOffset = 2465;
->>>>>>> .merge_file_a03772
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) /** (1 / ArmRotationsPerMotorRotation)*/ * (SensorTicksPerMotorRotation));
  
 	public static final double JoystickDeadzone = .15;

@@ -39,13 +39,8 @@ public class Elevarm extends Threaded {
 	private boolean elevatorIntakePositionSet = false;
 
 	private Elevarm() {
-<<<<<<< .merge_file_a07140
 		elevatorLimiter = new RateLimiter(Constants.ElevatorVelocityLimit, Constants.ElevatorVelocityLimit);
 		armLimiter = new RateLimiter(Constants.ArmVelocityLimit, Constants.ArmAccelerationLimit);
-=======
-		elevatorLimiter = new RateLimiter(1000, 250);
-		armLimiter = new RateLimiter(200, 400);
->>>>>>> .merge_file_a06708
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}

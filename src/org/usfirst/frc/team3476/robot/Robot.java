@@ -180,7 +180,6 @@ public class Robot extends IterativeRobot {
 		xbox.update();
 		buttonBox.update();
 		joystick.update();
-<<<<<<< .merge_file_a01672
 		
 		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
@@ -189,7 +188,7 @@ public class Robot extends IterativeRobot {
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-=======
+
 
 		// drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4),
 		// xbox.getRawAxis(2) > .3);
@@ -213,7 +212,6 @@ public class Robot extends IterativeRobot {
 			elevarm.setXRate(0);
 		}*/
 		
->>>>>>> .merge_file_a02344
 		
 		
 		
@@ -236,6 +234,22 @@ public class Robot extends IterativeRobot {
 		{
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
 			xbox.setRumble(RumbleType.kRightRumble, 1);
+		}
+		else
+		{
+			xbox.setRumble(RumbleType.kLeftRumble, 0);
+			xbox.setRumble(RumbleType.kRightRumble, 0);
+		}
+		if ((joystick.getRawButton(3) || xbox.getRawButton(6)) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
+			intake.setIntake(IntakeState.INTAKE, SolenoidState.OPEN);
+		}
+		else if (joystick.getRawButton(3) || xbox.getRawButton(6))
+		{			
+			System.out.println("Intake: " + intake.getCurrent());
+			intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
+		}
+		else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .95)
+		{
 		}
 		else
 		{
@@ -283,7 +297,7 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(9)) {
 			elevarm.homeElevator();
 		}
-<<<<<<< .merge_file_a01672
+
 		
 		if (joystick.getRisingEdge(9))
 		{
@@ -304,9 +318,6 @@ public class Robot extends IterativeRobot {
 		
 		else if (buttonBox.getRisingEdge(5))
 		{
-=======
-		if (buttonBox.getRisingEdge(5)) {
->>>>>>> .merge_file_a02344
 			elevarm.setElevarmIntakePosition();
 		} else if (buttonBox.getRisingEdge(6)) {
 			elevarm.setArmAngle(80); // Switch Position - once PID is tuned

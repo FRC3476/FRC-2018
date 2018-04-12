@@ -180,11 +180,19 @@ public class Robot extends IterativeRobot {
 		xbox.update();
 		buttonBox.update();
 		joystick.update();
+<<<<<<< HEAD
 
 		// drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4),
 		// xbox.getRawAxis(2) > .3);
 		// drive.setWheelVelocity(new DriveVelocity(20, 20));
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawButton(10));
+=======
+		
+		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		//drive.setWheelVelocity(new DriveVelocity(20, 20));
+		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2) || drive.getSpeed() < 12;
+		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
+>>>>>>> master
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());

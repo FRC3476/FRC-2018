@@ -273,23 +273,29 @@ public class Robot extends IterativeRobot {
 			elevarm.homeElevator();
 		}
 		if (buttonBox.getRisingEdge(5)) {
+			System.out.println("a");
 			elevarm.setElevarmIntakePosition();
 		} else if (buttonBox.getRisingEdge(6)) {
+			System.out.println("b");
 			elevarm.setArmAngle(80); // Switch Position - once PID is tuned
 										// better, make angle more vertical
 			elevarm.setElevatorHeight(10);
 		} else if (buttonBox.getRisingEdge(7)) {
+			System.out.println("c");
 			elevarm.setArmAngle(80); // Scale Position
 			elevarm.setElevatorHeight(50);
 		} else if (buttonBox.getRisingEdge(8)) {
+			System.out.println("d");
 			elevarm.setArmAngle(80); // Scale Horizontal Arm
 			elevarm.setElevatorHeight(Constants.ElevatorUpHeight);
 		} else if (buttonBox.getRisingEdge(4)) {
+			System.out.println("e");
 			if (elevarm.getElevatorHeight() < 58)
 				elevarm.setArmAngle(25);
 			else
 				elevarm.setArmAngle(60);
 		} else if (buttonBox.getRisingEdge(3)) {
+			System.out.println("f");
 			elevarm.setElevatorHeight(56.5);
 			elevarm.setArmAngle(80);
 		}
@@ -298,14 +304,17 @@ public class Robot extends IterativeRobot {
 		{
 			//elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getHeight());
 			elevarm.setArmAngle(elevarm.getTargetArmAngle() - 3);
+			System.out.println("g");
 		}
 		else if (buttonBox.getPOV() == 180)
 		{
 			//elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
 			elevarm.setArmAngle(elevarm.getTargetArmAngle() + 3);
+			System.out.println("h");
 		}
 		if (joystick.getRawButton(7) && joystick.getRawButton(8)) {
 			System.out.println("Forks");
+			System.out.println("i");
 			fork.set(true);
 		}
 

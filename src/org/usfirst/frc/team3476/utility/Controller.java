@@ -155,10 +155,10 @@ public class Controller extends Joystick {
 
 	@Override
 	public int getPOV(int pov) {
-		if (pov <= povCount && pov > 0) {
+		if (pov < povCount && pov >= 0) {
 			return currentPOV[pov];
 		}
-		return 0;
+		return -1;
 	}
 	
 	public boolean getButtonState(int button, int state) {

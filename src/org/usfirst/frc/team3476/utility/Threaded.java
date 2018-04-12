@@ -10,44 +10,54 @@ import edu.wpi.first.wpilibj.Timer;
 public abstract class Threaded implements Runnable {
 
 	private boolean isUpdated = true;
-	private volatile boolean isPaused = false;
+	private boolean isPaused = false;
 	private double lastRuntime = 0;
-	private volatile long period = Duration.ofMillis(5).toNanos();
+	private long period = Duration.ofMillis(5).toNanos();
 
 	@Override
 	public void run() {
-		if (!isPaused) {
-			isUpdated = false;
+		boolean snapPaused;
+		synchronized(this) {
+			snapPaused = isPaused;
+		}
+		if (!snapPaused) {
+			synchronized(this){
+				isUpdated = false;				
+			}
 			double start = Timer.getFPGATimestamp();
 			update();
-			lastRuntime = Timer.getFPGATimestamp() - start;
-			isUpdated = true;
+			synchronized(this) {
+				lastRuntime = Timer.getFPGATimestamp() - start;
+				isUpdated = true;
+			}
 		}
 	}
 
 	public abstract void update();
 
-	public boolean isUpdated() {
+	synchronized public boolean isUpdated() {
 		return isUpdated;
 	}
 
-	public double getLastRuntime() {
+	synchronized public double getLastRuntime() {
 		return lastRuntime;
 	}
 
-	public double getPeriod() {
+	synchronized public double getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(Duration duration) {
+	synchronized public void setPeriod(Duration duration) {
 		this.period = duration.getNano();
 	}
 
-	public void pause() {
+	synchronized public void pause() {
 		isPaused = true;
+		isUpdated = false;
 	}
 
-	public void resume() {
+	synchronized public void resume() {
 		isPaused = false;
+		isUpdated = true;
 	}
 }

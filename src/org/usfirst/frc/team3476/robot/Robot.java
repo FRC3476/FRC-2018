@@ -43,6 +43,7 @@ public class Robot extends IterativeRobot {
 	SendableChooser<String> posChooser = new SendableChooser<>();
 	SendableChooser<String> optionChooser = new SendableChooser<>();
 	SendableChooser<String> mInDbUsInEsS = new SendableChooser<>();
+	SendableChooser<String> evilChooser = new SendableChooser<>();
 
 	@Override
 	public void robotInit() {
@@ -60,13 +61,17 @@ public class Robot extends IterativeRobot {
 		optionChooser.addObject("BOTH", "BOTH");
 		optionChooser.addObject("FORWARD", "FORWARD");
 		optionChooser.addObject("NONE", "NONE");
+		evilChooser.addDefault("good", "good");
+		evilChooser.addObject("bad", "bad");
 		SmartDashboard.putData("Position", posChooser);
 		SmartDashboard.putData("Option", optionChooser);
 		SmartDashboard.putData("business", mInDbUsInEsS);
+		SmartDashboard.putData("Good", evilChooser);
 		scheduler.schedule(drive, mainExecutor);
 		scheduler.schedule(tracker, mainExecutor);
 		scheduler.schedule(elevarm, mainExecutor);
 		scheduler.schedule(intake, mainExecutor);
+		
 		camServer.startAutomaticCapture(0);
 		camServer.startAutomaticCapture(1);
 	}
@@ -79,10 +84,21 @@ public class Robot extends IterativeRobot {
 		String pos = posChooser.getSelected();
 		String option = optionChooser.getSelected();
 		String business = mInDbUsInEsS.getSelected();
+		String good = evilChooser.getSelected();
 
 		PathOption pOption = PathOption.NONE;
 		StartPosition sPos = StartPosition.CENTER;
 		boolean mind = false;
+		boolean isGood = true;
+		
+		switch(good) {
+			case "good":
+				isGood = true;
+				break;
+			case "bad":
+				isGood = false;
+				break;
+		}
 		switch (business) {
 		case "Business":
 			mind = false;
@@ -128,9 +144,9 @@ public class Robot extends IterativeRobot {
 		while (DriverStation.getInstance().getGameSpecificMessage().isEmpty() && Timer.getFPGATimestamp() - start < 1) {
 
 		}
-		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		String gameData = DriverStation.getInstance().getGameSpecificMessage().toLowerCase();
 		if (gameData.isEmpty()) {
-			gameData = "rr";
+			gameData = "ll";
 			if (pOption == PathOption.NONE) {
 			} else if (sPos != StartPosition.CENTER) {
 				pOption = PathOption.FORWARD;
@@ -138,7 +154,7 @@ public class Robot extends IterativeRobot {
 				pOption = PathOption.SWITCH;
 			}
 		}
-		AutoRoutine routine = AutoRoutineGenerator.generate(gameData, pOption, sPos, mind);
+		AutoRoutine routine = AutoRoutineGenerator.generate(gameData, pOption, sPos, mind, isGood);
 		new Thread(routine).start();
 	}
 
@@ -149,8 +165,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		configSubsytems();
-		drive.pause();
-		tracker.pause();
 	}
 
 	double elevatorMaxCurrent = 150, armMaxCurrent = 40; // TEMP for testing
@@ -163,7 +177,8 @@ public class Robot extends IterativeRobot {
 		
 		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
-		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawButton(5));
+		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2) || drive.getSpeed() < 12;
+		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
@@ -215,7 +230,7 @@ public class Robot extends IterativeRobot {
 		{
 			intake.setIntake(IntakeState.OUTTAKE);
 		}
-		else if (joystick.getRawButton(5) || xbox.getRawButton(Controller.Xbox.A))
+		else if (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)
 		{
 			intake.setIntake(IntakeState.OPEN);
 		}
@@ -224,11 +239,11 @@ public class Robot extends IterativeRobot {
 			intake.setIntake(IntakeState.GRIP);
 		}
 		
-		if (xbox.getRisingEdge(2, 0.3))
+		if (xbox.getRisingEdge(5))
 		{
 			drive.setShiftState(true);
 		}
-		if (xbox.getFallingEdge(2, 0.3))
+		if (xbox.getFallingEdge(5))
 		{
 			drive.setShiftState(false);
 		}
@@ -242,12 +257,10 @@ public class Robot extends IterativeRobot {
 			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge + Constants.JoystickDeadzone) / 5);
 		}
 		
-		
 		if (buttonBox.getRisingEdge(9))
 		{
 			elevarm.homeElevator();
 		}
-
 		
 		if (joystick.getRisingEdge(9))
 		{
@@ -321,6 +334,8 @@ public class Robot extends IterativeRobot {
 		scheduler.pause();
 		drive.stopMovement();
 		elevarm.stopMovement();
+		drive.pause();
+		tracker.pause();
 		fork.set(false);
 		elevarm.setElevatorGearbox(false);
 	}
@@ -374,6 +389,10 @@ public class Robot extends IterativeRobot {
 		}
 		if (buttonBox.getRisingEdge(3)) {
 			elevarm.checkClimber();
+		}
+		
+		if(xbox.getRisingEdge(5)){
+			drive.clearStickyFaults();
 		}
 	}
 }

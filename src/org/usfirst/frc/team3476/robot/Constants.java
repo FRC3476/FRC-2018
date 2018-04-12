@@ -2,7 +2,7 @@ package org.usfirst.frc.team3476.robot;
 
 public final class Constants {
 
-	public static final boolean LOGGING = false;
+	public static final boolean LOGGING = true;
 
 	// Other
 	public static final double SensorTicksPerMotorRotation = 4096;
@@ -12,21 +12,28 @@ public final class Constants {
 	// Driving
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
-	public static final double kRightHighP = 0.05;
+	public static final double kRightHighP = 0.03;
 	public static final double kRightHighI = 0;
-	public static final double kRightHighD = 0.05;
-	public static final double kRightHighF = 0.04;
+	public static final double kRightHighD = 0;
+	public static final double kRightHighF = 0.035;
 	public static final double kRightLowP = 0.1;
 	public static final double kRightLowF = 0.05763730970902943999708309631717;
 	public static final double kRightLowD = 0.1;
 
-	public static final double kLeftHighP = 0.05;
+	public static final double kLeftHighP = 0.03;
 	public static final double kLeftHighI = 0;
-	public static final double kLeftHighD = 0.05;
-	public static final double kLeftHighF = 0.04;
+	public static final double kLeftHighD = 0;
+	public static final double kLeftHighF = 0.035;
 	public static final double kLeftLowP = 0.1;
 	public static final double kLeftLowF = 0.05763730970902943999708309631717;
 	public static final double kLeftLowD = 0;
+
+	public static final double kRightAutoP = 0.12;
+	public static final double kRightAutoD = 0.7;
+	public static final double kRightAutoF = 0.035;
+	public static final double kLeftAutoP = 0.12;
+	public static final double kLeftAutoD = 0.7;
+	public static final double kLeftAutoF = 0.035;
 	public static final double TeleopAccLimit = 120;
 	public static final double TeleopJerkLimit = 2000;
 	public static final double ExpectedDriveCurrent = 1.5;
@@ -41,12 +48,12 @@ public final class Constants {
 	public static final double MaxAcceleration = 1000;
 
 	// Autonomous Driving
-	public static final double TrackRadius = 15.5;
+	public static final double TrackRadius = 14;
 	public static final double WheelDiameter = 6;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 20;
-	public static final double MaxPathSpeed = 140;
-	public static final double MinLookAheadDistance = 18;
+	public static final double MaxPathSpeed = 120;
+	public static final double MinLookAheadDistance = 14;
 	public static final double MaxLookAheadDistance = 30;
 
 	// CAN IDs
@@ -87,8 +94,8 @@ public final class Constants {
 	public static final double ElevatorAccelerationLimit = 250;
 
 	// Arm
-	public static final double ArmLowerAngleLimit = -55;
-	public static final double ArmUpperAngleLimit = 96;
+	public static final double ArmLowerAngleLimit = -37;
+	public static final double ArmUpperAngleLimit = 100;
 	public static final double ArmRotationsPerMotorRotation = 1 / 1.5;
 	public static final double ArmSpeed = 0; // Degrees Per Second
 	public static final double ArmLength = 18.6; // Inches
@@ -96,14 +103,13 @@ public final class Constants {
 	public static final double ExpectedArmRPM = 0;
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
-	public static final double ArmDownDegrees = -55;
+	public static final double ArmDownDegrees = -37;
 	public static final double ArmIntakeDegrees = -22;
 	public static final double ArmVelocityLimit = 200;
 	public static final double ArmAccelerationLimit = 300;
 	
-	
-	
-	public static final int PracticeBotArmTicksOffset = 1612;
+	public static final int PracticeBotArmTicksOffset = 1510;
+
 	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
 
 	public static final double JoystickDeadzone = .15;

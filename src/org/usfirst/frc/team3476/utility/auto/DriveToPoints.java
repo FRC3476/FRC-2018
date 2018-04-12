@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
-import org.usfirst.frc.team3476.utility.control.Path;
+import org.usfirst.frc.team3476.utility.control.motion.Path;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 public class DriveToPoints extends AutoCommand {

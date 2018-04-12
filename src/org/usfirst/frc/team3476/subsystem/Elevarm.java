@@ -36,7 +36,7 @@ public class Elevarm extends Threaded {
 
 	private Elevarm() {
 		elevatorLimiter = new RateLimiter(1000, 250);
-		armLimiter = new RateLimiter(200, 300);
+		armLimiter = new RateLimiter(200, 400);
 		elevator = Elevator.getInstance();
 		arm = Arm.getInstance();
 	}
@@ -77,9 +77,11 @@ public class Elevarm extends Threaded {
 	}
 
 	synchronized public void setElevatorPercentOutput(double output) {
+		System.out.println(elevarmState);
 		if (elevarmState != ElevarmState.HOMING) {
 			elevarmState = ElevarmState.EXTERNAL;
 			elevState = ElevatorState.MANUAL;
+			System.out.println("working");
 			elevator.setPercentOutput(output);
 		}
 	}

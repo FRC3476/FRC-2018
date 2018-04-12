@@ -18,7 +18,7 @@ public class Intake extends Threaded {
 	private Solenoid intakeSolenoid60Psi;
 	private LazyTalonSRX intakeMotor1;
 	private LazyTalonSRX intakeMotor2;
-	private IntakingState intakeState;
+	private IntakeState intakeState;
 	private BiasState biasState;
 	private double biasTimer;
 	private static Intake intakeInstance = new Intake();
@@ -28,15 +28,12 @@ public class Intake extends Threaded {
 	{
 		OPEN,
 		CLAMP,
-		INTAKING
-	}
-	
-	private enum IntakingState {
-		INTAKE, MANUAL
+		INTAKING,
+		AUTO
 	}
 	
 	public enum IntakeState {
-		INTAKE, OUTTAKE, GRIP, OPEN, OUTTAKE_FAST, OUTTAKE_FASTEST, INTAKE_OPEN
+		INTAKE, OUTTAKE, OUTTAKE_FAST, OUTTAKE_FASTEST, NEUTRAL
 	}
 	
 	private enum BiasState {
@@ -48,8 +45,7 @@ public class Intake extends Threaded {
 		intakeMotor2 = new LazyTalonSRX(Constants.Intake2Id);
 		intakeSolenoid30Psi = new Solenoid(Constants.IntakeSolenoid30PsiId);
 		intakeSolenoid60Psi = new Solenoid(Constants.IntakeSolenoid60PsiId);
-		intakeState = IntakingState.MANUAL;
-		biasState = biasState.REVERSE;
+		intakeState = IntakeState.NEUTRAL;
 	}
 
 	public static Intake getInstance() {
@@ -61,53 +57,12 @@ public class Intake extends Threaded {
 		return !cubeSwitch.get();
 	}
 	*/
-	public void setIntake(IntakeState state)
+	public void setIntake(IntakeState intakeState, SolenoidState solenoidState)
 	{
-		switch(state)
-		{
-		case INTAKE:
-			setIntakeSolenoid(SolenoidState.INTAKING);			
-			break;
-		case OUTTAKE:
-			intakeMotor1.set(ControlMode.PercentOutput, .25);
-			intakeMotor2.set(ControlMode.PercentOutput, .25);
-			setIntakeSolenoid(SolenoidState.INTAKING);
-			break;
-		case OUTTAKE_FAST:
-			intakeMotor1.set(ControlMode.PercentOutput, .5);
-			intakeMotor2.set(ControlMode.PercentOutput, .5);
-			break;
-		case OUTTAKE_FASTEST:
-			intakeMotor1.set(ControlMode.PercentOutput, 1);
-			intakeMotor2.set(ControlMode.PercentOutput, 1);
-			break;
-		case GRIP:
-			setIntakeSolenoid(SolenoidState.CLAMP);
-			intakeMotor1.set(ControlMode.PercentOutput, 0);
-			intakeMotor2.set(ControlMode.PercentOutput, 0);
-			break;
-		case OPEN:
-			setIntakeSolenoid(SolenoidState.OPEN);
-			intakeMotor1.set(ControlMode.PercentOutput, 0);
-			intakeMotor2.set(ControlMode.PercentOutput, 0);
-			break;
-		case INTAKE_OPEN:
-			setIntakeSolenoid(SolenoidState.OPEN);
-			intakeMotor1.set(ControlMode.PercentOutput, -.15);
-			intakeMotor2.set(ControlMode.PercentOutput, -.15);
-			break;
+		synchronized(this) {
+			this.intakeState = intakeState;
 		}
-		
-		if(state == IntakeState.INTAKE){
-			synchronized(this){
-				intakeState = IntakingState.INTAKE;
-				biasState = BiasState.NORMAL;
-			}
-		} else {
-			synchronized(this){
-				intakeState = IntakingState.MANUAL;
-			}
-		}
+		setIntakeSolenoid(solenoidState);
 	}
 
 	private void setIntakeSolenoid(SolenoidState state) {
@@ -137,7 +92,7 @@ public class Intake extends Threaded {
 
 	@Override
 	public void update() {
-		IntakingState snapState;
+		IntakeState snapState;
 		synchronized(this) {
 			snapState = intakeState;			
 		}
@@ -146,18 +101,12 @@ public class Intake extends Threaded {
 			case INTAKE:
 				double currentRight = intakeMotor1.getOutputCurrent();
 				double currentLeft = intakeMotor2.getOutputCurrent();
-				System.out.println(currentLeft + "   " + currentRight);
+				//System.out.println(currentLeft + "   " + currentRight);
 				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.2, 1);
 				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.2, 1);
 				double bias = 0;
 				if(!DriverStation.getInstance().isAutonomous()) {
-					if(getCurrent() > 10) {
-						bias = OrangeUtility.coercedNormalize(getCurrent(), 10, 40, 0.0, 0.3);
-						/*
-						if(Timer.getFPGATimestamp() - biasTimer > 1) {
-							swapBias();
-							biasTimer = Timer.getFPGATimestamp();
-						}*/
+					if(getCurrent() > 10) {						
 						if(biasState == BiasState.NORMAL && Timer.getFPGATimestamp() - biasTimer > 0.8) {
 							biasState = BiasState.REVERSE;
 							biasTimer = Timer.getFPGATimestamp();
@@ -174,25 +123,29 @@ public class Intake extends Threaded {
 					}					
 				}
 				if(biasState == BiasState.NORMAL) {
-					intakeMotor1.set(ControlMode.PercentOutput, -powerRight + bias);
-					intakeMotor2.set(ControlMode.PercentOutput, -powerLeft - bias);
+					intakeMotor1.set(ControlMode.PercentOutput, -powerRight);
+					intakeMotor2.set(ControlMode.PercentOutput, -powerLeft);
 				} else {
-					intakeMotor1.set(ControlMode.PercentOutput, -powerRight - bias);
-					intakeMotor2.set(ControlMode.PercentOutput, -(-powerLeft - bias));
+					intakeMotor1.set(ControlMode.PercentOutput, -powerRight);
+					intakeMotor2.set(ControlMode.PercentOutput, -(-powerLeft));
 				}
 				break;
-			case MANUAL:
+			case OUTTAKE:
+				intakeMotor1.set(ControlMode.PercentOutput, .25);
+				intakeMotor2.set(ControlMode.PercentOutput, .25);
 				break;
-		}
-	}
-	
-	synchronized private void swapBias(){
-		if(biasState == BiasState.REVERSE) {
-			biasState = BiasState.NORMAL;
-			System.out.println("Normal");
-		} else {
-			biasState = BiasState.REVERSE;
-			System.out.println("Reverse");
+			case OUTTAKE_FAST:
+				intakeMotor1.set(ControlMode.PercentOutput, .5);
+				intakeMotor2.set(ControlMode.PercentOutput, .5);
+				break;
+			case OUTTAKE_FASTEST:
+				intakeMotor1.set(ControlMode.PercentOutput, 1);
+				intakeMotor2.set(ControlMode.PercentOutput, 1);
+				break;
+			case NEUTRAL:
+				intakeMotor1.set(ControlMode.PercentOutput, 0);
+				intakeMotor2.set(ControlMode.PercentOutput, 0);
+				break;
 		}
 	}
 }

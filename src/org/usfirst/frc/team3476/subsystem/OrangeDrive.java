@@ -4,10 +4,10 @@ import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.Threaded;
-import org.usfirst.frc.team3476.utility.control.Path;
-import org.usfirst.frc.team3476.utility.control.PurePursuitController;
 import org.usfirst.frc.team3476.utility.control.RateLimiter;
-import org.usfirst.frc.team3476.utility.control.PurePursuitController.AutoDriveSignal;
+import org.usfirst.frc.team3476.utility.control.SynchronousPid;
+import org.usfirst.frc.team3476.utility.control.motion.Path;
+import org.usfirst.frc.team3476.utility.control.motion.PurePursuitController;
 import org.usfirst.frc.team3476.utility.math.Rotation;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -20,20 +20,39 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class OrangeDrive extends Threaded {
+	
 	public enum DriveState {
-		TELEOP, AUTO, DONE
+		TELEOP, PUREPURSUIT, TURN, DONE
 	}
 
 	public static class DriveSignal {
 		/*
 		 * Inches per second for speed
 		 */
-		public double rightWheelSpeed;
-		public double leftWheelSpeed;
+		public double leftVelocity;
+		public double rightVelocity;
+		public double leftAcc;
+		public double rightAcc;
 
 		public DriveSignal(double left, double right) {
-			this.rightWheelSpeed = left;
-			this.leftWheelSpeed = right;
+			this(left, 0, right, 0);
+		}		
+
+		public DriveSignal(double left, double leftAcc, double right, double rightAcc) {
+			leftVelocity = left;
+			this.leftAcc = leftAcc;
+			rightVelocity = right;
+			this.rightAcc = rightAcc;
+		}
+	}	
+
+	public static class AutoDriveSignal {
+		public DriveSignal command;
+		public boolean isDone;
+		
+		public AutoDriveSignal(DriveSignal command, boolean isDone) {
+			this.command = command;
+			this.isDone = isDone;
 		}
 	}
 
@@ -50,9 +69,10 @@ public class OrangeDrive extends Threaded {
 	private ADXRS450_Gyro gyroSensor = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	private LazyTalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
 	private PurePursuitController autonomousDriver;
+	private SynchronousPid turnPID;
 	private volatile double driveMultiplier;
 	private DriveState driveState;
-	private RateLimiter moveProfiler;
+	private RateLimiter moveProfiler, turnProfiler;
 	private Solenoid shifter;
 
 	private OrangeDrive() {
@@ -62,7 +82,7 @@ public class OrangeDrive extends Threaded {
 
 		leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-
+		
 		leftSlaveTalon = new LazyTalonSRX(Constants.LeftSlaveDriveId);
 		leftSlave2Talon = new LazyTalonSRX(Constants.LeftSlave2DriveId);
 		rightSlaveTalon = new LazyTalonSRX(Constants.RightSlaveDriveId);
@@ -71,8 +91,12 @@ public class OrangeDrive extends Threaded {
 
 		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
-
+		
+		turnPID = new SynchronousPid(0, 0, 0, 0);
+		turnPID.setTolerance(1);
+		
 		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
+		turnProfiler = new RateLimiter(100);
 
 		configHigh();
 	}
@@ -122,25 +146,17 @@ public class OrangeDrive extends Threaded {
 		// Square values but keep sign
 		moveValue = Math.copySign(Math.pow(moveValue, 2), moveValue);
 		rotateValue = Math.copySign(Math.pow(rotateValue, 2), rotateValue);
-
-		// Get highest correct speed for left/right wheels
-		// Positive rotateValue turns right
+		double maxValue = Math.abs(moveValue) + Math.abs(rotateValue);
+		if(maxValue > 1) {
+			moveValue -= Math.copySign(maxValue - 1, moveValue);
+		}
+		leftMotorSpeed = moveValue + rotateValue;
+		rightMotorSpeed = moveValue - rotateValue;
 		if (drivePercentVbus) {
-			leftMotorSpeed = OrangeUtility.coerce(moveValue + rotateValue, 1, -1);
-			rightMotorSpeed = OrangeUtility.coerce(moveValue - rotateValue, 1, -1);
 			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		} else {
-			moveValue *= Constants.HighDriveSpeed;
-			rotateValue *= Constants.HighDriveSpeed;
-
-			leftMotorSpeed = OrangeUtility.coerce(moveValue
-					+ rotateValue, Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
-			rightMotorSpeed = OrangeUtility.coerce(moveValue
-					- rotateValue, Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
-
-			// leftMotorSpeed = leftProfiler.update(leftMotorSpeed);
-			// rightMotorSpeed = rightProfiler.update(rightMotorSpeed);
-
+			leftMotorSpeed *= Constants.HighDriveSpeed;
+			rightMotorSpeed *= Constants.HighDriveSpeed;			
 			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
@@ -185,7 +201,7 @@ public class OrangeDrive extends Threaded {
 		rightMotorSpeed = moveValue - angularPower;
 
 		angularPower = Math.abs(moveValue) * rotateValue - quickStopAccumulator;
-		// TODO: make pretty - coerce
+		
 		if (leftMotorSpeed > 1.0) {
 			rightMotorSpeed -= overPower * (leftMotorSpeed - 1.0);
 			leftMotorSpeed = 1.0;
@@ -319,11 +335,11 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public synchronized void setAutoPath(Path autoPath, boolean isReversed) {
-		driveState = DriveState.AUTO;
+		driveState = DriveState.PUREPURSUIT;
 		autonomousDriver = new PurePursuitController(autoPath, isReversed);
 		autonomousDriver.resetTime();
 		configAuto();
-		updateAutoPath();
+		updatePurePursuit();
 	}
 
 	public void setBrakeState(NeutralMode mode) {
@@ -334,24 +350,29 @@ public class OrangeDrive extends Threaded {
 		leftSlave2Talon.setNeutralMode(mode);
 		rightSlave2Talon.setNeutralMode(mode);
 	}
+	
+	public double getVoltage()
+	{
+		return (leftTalon.getMotorOutputVoltage() + rightTalon.getMotorOutputVoltage() + leftSlaveTalon.getMotorOutputVoltage() + rightSlaveTalon.getMotorOutputVoltage() + rightSlave2Talon.getMotorOutputVoltage() + leftSlave2Talon.getMotorOutputVoltage()) / 6;
+	}
 
 	private void setWheelPower(DriveSignal setVelocity) {
-		leftTalon.set(ControlMode.PercentOutput, setVelocity.leftWheelSpeed);
-		rightTalon.set(ControlMode.PercentOutput, setVelocity.rightWheelSpeed);
+		leftTalon.set(ControlMode.PercentOutput, setVelocity.rightVelocity);
+		rightTalon.set(ControlMode.PercentOutput, setVelocity.leftVelocity);
 	}
 
 	private void setWheelVelocity(DriveSignal setVelocity) {
-		if (Math.abs(setVelocity.leftWheelSpeed) > Constants.HighDriveSpeed
-				|| Math.abs(setVelocity.rightWheelSpeed) > Constants.HighDriveSpeed) {
+		if (Math.abs(setVelocity.rightVelocity) > Constants.HighDriveSpeed
+				|| Math.abs(setVelocity.leftVelocity) > Constants.HighDriveSpeed) {
 			DriverStation.getInstance();
 			DriverStation.reportError("Velocity set over " + Constants.HighDriveSpeed + " !", false);
 			return;
 		}
 		//System.out.println("Left: " + setVelocity.leftWheelSpeed + " Speed:" + getLeftSpeed());
 		// inches per sec to rotations per min
-		double leftSetpoint = (setVelocity.leftWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
+		double leftSetpoint = (setVelocity.rightVelocity) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
 				* (62d / 22d) * 3d;
-		double rightSetpoint = (setVelocity.rightWheelSpeed) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
+		double rightSetpoint = (setVelocity.leftVelocity) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
 				* (62 / 22d) * 3d;
 		leftTalon.set(ControlMode.Velocity, leftSetpoint);
 		rightTalon.set(ControlMode.Velocity, rightSetpoint);
@@ -362,11 +383,44 @@ public class OrangeDrive extends Threaded {
 	}
 
 	@Override
-	public synchronized void update() {		
-		if (driveState == DriveState.TELEOP) {
-			
+	public void update() {		
+		DriveState snapDriveState;
+		synchronized(this) {
+			snapDriveState = driveState;
+		}
+		switch(snapDriveState) {
+		case TELEOP:
+			break;
+		case PUREPURSUIT:
+			updatePurePursuit();
+			break;
+		case TURN:
+			updateTurn();
+			break;
+		}
+	}
+	
+	public void setRotation(Rotation angle) {
+		synchronized(this) {
+			turnPID.setSetpoint(angle.getDegrees());
+		}
+		configHigh();
+	}
+	
+	private void updateTurn() {
+		double heading = getGyroAngle().getDegrees();
+		double deltaSpeed;
+		
+		synchronized(this) {
+			deltaSpeed = turnPID.update(heading);
+		}
+		if(turnPID.isDone()) {
+			setWheelVelocity(new DriveSignal(0, 0));
+			synchronized(this) {
+				driveState = DriveState.DONE;
+			}
 		} else {
-			updateAutoPath();
+			setWheelVelocity(new DriveSignal(deltaSpeed, -deltaSpeed));
 		}
 	}
 
@@ -379,7 +433,7 @@ public class OrangeDrive extends Threaded {
 		}
 	}
 
-	private void updateAutoPath() {
+	private void updatePurePursuit() {
 		AutoDriveSignal signal = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
 		if(signal.isDone){
 			synchronized(this){
@@ -424,7 +478,6 @@ public class OrangeDrive extends Threaded {
 		leftSlave2Talon.clearStickyFaults(10); 
 		rightTalon.clearStickyFaults(10);
 		rightSlaveTalon.clearStickyFaults(10);
-		rightSlave2Talon.clearStickyFaults(10); 
-		
+		rightSlave2Talon.clearStickyFaults(10);		
 	}
 }

@@ -2,7 +2,6 @@ package org.usfirst.frc.team3476.utility;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
-
 /**
  * This class stores the int sent back from the Driver Station and uses it to check for rising or falling edges
  */
@@ -36,15 +35,20 @@ public class Controller extends Joystick {
 	 */
 	private int oldButtons;
 	private int currentButtons;
-	private int axisCount;
+	private int axisCount, povCount;
 	private double[] oldAxis;
 	private double[] currentAxis;
+	private int[] oldPOV;
+	private int[] currentPOV;
 
 	public Controller(int port) {
 		super(port);
 		axisCount = DriverStation.getInstance().getStickAxisCount(port);
+		povCount = DriverStation.getInstance().getStickPOVCount(port);
 		oldAxis = new double[axisCount];
 		currentAxis = new double[axisCount];
+		oldPOV = new int[povCount];
+		currentPOV = new int[povCount];
 	}
 
 	/**
@@ -56,8 +60,8 @@ public class Controller extends Joystick {
 	 * 		Falling edge state of the button
 	 */
 	public boolean getFallingEdge(int button) {
-		boolean oldVal = ((0x1 << (button - 1)) & oldButtons) != 0;
-		boolean currentVal = ((0x1 << (button - 1)) & currentButtons) != 0;
+		boolean oldVal = getButtonState(button, oldButtons);
+		boolean currentVal = getButtonState(button, currentButtons);
 		if (oldVal == true && currentVal == false) {
 			return true;
 		} else {
@@ -74,8 +78,8 @@ public class Controller extends Joystick {
 	 * 		Rising edge state of the button
 	 */
 	public boolean getRisingEdge(int button) {
-		boolean oldVal = ((0x1 << (button - 1)) & oldButtons) != 0;
-		boolean currentVal = ((0x1 << (button - 1)) & currentButtons) != 0;
+		boolean oldVal = getButtonState(button, oldButtons);
+		boolean currentVal = getButtonState(button, currentButtons);
 		if (oldVal == false && currentVal == true) {
 			return true;
 		} else {
@@ -112,35 +116,53 @@ public class Controller extends Joystick {
 	/**
 	 * This method needs to be called for each iteration of the teleop loop
 	 */
-	boolean next = false;
-
 	public void update() {
-		/*
-		if (Math.random() > .999 || next) {
-			this.setRumble(RumbleType.kLeftRumble, 1);
-			this.setRumble(RumbleType.kRightRumble, 1);
-			if (next = true) {
-				next = false;
-			} else {
-				next = true;
-			}
-		} else {
-			this.setRumble(RumbleType.kLeftRumble, 0);
-			this.setRumble(RumbleType.kRightRumble, 0);
-		}
-		*/
 		oldButtons = currentButtons;
 		currentButtons = DriverStation.getInstance().getStickButtons(getPort());
-		if(axisCount != DriverStation.getInstance().getStickAxisCount(getPort())){
+		if (axisCount != DriverStation.getInstance().getStickAxisCount(getPort())) {
 			axisCount = DriverStation.getInstance().getStickAxisCount(getPort());
 			oldAxis = new double[axisCount];
 			currentAxis = new double[axisCount];
 		}
+		if (povCount != DriverStation.getInstance().getStickPOVCount(getPort())) {
+			povCount = DriverStation.getInstance().getStickPOVCount(getPort());
+			oldPOV = new int[povCount];
+			currentPOV = new int[povCount];
+		}
 		oldAxis = currentAxis;
 		for (int i = 0; i < axisCount; i++) {
-			currentAxis[i] = super.getRawAxis(i);
+			currentAxis[i] = DriverStation.getInstance().getStickAxis(getPort(), i);
 		}
-		
+
+		oldPOV = currentPOV;
+		for (int i = 0; i < povCount; i++) {
+			currentPOV[i] = DriverStation.getInstance().getStickPOV(getPort(), i);
+		}	
+	}
+
+	@Override
+	public boolean getRawButton(int button) {
+		return getButtonState(button, currentButtons);
+	}
+
+	@Override
+	public double getRawAxis(int axis) {
+		if (axis <= axisCount && axis > 0) {
+			return currentAxis[axis];
+		}
+		return 0;
+	}
+
+	@Override
+	public int getPOV(int pov) {
+		if (pov <= povCount && pov > 0) {
+			return currentPOV[pov];
+		}
+		return 0;
+	}
+	
+	public boolean getButtonState(int button, int state) {
+		return ((0x1 << (button - 1)) & state) != 0;
 	}
 
 }

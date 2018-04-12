@@ -165,8 +165,8 @@ public class Robot extends IterativeRobot {
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawButton(5));
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 		
 		
 		

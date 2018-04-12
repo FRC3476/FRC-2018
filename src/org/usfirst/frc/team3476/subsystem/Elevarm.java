@@ -131,8 +131,6 @@ public class Elevarm extends Threaded {
 	}
 	
 	public void setXRate(double xRate) {
-		elevState = ElevatorState.SPEED;
-		armState = ArmState.SPEED;
 		double armSpeed = -xRate * (180d / Math.PI) / (Constants.ArmLength * Math.sin(Math.toRadians(getArmAngle())));
 		double elevatorSpeed = -armSpeed * Constants.ArmLength * Math.cos(Math.toRadians(getArmAngle()));
 
@@ -179,6 +177,8 @@ public class Elevarm extends Threaded {
 		
  		elevatorSpeedSetpoint = elevatorSpeed;
 		armSpeedSetpoint = armSpeed;
+		elevState = ElevatorState.SPEED;
+		armState = ArmState.SPEED;
 	}
 
 	public void setOverallPosition(double distance, double height) {

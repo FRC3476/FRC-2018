@@ -252,7 +252,6 @@ public class Robot extends IterativeRobot {
 		else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .95)
 		{
 		}
-<<<<<<< HEAD
 		else
 		{
 			xbox.setRumble(RumbleType.kLeftRumble, 0);
@@ -266,28 +265,6 @@ public class Robot extends IterativeRobot {
 			System.out.println("Intake: " + intake.getCurrent());
 			intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
 		}
-=======
-	
-
-		if (intake.getCurrent() > 28)
-		{
-			xbox.setRumble(RumbleType.kLeftRumble, 1);
-			xbox.setRumble(RumbleType.kRightRumble, 1);
-		}
-		else
-		{
-			xbox.setRumble(RumbleType.kLeftRumble, 0);
-			xbox.setRumble(RumbleType.kRightRumble, 0);
-		}
-		if ((joystick.getRawButton(3) || xbox.getRawButton(6)) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
-			intake.setIntake(IntakeState.INTAKE_OPEN);
-		}
-		else if (joystick.getRawButton(3) || xbox.getRawButton(6))
-		{			
-			System.out.println("Intake: " + intake.getCurrent());
-			intake.setIntake(IntakeState.INTAKE);
-		}
->>>>>>> AVR
 		else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .95)
 		{
 			intake.setIntake(IntakeState.OUTTAKE_FAST, SolenoidState.CLAMP);

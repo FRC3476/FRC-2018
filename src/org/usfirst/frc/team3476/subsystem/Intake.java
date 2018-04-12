@@ -57,59 +57,12 @@ public class Intake extends Threaded {
 		return !cubeSwitch.get();
 	}
 	*/
-<<<<<<< HEAD
 	public void setIntake(IntakeState intakeState, SolenoidState solenoidState)
 	{
 		synchronized(this) {
 			this.intakeState = intakeState;
 		}
 		setIntakeSolenoid(solenoidState);
-=======
-	public void setIntake(IntakeState state)
-	{		
-		if(state == IntakeState.INTAKE || state == IntakeState.INTAKE_OPEN){
-			synchronized(this){
-				intakeState = IntakingState.INTAKE;
-				biasState = BiasState.NORMAL;
-			}
-		} else {
-			synchronized(this){
-				intakeState = IntakingState.MANUAL;
-			}
-		}
-		switch(state)
-		{
-		case INTAKE:
-			setIntakeSolenoid(SolenoidState.INTAKING);			
-			break;
-		case OUTTAKE:
-			intakeMotor1.set(ControlMode.PercentOutput, .25);
-			intakeMotor2.set(ControlMode.PercentOutput, .25);
-			setIntakeSolenoid(SolenoidState.INTAKING);
-			break;
-		case OUTTAKE_FAST:
-			intakeMotor1.set(ControlMode.PercentOutput, .5);
-			intakeMotor2.set(ControlMode.PercentOutput, .5);
-			break;
-		case OUTTAKE_FASTEST:
-			intakeMotor1.set(ControlMode.PercentOutput, 1);
-			intakeMotor2.set(ControlMode.PercentOutput, 1);
-			break;
-		case GRIP:
-			setIntakeSolenoid(SolenoidState.CLAMP);
-			intakeMotor1.set(ControlMode.PercentOutput, 0);
-			intakeMotor2.set(ControlMode.PercentOutput, 0);
-			break;
-		case OPEN:
-			setIntakeSolenoid(SolenoidState.OPEN);
-			intakeMotor1.set(ControlMode.PercentOutput, 0);
-			intakeMotor2.set(ControlMode.PercentOutput, 0);
-			break;
-		case INTAKE_OPEN:
-			setIntakeSolenoid(SolenoidState.OPEN);
-			break;
-		}
->>>>>>> AVR
 	}
 
 	private void setIntakeSolenoid(SolenoidState state) {

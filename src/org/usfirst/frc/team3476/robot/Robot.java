@@ -185,8 +185,6 @@ public class Robot extends IterativeRobot {
 		
 		
 		
-		
-		
 		if (buttonBox.getRawButton(10))
 		{
 			elevarm.setClimberPercentOutput(.75);

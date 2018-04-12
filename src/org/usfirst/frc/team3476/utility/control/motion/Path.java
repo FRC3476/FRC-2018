@@ -1,5 +1,5 @@
 
-package org.usfirst.frc.team3476.utility.control;
+package org.usfirst.frc.team3476.utility.control.motion;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,118 +18,6 @@ import org.usfirst.frc.team3476.utility.math.Translation2d;
  */
 public class Path {
 
-	/**
-	 * Two points that function as a line.
-	 */
-	public static class PathSegment {
-
-		private Translation2d start, end, delta;
-		private double maxSpeed, deltaDist, deltaDistSquared;
-		
-		private ArrayList<AutoRoutineTrigger> commands = new ArrayList<>();
-
-		private PathSegment(double xStart, double yStart, double xEnd, double yEnd, double maxSpeed) {
-			this(new Translation2d(xStart, yStart), new Translation2d(xEnd, yEnd), maxSpeed);
-		}
-
-		private PathSegment(Translation2d start, Translation2d end, double maxSpeed) {
-			this.start = start;
-			this.end = end;
-			this.maxSpeed = maxSpeed;
-			delta = start.inverse().translateBy(end);
-			deltaDist = Math.hypot(delta.getX(), delta.getY());
-			deltaDistSquared = Math.pow(deltaDist, 2);
-		}
-		
-		public void addAutoRoutineTrigger(AutoRoutineTrigger routine) {
-			this.commands.add(routine);
-			Collections.sort(this.commands);
-		}
-	
-		private Translation2d getStart() {
-			return start;
-		}
-
-		private Translation2d getEnd() {
-			return end;
-		}
-
-		/**
-		 * Gets the point on the line closest to the point defined in the
-		 * argument
-		 *
-		 * @param point
-		 *            Point to find the closest point to
-		 * @return The closest point on the line to the point specified
-		 */
-		private Translation2d getClosestPoint(Translation2d point) {
-			double u = ((point.getX() - start.getX()) * delta.getX() + (point.getY() - start.getY()) * delta.getY())
-					/ deltaDistSquared;
-			u = Math.max(Math.min(u, 1), 0);
-			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);
-		}
-		
-		private double getPercentageOnSegment(Translation2d point) {
-			double u = ((point.getX() - start.getX()) * delta.getX() + (point.getY() - start.getY()) * delta.getY())
-					/ deltaDistSquared;
-			u = Math.max(Math.min(u, 1), 0);
-			return u;
-		}
-
-		/**
-		 * Returns the point on the line which is some distance away from the
-		 * start. The point travels on the line towards the end. More efficient
-		 * than calling interpolate in Translation2d because delta is
-		 * pre-computed before.
-		 *
-		 * @param distance
-		 *            Distance from the start of the line.
-		 * @return Point on the line that is the distance away specified.
-		 */
-		private Translation2d getPointByDistance(double distance) {
-			distance = Math.pow(distance, 2);
-			double u = Math.sqrt(distance / deltaDistSquared);
-			return new Translation2d(start.getX() + delta.getX() * u, start.getY() + delta.getY() * u);
-		}
-
-		/**
-		 * Returns the point on the line which is some distance away from the
-		 * end. The point travels on the line towards the start.
-		 *
-		 * @param distance
-		 *            Distance from the end of the line.
-		 * @return Point on the line that is the distance away from the end
-		 */
-		private Translation2d getPointByDistanceFromEnd(double distance) {
-			distance = Math.pow(distance, 2);
-			double u = Math.sqrt(distance / deltaDistSquared);
-			return new Translation2d(end.getX() - delta.getX() * u, end.getY() - end.getY() * u);
-		}
-
-		/**
-		 *
-		 * @return Maximum speed for the path segment.
-		 */
-		private double getMaxSpeed() {
-			return maxSpeed;
-		}
-
-		/**
-		 *
-		 * @return Total distance from start of the segment to the end.
-		 */
-		private double getDistance() {
-			return deltaDist;
-		}
-
-		/**
-		 *
-		 * @return X and Y offset from the start to the end of the segment.
-		 */
-		private Translation2d getDelta() {
-			return delta;
-		}
-	}
 
 	public static class DrivingData {
 		public double remainingDist, maxSpeed;
@@ -158,9 +46,12 @@ public class Path {
 		}
 	}
 
-	private List<PathSegment> segments;
+	private List<Segment> segments;
 	private Translation2d lastPoint;
 	private Rotation endAngle = null;
+	private double totalDist;
+	private double finishedDist;
+	private ArrayList<AutoRoutineTrigger> commands = new ArrayList<>();
 	private volatile boolean isEmpty;
 
 	/**
@@ -171,9 +62,11 @@ public class Path {
 	 *            Initial point in path.
 	 */
 	public Path(Translation2d start) {
-		segments = new ArrayList<PathSegment>();
+		segments = new ArrayList<Segment>();
 		lastPoint = start;
 		isEmpty = true;
+		totalDist = 0;
+		finishedDist = 0;
 	}
 
 	/**
@@ -184,7 +77,9 @@ public class Path {
 	 * @param speed
 	 */
 	public void addPoint(double x, double y, double speed) {
-		segments.add(new PathSegment(lastPoint.getX(), lastPoint.getY(), x, y, speed));
+		Segment newSegment = new Segment(lastPoint.getX(), lastPoint.getY(), x, y, speed);
+		segments.add(newSegment);
+		totalDist += newSegment.getDistance();
 		lastPoint = new Translation2d(x, y);
 		isEmpty = false;
 	}
@@ -195,14 +90,7 @@ public class Path {
 		isEmpty = false;
 	}
 
-	public void addRoutineToCurrentSegment(AutoRoutine routine, double percentage){
-		segments.get(segments.size() - 1).addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
-	}
-	public void addCommandToCurrentSegment(AutoCommand command, double percentage){
-		AutoRoutine routine = new AutoRoutine();
-		routine.addCommands(command);
-		segments.get(segments.size() - 1).addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
-	}
+	
 	/**
 	 * Sets the desired angle for the robot to end in. It does this by placing
 	 * up to two points that have a 90 degree angle to allow the robot to
@@ -224,7 +112,7 @@ public class Path {
 	 */
 	public void processPoints() {
 		if (endAngle != null) {
-			PathSegment lastSegment = segments.get(segments.size() - 1);
+			Segment lastSegment = segments.get(segments.size() - 1);
 			Rotation angleOfPath = lastSegment.getStart().getAngle(lastSegment.getEnd());
 			Rotation rotatedEndAngle = angleOfPath.inverse().rotateBy(endAngle);
 			boolean rotateLeft = rotatedEndAngle.sin() > 0;
@@ -239,12 +127,12 @@ public class Path {
 			// Add both points if it is
 			// sharper than a 90 degree turn
 			if (rotatedEndAngle.cos() < 0) {
-				segments.add(new PathSegment(lastSegment.getStart(), secondSegmentStart, lastSegment.getMaxSpeed()));
-				segments.add(new PathSegment(secondSegmentStart, finalSegmentStart, lastSegment.getMaxSpeed()));
+				segments.add(new Segment(lastSegment.getStart(), secondSegmentStart, lastSegment.getMaxSpeed()));
+				segments.add(new Segment(secondSegmentStart, finalSegmentStart, lastSegment.getMaxSpeed()));
 			} else {
-				segments.add(new PathSegment(lastSegment.getStart(), finalSegmentStart, lastSegment.getMaxSpeed()));
+				segments.add(new Segment(lastSegment.getStart(), finalSegmentStart, lastSegment.getMaxSpeed()));
 			}
-			segments.add(new PathSegment(finalSegmentStart, lastSegment.getEnd(), lastSegment.getMaxSpeed()));
+			segments.add(new Segment(finalSegmentStart, lastSegment.getEnd(), lastSegment.getMaxSpeed()));
 		}
 	}
 
@@ -252,13 +140,27 @@ public class Path {
 	 * Prints all the points on the path.
 	 */
 	synchronized public void printAllPoints() {
-		for (PathSegment segment : segments) {
+		for (Segment segment : segments) {
 			System.out.println(segment.getStart().getX() + "    " + segment.getStart().getY());
 		}
 		System.out.println(segments.get(segments.size()).getEnd().getX() + "   "
 				+ segments.get(segments.size()).getEnd().getY());
 	}
 
+	public void addRoutine(AutoRoutine routine, double percentage){
+		addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
+	}
+	public void addCommand(AutoCommand command, double percentage){
+		AutoRoutine routine = new AutoRoutine();
+		routine.addCommands(command);
+		addAutoRoutineTrigger(new AutoRoutineTrigger(routine, percentage));
+	}
+
+	public void addAutoRoutineTrigger(AutoRoutineTrigger routine) {
+		this.commands.add(routine);
+		Collections.sort(this.commands);
+	}
+	
 	/**
 	 * TODO: Explain what's goin on in this function. Review with uncool kids(mentor)
 	 *
@@ -271,7 +173,6 @@ public class Path {
 	public DrivingData getLookAheadPoint(Translation2d pose, double lookAheadDistance) {
 		DrivingData data = new DrivingData();
 		Translation2d closestPoint = segments.get(0).getClosestPoint(pose);
-		
 		Translation2d closestToRobot = closestPoint.inverse().translateBy(pose);
 		while (segments.size() > 1) {
 			double distToClosest = Math.hypot(closestToRobot.getX(), closestToRobot.getY());
@@ -280,9 +181,7 @@ public class Path {
 			double distToNext = Math.hypot(closestNextToRobot.getX(), closestNextToRobot.getY());
 			if (distToClosest > distToNext) {
 				//Run commands that didn't run yet in segments being deleted
-				while(!segments.get(0).commands.isEmpty()) {
-					segments.get(0).commands.remove(0).routine.run();
-				}
+				finishedDist += segments.get(0).getDistance();
 				segments.remove(0);				
 				closestPoint = closestNextPoint;
 				closestToRobot = closestNextToRobot;
@@ -291,10 +190,11 @@ public class Path {
 			}
 		}
 		//Run commands when we zoom past
-		double percentage = segments.get(0).getPercentageOnSegment(pose);
-		while(!segments.get(0).commands.isEmpty()) {
-			if(segments.get(0).commands.get(0).percentage <= percentage) {
-				segments.get(0).commands.remove(0).routine.run();
+		double traveledDist = (segments.get(0).getPercentageOnSegment(pose) * segments.get(0).getDistance() + finishedDist);
+		double percentage = traveledDist / totalDist;
+		while(!commands.isEmpty()) {
+			if(commands.get(0).percentage <= percentage) {
+				commands.remove(0).routine.run();
 			} else {
 				break;
 			}
@@ -313,7 +213,7 @@ public class Path {
 		}
 		if (lookAheadDistance > remainingSegDist && segments.size() > 1) {
 			lookAheadDistance -= remainingSegDist;
-			PathSegment lastSegment;
+			Segment lastSegment;
 			for (int i = 1; i < segments.size(); i++) {
 				if (lookAheadDistance > segments.get(i).getDistance() && i != (segments.size() - 1)) {
 					lookAheadDistance -= segments.get(i).getDistance();

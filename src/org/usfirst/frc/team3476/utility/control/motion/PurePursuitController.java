@@ -1,13 +1,16 @@
-package org.usfirst.frc.team3476.utility.control;
+package org.usfirst.frc.team3476.utility.control.motion;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive;
+import org.usfirst.frc.team3476.subsystem.OrangeDrive.AutoDriveSignal;
 import org.usfirst.frc.team3476.subsystem.OrangeDrive.DriveSignal;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.UDP;
-import org.usfirst.frc.team3476.utility.control.Path.DrivingData;
+import org.usfirst.frc.team3476.utility.control.RateLimiter;
+import org.usfirst.frc.team3476.utility.control.SynchronousPid;
+import org.usfirst.frc.team3476.utility.control.motion.Path.DrivingData;
 import org.usfirst.frc.team3476.utility.math.RigidTransform;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
@@ -17,19 +20,13 @@ public class PurePursuitController {
 	 */
 
 	private Path robotPath;
-	private boolean isReversed, turnToHeading;
-	private SynchronousPid turnPID;
+	private boolean isReversed;
 	private RateLimiter speedProfiler;
 
 	public PurePursuitController(Path robotPath, boolean isReversed) {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
-		this.turnToHeading = false;
-		turnPID = new SynchronousPid(0.2, 0, 5, 0);
-		turnPID.setInputRange(180, -180);
-		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
-		turnPID.setTolerance(1);
-		speedProfiler = new RateLimiter(200, 2000);
+		speedProfiler = new RateLimiter(100, 1000);
 		if(robotPath.isEmpty()){
 			
 		}
@@ -62,25 +59,6 @@ public class PurePursuitController {
 			robotSpeed = 20;
 		}
 		Translation2d robotToLookAhead = getRobotToLookAheadPoint(robotPose, data.lookAheadPoint);
-		/*
-		 * TEST
-		 * Translation2d closestToEnd = data.currentSegEnd.translateBy(data.closestPoint.inverse());
-		 * double angleToPath = robotPose.rotationMat.inverse().rotateBy(closestToEnd.getAngleFromOffset(new
-		 * Translation2d(0, 0))).getDegrees();
-		 * if(Math.abs(angleToPath) > 135) {
-		 * turnToHeading = true;
-		 * }
-		 * if(turnToHeading) {
-		 * double angleToLookAhead = robotToLookAhead.getAngleFromOffset(new Translation2d(0, 0)).getDegrees();
-		 * double deltaSpeed = turnPID.update(angleToLookAhead);
-		 * if(turnPID.isDone()) {
-		 * turnToHeading = false;
-		 * } else {
-		 * return new DriveVelocity(deltaSpeed, deltaSpeed);
-		 * }
-		 * }
-		 */
-
 		double radius;
 		radius = getRadius(robotToLookAhead);
 		double delta = (robotSpeed / radius);
@@ -136,13 +114,4 @@ public class PurePursuitController {
 		speedProfiler.reset();
 	}
 	
-	public static class AutoDriveSignal {
-		public DriveSignal command;
-		public boolean isDone;
-		
-		public AutoDriveSignal(DriveSignal command, boolean isDone) {
-			this.command = command;
-			this.isDone = isDone;
-		}
-	}
 }

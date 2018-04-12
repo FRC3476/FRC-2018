@@ -96,7 +96,7 @@ public final class Constants {
 	// Arm
 	public static final double ArmLowerAngleLimit = -37;
 	public static final double ArmUpperAngleLimit = 100;
-	public static final double ArmRotationsPerMotorRotation = 1 / 1.5;
+	public static final double ArmRotationsPerMotorRotation = 1 / 1.5; 
 	public static final double ArmSpeed = 0; // Degrees Per Second
 	public static final double ArmLength = 18.6; // Inches
 	public static final double ExpectedArmCurrent = 0; //
@@ -104,14 +104,14 @@ public final class Constants {
 	public static final double ExpectedArmPosition = 0;
 	public static final double ArmHorizontalDegrees = 0;
 	public static final double ArmDownDegrees = -37;
-	public static final double ArmIntakeDegrees = -22;
+	public static final double ArmIntakeDegrees = -20;
 	public static final double ArmVelocityLimit = 200;
 	public static final double ArmAccelerationLimit = 300;
 	
 	public static final int PracticeBotArmTicksOffset = 1623;
 
-	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) * (1 / ArmRotationsPerMotorRotation) * (SensorTicksPerMotorRotation));
-
+	public static final int PracticeBotArmAngleOffsetInTicks = (int)(ArmDownDegrees * (1d / 360) /** (1 / ArmRotationsPerMotorRotation)*/ * (SensorTicksPerMotorRotation));
+ 
 	public static final double JoystickDeadzone = .15;
 
 	public static final int CubeSwitchId = 0;

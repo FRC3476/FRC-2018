@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+<<<<<<< HEAD
 	<classpathentry kind="var" path="wpilib" sourcepath="wpilib.sources"/>
 	<classpathentry kind="var" path="networktables" sourcepath="ntcore.sources"/>
 	<classpathentry kind="var" path="opencv" sourcepath="opencv.sources"/>
@@ -12,5 +13,17 @@
 	<classpathentry kind="var" path="USERLIBS_DIR/json-simple-1.1.1.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRLib.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/gson-2.6.2.jar"/>
+=======
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="build/jars/cscore.jar"/>
+	<classpathentry kind="lib" path="build/jars/CTRE_Phoenix.jar"/>
+	<classpathentry kind="lib" path="build/jars/CTRLib.jar"/>
+	<classpathentry kind="lib" path="build/jars/gson-2.6.2.jar"/>
+	<classpathentry kind="lib" path="build/jars/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="build/jars/ntcore.jar"/>
+	<classpathentry kind="lib" path="build/jars/opencv.jar"/>
+	<classpathentry kind="lib" path="build/jars/WPILib.jar"/>
+	<classpathentry kind="lib" path="build/jars/wpiutil.jar"/>
+>>>>>>> master
 	<classpathentry kind="output" path="bin"/>
 </classpath>

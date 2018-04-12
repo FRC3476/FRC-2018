@@ -180,6 +180,7 @@ public class Robot extends IterativeRobot {
 		xbox.update();
 		buttonBox.update();
 		joystick.update();
+<<<<<<< .merge_file_a01672
 		
 		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
@@ -188,6 +189,31 @@ public class Robot extends IterativeRobot {
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+=======
+
+		// drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4),
+		// xbox.getRawAxis(2) > .3);
+		// drive.setWheelVelocity(new DriveVelocity(20, 20));
+		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawButton(10));
+		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		
+		
+		/*if (joystick.getRisingEdge(9))
+		{
+			elevarm.setXRate(.1);
+		}
+		else if (joystick.getRisingEdge(10))
+		{
+			elevarm.setXRate(-.1);
+		}
+		else if (joystick.getFallingEdge(9) || joystick.getFallingEdge(10))
+		{
+			elevarm.setXRate(0);
+		}*/
+		
+>>>>>>> .merge_file_a02344
 		
 		
 		
@@ -257,6 +283,7 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(9)) {
 			elevarm.homeElevator();
 		}
+<<<<<<< .merge_file_a01672
 		
 		if (joystick.getRisingEdge(9))
 		{
@@ -277,6 +304,9 @@ public class Robot extends IterativeRobot {
 		
 		else if (buttonBox.getRisingEdge(5))
 		{
+=======
+		if (buttonBox.getRisingEdge(5)) {
+>>>>>>> .merge_file_a02344
 			elevarm.setElevarmIntakePosition();
 		} else if (buttonBox.getRisingEdge(6)) {
 			elevarm.setArmAngle(80); // Switch Position - once PID is tuned

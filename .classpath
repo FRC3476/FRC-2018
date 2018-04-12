@@ -11,6 +11,7 @@
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix-sources.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix.jar" sourcepath="/USERLIBS_DIR/CTRE_Phoenix-sources.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/json-simple-1.1.1.jar"/>
+<<<<<<< .merge_file_a00144
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRLib.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/gson-2.6.2.jar"/>
 =======
@@ -24,6 +25,13 @@
 	<classpathentry kind="lib" path="build/jars/opencv.jar"/>
 	<classpathentry kind="lib" path="build/jars/WPILib.jar"/>
 	<classpathentry kind="lib" path="build/jars/wpiutil.jar"/>
+=======
+<<<<<<< HEAD
+	<classpathentry kind="var" path="USERLIBS_DIR/Pathfinder-Java-1.8.jar"/>
+=======
+	<classpathentry kind="var" path="USERLIBS_DIR/CTRLib.jar"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/gson-2.6.2.jar"/>
+>>>>>>> .merge_file_a06788
 >>>>>>> master
 	<classpathentry kind="output" path="bin"/>
 </classpath>

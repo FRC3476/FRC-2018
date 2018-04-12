@@ -177,6 +177,10 @@ public class Elevarm extends Threaded {
 		
  		elevatorSpeedSetpoint = elevatorSpeed;
 		armSpeedSetpoint = armSpeed;
+		
+		System.out.println("Elevator Speed: " + elevatorSpeed);
+		System.out.println("Arm Speed: " + armSpeed);
+		
 		elevState = ElevatorState.SPEED;
 		armState = ArmState.SPEED;
 	}
@@ -374,12 +378,10 @@ public class Elevarm extends Threaded {
 				elevator.setHeight(setpoint);
 				break;
 			case SPEED:
-				/*
-				 * TODO: FIX it. it's trash
-				 */
-				if (elevatorSpeedSetpoint > maxElevatorSpeed)
-					elevatorSpeedSetpoint = maxElevatorSpeed;
-				elevator.setSpeed(elevatorSpeedSetpoint);
+				System.out.println();
+				elevatorLimiter.setMaxAccel(elevatorSpeedSetpoint);
+ 				elevator.setHeight(armLimiter.update(snapElevSetpoint));
+				//elevator.setSpeed(elevatorSpeedSetpoint);
 				break;
 			case MANUAL:
 				elevatorLimiter.update(elevator.getHeight());
@@ -387,17 +389,17 @@ public class Elevarm extends Threaded {
 		}
 
 		switch (snapArmState) {
-		case POSITION:
-			arm.setAngle(armLimiter.update(snapArmSetpoint));
-			break;
-		case SPEED:
-			if (armSpeedSetpoint > maxArmSpeed)
-				armSpeedSetpoint = maxArmSpeed;
-			arm.setSpeed(armSpeedSetpoint);
-			break;
-		case MANUAL:
-			armLimiter.update(arm.getAngle());
-			break;
+			case POSITION:
+				arm.setAngle(armLimiter.update(snapArmSetpoint));
+				break;
+			case SPEED:
+				armLimiter.setMaxAccel(armSpeedSetpoint);
+				arm.setAngle(armLimiter.update(snapArmSetpoint));
+				//arm.setSpeed(armSpeedSetpoint);
+				break;
+			case MANUAL:
+				armLimiter.update(arm.getAngle());
+				break;
 		}
 	}
 

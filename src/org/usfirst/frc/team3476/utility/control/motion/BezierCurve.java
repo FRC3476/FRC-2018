@@ -13,7 +13,7 @@ public class BezierCurve {
 		private Translation2d start, prevTangent, nextTangent;
 		private double speed;
 		
-		public BezierPoint(Translation2d start, Translation2d prevTangent, Translation2d nextTangent, double speed) {
+		public BezierPoint(Translation2d prevTangent, Translation2d start, Translation2d nextTangent, double speed) {
 			this.start = start;
 			this.prevTangent = prevTangent;
 			this.nextTangent = nextTangent;
@@ -23,9 +23,9 @@ public class BezierCurve {
 	
 	private ArrayList<BezierPoint> points;
 	
-	public BezierCurve(BezierPoint... points) {
+	public BezierCurve(BezierPoint bezierPoint) {
 		this.points = new ArrayList<BezierPoint>();
-		this.points.addAll(Arrays.asList(points));
+		this.points.addAll(Arrays.asList(bezierPoint));
 	}
 	
 	public void addPoints(BezierPoint... points) {
@@ -33,18 +33,18 @@ public class BezierCurve {
 	}
 	
 	public Path computePath(double step) {
-		if(points.size() > 2) {
+		if(points.size() > 1) {
 			Path generatedPath = new Path(points.get(0).start);
-			double startSpeed = points.get(0).speed;
-			double endSpeed = points.get(1).speed;
-			double diffSpeed = startSpeed - endSpeed;
-			for(int i = 1; i < points.size() - 1; i++) {
+			for(int i = 1; i < points.size(); i++) {
 				BezierPoint firstPoint = points.get(i - 1);
 				BezierPoint secondPoint = points.get(i);
+				double startSpeed = firstPoint.speed;
+				double endSpeed = secondPoint.speed;
+				double diffSpeed = startSpeed - endSpeed;
 				Segment firstSeg = new Segment(firstPoint.start, firstPoint.nextTangent, 0);
 				Segment secondSeg = new Segment(firstPoint.nextTangent, secondPoint.prevTangent, 0);
-				Segment thirdSeg = new Segment(firstPoint.nextTangent, secondPoint.prevTangent, 0);
-				for(double j = 0; j <= 1.0; j += step) {
+				Segment thirdSeg = new Segment(secondPoint.prevTangent, secondPoint.start, 0);
+				for(double j = step; j < 1.0; j += step) {
 					Translation2d A = firstSeg.getPointByPercentage(j);
 					Translation2d B = secondSeg.getPointByPercentage(j);
 					Translation2d C = thirdSeg.getPointByPercentage(j);
@@ -63,7 +63,7 @@ public class BezierCurve {
 			return null;
 		}
 	}
-	
+
 	public static BezierCurve parseJson(JSONObject json) {
 		
 		return new BezierCurve(null);

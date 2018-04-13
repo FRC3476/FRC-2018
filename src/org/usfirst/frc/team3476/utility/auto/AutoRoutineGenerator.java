@@ -6,6 +6,8 @@ import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.subsystem.Intake;
 import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
 import org.usfirst.frc.team3476.subsystem.Intake.SolenoidState;
+import org.usfirst.frc.team3476.utility.control.motion.BezierCurve;
+import org.usfirst.frc.team3476.utility.control.motion.BezierCurve.BezierPoint;
 import org.usfirst.frc.team3476.utility.control.motion.Path;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
@@ -522,6 +524,7 @@ public class AutoRoutineGenerator {
 							}
 							else
 							{ //FAR SCALE
+								/*
 								initialPath.addPoint(180, -115, 120);
 								initialPath.addPoint(220, -115, 120);
 								initialPath.addPoint(220, -75, 120);
@@ -551,6 +554,24 @@ public class AutoRoutineGenerator {
 								initialDrive.addCommands(new SetDrivePath(secondPath, true));
 								
 								overallRoutine.addRoutines(initialDrive);
+								*/
+								BezierCurve curve = new BezierCurve(new BezierPoint(new Translation2d(0, 0),
+										new Translation2d(20.0 / 12, -9.58 * 12),
+										new Translation2d(5 * 12, -9.58 * 12),
+										120));
+								curve.addPoints(new BezierPoint(new Translation2d((16.24 - 1) * 12, -9.58 * 12),
+										new Translation2d(16.24 * 12, -9.58 * 12),
+										new Translation2d((5 + 16.24) * 12, -9.58 * 12),
+										120));
+								curve.addPoints(new BezierPoint(new Translation2d(20 * 12, (10 - 7) * 12),
+										new Translation2d(20 * 12, 10 * 12),
+										new Translation2d(0, 0),
+										120));
+								Path a = curve.computePath(0.1);
+								a.printAllPoints();
+								initialDrive.addCommands(new SetDrivePath(a, false));	
+								overallRoutine.addRoutines(initialDrive);
+								System.out.println("correct");
 							}
 						} else {
 							initialPath.addPoint(midFieldRightLeadUp, longDistanceSpeed);

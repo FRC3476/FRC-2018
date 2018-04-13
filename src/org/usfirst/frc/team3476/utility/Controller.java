@@ -159,6 +159,7 @@ public class Controller extends Joystick {
 			return currentPOV[pov];
 		}
 		return -1;
+
 	}
 	
 	public boolean getButtonState(int button, int state) {

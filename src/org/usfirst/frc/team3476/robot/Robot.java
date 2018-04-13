@@ -183,7 +183,7 @@ public class Robot extends IterativeRobot {
 		
 		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
-		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2) || drive.getSpeed() < 12;
+		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2) /*|| drive.getSpeed() < 12*/;
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
@@ -209,22 +209,6 @@ public class Robot extends IterativeRobot {
 		{
 			xbox.setRumble(RumbleType.kLeftRumble, 1);
 			xbox.setRumble(RumbleType.kRightRumble, 1);
-		}
-		else
-		{
-			xbox.setRumble(RumbleType.kLeftRumble, 0);
-			xbox.setRumble(RumbleType.kRightRumble, 0);
-		}
-		if ((joystick.getRawButton(3) || xbox.getRawButton(6)) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
-			intake.setIntake(IntakeState.INTAKE, SolenoidState.OPEN);
-		}
-		else if (joystick.getRawButton(3) || xbox.getRawButton(6))
-		{			
-			System.out.println("Intake: " + intake.getCurrent());
-			intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
-		}
-		else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .95)
-		{
 		}
 		else
 		{
@@ -272,8 +256,6 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(9)) {
 			elevarm.homeElevator();
 		}
-
-		
 		if (joystick.getRisingEdge(9))
 		{
 			elevarm.setXRate(3);

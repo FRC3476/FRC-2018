@@ -216,7 +216,14 @@ public class Robot extends IterativeRobot {
 			xbox.setRumble(RumbleType.kRightRumble, 0);
 		}
 		if ((joystick.getRawButton(3) || xbox.getRawButton(6)) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
-			intake.setIntake(IntakeState.INTAKE, SolenoidState.OPEN);
+			if(!dio.get()) {
+				time = Timer.getFPGATimestamp();
+				intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
+			} else {
+				if(Timer.getFPGATimestamp() - time > 1) {
+					intake.setIntake(IntakeState.INTAKE, SolenoidState.OPEN);					
+				}
+			}
 		}
 		else if (joystick.getRawButton(3) || xbox.getRawButton(6))
 		{			
@@ -309,15 +316,17 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getPOV() == 0)
 		{
 			//elevarm.setOverallPosition(elevarm.getDistance() + 1, elevarm.getHeight());
-			elevarm.setArmAngle(elevarm.getTargetArmAngle() - 3);
+			elevarm.setArmAngle(elevarm.getTargetArmAngle() - 1);
 		}
 		else if (buttonBox.getPOV() == 180)
 		{
 			//elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
-			elevarm.setArmAngle(elevarm.getTargetArmAngle() + 3);
+			elevarm.setArmAngle(elevarm.getTargetArmAngle() + 1);
+			System.out.println("h");
 		}
 		if (joystick.getRawButton(7) && joystick.getRawButton(8)) {
 			System.out.println("Forks");
+			System.out.println("i");
 			fork.set(true);
 		}
 
@@ -376,10 +385,11 @@ public class Robot extends IterativeRobot {
 		if (xbox.getRisingEdge(3)) {
 			elevarm.homeElevator();
 		}
-		if (xbox.getRisingEdge(4)) {
+		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+	//	if (xbox.getRisingEdge(4)) {
 			System.out.println("Arm PWM Ticks: " + elevarm.getArmPWMPosition());
 			System.out.println("Arm Encoder Ticks: " + elevarm.getArmEncoderPosition());
-		}
+		//}
 
 		if (buttonBox.getRisingEdge(1)) {
 			elevarm.stopMovement();

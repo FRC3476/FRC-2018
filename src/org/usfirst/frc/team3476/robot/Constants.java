@@ -13,20 +13,26 @@ public final class Constants {
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
 	public static final double kRightHighP = 0.03;
-	public static final double kRightHighI = 0;
 	public static final double kRightHighD = 0;
 	public static final double kRightHighF = 0.035;
+	public static final double kRightHighFIntercept = 0;
+	public static final double kRightHighA = 0;
 	public static final double kRightLowP = 0.1;
-	public static final double kRightLowF = 0.05763730970902943999708309631717;
 	public static final double kRightLowD = 0.1;
+	public static final double kRightLowF = 0.05763730970902943999708309631717;
+	public static final double kRightLowFIntercept = 0;
+	public static final double kRightLowA = 0;
 
 	public static final double kLeftHighP = 0.03;
-	public static final double kLeftHighI = 0;
 	public static final double kLeftHighD = 0;
 	public static final double kLeftHighF = 0.035;
+	public static final double kLeftHighFIntercept = 0;
+	public static final double kLeftHighA = 0;
 	public static final double kLeftLowP = 0.1;
-	public static final double kLeftLowF = 0.05763730970902943999708309631717;
 	public static final double kLeftLowD = 0;
+	public static final double kLeftLowF = 0.05763730970902943999708309631717;
+	public static final double kLeftLowFIntercept = 0;
+	public static final double kLeftLowA = 0;
 
 	public static final double kRightAutoP = 0.12;
 	public static final double kRightAutoD = 0.7;
@@ -88,7 +94,7 @@ public final class Constants {
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
-	public static final double ElevatorDownHeight = .5; // Should be the proper position for getting cubes
+	public static final double ElevatorDownHeight = 1.5; // Should be the proper position for getting cubes
 	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
 	public static final double ElevatorVelocityLimit = 1000;
 	public static final double ElevatorAccelerationLimit = 250;

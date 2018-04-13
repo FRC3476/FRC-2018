@@ -97,6 +97,7 @@ public class OrangeDrive extends Threaded {
 		
 		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
 		turnProfiler = new RateLimiter(100);
+		
 
 		configHigh();
 	}
@@ -114,15 +115,14 @@ public class OrangeDrive extends Threaded {
 	
 	private void configHigh() {
 		rightTalon.config_kP(0, Constants.kRightHighP, 10);
-		rightTalon.config_kI(0, Constants.kRightHighI, 10);
 		rightTalon.config_kD(0, Constants.kRightHighD, 10);
 		rightTalon.config_kF(0, Constants.kRightHighF, 10);
 		rightTalon.configClosedloopRamp(12d/200d, 10);
 		leftTalon.config_kP(0, Constants.kLeftHighP, 10);
-		leftTalon.config_kI(0, Constants.kLeftHighI, 10);
 		leftTalon.config_kD(0, Constants.kRightHighD, 10);
 		leftTalon.config_kF(0, Constants.kLeftHighF, 10);
 		leftTalon.configClosedloopRamp(12d/200d, 10);
+		
 		driveMultiplier = Constants.HighDriveSpeed;
 	}
 
@@ -183,7 +183,7 @@ public class OrangeDrive extends Threaded {
 			if (moveValue < 0.2) {
 				quickStopAccumulator = 0.9 * quickStopAccumulator + 0.1 * rotateValue * 2;
 			}
-			angularPower = rotateValue * 0.6;
+			angularPower = rotateValue * 0.4;
 		} else {
 			overPower = 0;
 			angularPower = Math.abs(moveValue) * rotateValue - quickStopAccumulator;

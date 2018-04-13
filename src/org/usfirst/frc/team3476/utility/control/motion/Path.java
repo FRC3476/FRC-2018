@@ -143,8 +143,8 @@ public class Path {
 		for (Segment segment : segments) {
 			System.out.println(segment.getStart().getX() + "    " + segment.getStart().getY());
 		}
-		System.out.println(segments.get(segments.size()).getEnd().getX() + "   "
-				+ segments.get(segments.size()).getEnd().getY());
+		System.out.println(segments.get(segments.size() - 1).getEnd().getX() + "   "
+				+ segments.get(segments.size() - 1).getEnd().getY());
 	}
 
 	public void addRoutine(AutoRoutine routine, double percentage){

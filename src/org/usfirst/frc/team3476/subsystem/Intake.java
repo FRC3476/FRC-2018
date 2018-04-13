@@ -46,6 +46,7 @@ public class Intake extends Threaded {
 		intakeSolenoid30Psi = new Solenoid(Constants.IntakeSolenoid30PsiId);
 		intakeSolenoid60Psi = new Solenoid(Constants.IntakeSolenoid60PsiId);
 		intakeState = IntakeState.NEUTRAL;
+		biasState = BiasState.NORMAL;
 	}
 
 	public static Intake getInstance() {
@@ -105,6 +106,7 @@ public class Intake extends Threaded {
 				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.2, 1);
 				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.2, 1);
 				double bias = 0;
+				/*
 				if(!DriverStation.getInstance().isAutonomous()) {
 					if(getCurrent() > 10) {						
 						if(biasState == BiasState.NORMAL && Timer.getFPGATimestamp() - biasTimer > 0.8) {
@@ -122,6 +124,7 @@ public class Intake extends Threaded {
 						biasState = BiasState.NORMAL;					
 					}					
 				}
+				*/
 				if(biasState == BiasState.NORMAL) {
 					intakeMotor1.set(ControlMode.PercentOutput, -powerRight);
 					intakeMotor2.set(ControlMode.PercentOutput, -powerLeft);

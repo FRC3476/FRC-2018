@@ -90,7 +90,7 @@ public final class Constants {
 	public static final double ElevatorMaxHeight = 70; //
 	public static final double ElevatorInchesPerMotorRotation = 8;
 	public static final double ElevatorSpeed = 120; // Inches Per Second - need to double check value
-	public static final double ElevatorStallCurrent = 1.25; //
+	public static final double ElevatorStallCurrent = 3; //
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;

@@ -15,15 +15,15 @@ public class BezierCurve {
 		
 		public BezierPoint(Translation2d prevTangent, Translation2d start, Translation2d nextTangent, double speed) {
 			this.start = start;
-			this.prevTangent = prevTangent;
-			this.nextTangent = nextTangent;
+			this.prevTangent = start.translateBy(prevTangent);
+			this.nextTangent = start.translateBy(nextTangent);
 			this.speed = speed;
 		}
 	}
 	
 	private ArrayList<BezierPoint> points;
 	
-	public BezierCurve(BezierPoint bezierPoint) {
+	public BezierCurve(BezierPoint... bezierPoint) {
 		this.points = new ArrayList<BezierPoint>();
 		this.points.addAll(Arrays.asList(bezierPoint));
 	}

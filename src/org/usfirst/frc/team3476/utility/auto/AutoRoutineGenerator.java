@@ -555,19 +555,22 @@ public class AutoRoutineGenerator {
 								
 								overallRoutine.addRoutines(initialDrive);
 								*/
-								BezierCurve curve = new BezierCurve(new BezierPoint(new Translation2d(0, 0),
-										new Translation2d(20.0 / 12, -9.58 * 12),
-										new Translation2d(5 * 12, -9.58 * 12),
-										120));
-								curve.addPoints(new BezierPoint(new Translation2d((16.24 - 1) * 12, -9.58 * 12),
-										new Translation2d(16.24 * 12, -9.58 * 12),
-										new Translation2d((5 + 16.24) * 12, -9.58 * 12),
-										120));
-								curve.addPoints(new BezierPoint(new Translation2d(20 * 12, (10 - 7) * 12),
-										new Translation2d(20 * 12, 10 * 12),
-										new Translation2d(0, 0),
-										120));
-								Path a = curve.computePath(0.1);
+								BezierCurve Test = new BezierCurve(new BezierPoint(new Translation2d(-185.13599999999997, -0.01139999999999368),
+									     new Translation2d(0.0, -114.96000000000001),
+									     new Translation2d(185.13599999999997, 0.01139999999999368), 60),
+									new BezierPoint(new Translation2d(-35.99407607661114, -0.6530600210776694),
+									     new Translation2d(194.88, -114.972),
+									     new Translation2d(35.99407607661114, 0.6530600210776694), 60),
+									new BezierPoint(new Translation2d(-1.4085774310640673, 175.9399451818208),
+									     new Translation2d(242.52, 114.0),
+									     new Translation2d(1.4085774310640673, -175.9399451818208), 60),
+									new BezierPoint(new Translation2d(-30.73513301377133, -50.486276379743884),
+									     new Translation2d(296.1971830985916, 136.05633802816905),
+									     new Translation2d(30.73513301377133, 50.486276379743884), 60),
+									new BezierPoint(new Translation2d(50.704225352112786, -3.8028169014084643),
+									     new Translation2d(261.12676056338034, 95.07042253521129),
+									     new Translation2d(-50.704225352112786, 3.8028169014084643), 60));
+								Path a = Test.computePath(0.1);
 								a.printAllPoints();
 								initialDrive.addCommands(new SetDrivePath(a, false));	
 								overallRoutine.addRoutines(initialDrive);

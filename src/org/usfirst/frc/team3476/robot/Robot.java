@@ -184,11 +184,12 @@ public class Robot extends IterativeRobot {
 		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
 		//drive.setWheelVelocity(new DriveVelocity(20, 20));
 		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2) /*|| drive.getSpeed() < 12*/;
+
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
 		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
 		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-	
+
 		
 		if (buttonBox.getRawButton(10))
 		{
@@ -232,11 +233,11 @@ public class Robot extends IterativeRobot {
 		}
 		else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .95)
 		{
-			intake.setIntake(IntakeState.OUTTAKE_FAST, SolenoidState.CLAMP);
+			intake.setIntake(IntakeState.OUTTAKE_FAST, SolenoidState.INTAKING);
 		}
 		else if (joystick.getRawButton(4) || xbox.getRawAxis(3) > .05)
 		{
-			intake.setIntake(IntakeState.OUTTAKE, SolenoidState.CLAMP);
+			intake.setIntake(IntakeState.OUTTAKE, SolenoidState.INTAKING);
 		}
 		else if (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)
 		{
@@ -312,6 +313,14 @@ public class Robot extends IterativeRobot {
 		{
 			elevarm.setOverallPosition(10, elevarm.getY());
 		}
+		else if (joystick.getRisingEdge(1))
+		{
+			elevarm.setElevatorHeight((elevarm.getTargetElevatorHeight() + 11 > Constants.ElevatorMaxHeight ? Constants.ElevatorMaxHeight : elevarm.getTargetElevatorHeight() + 11));
+		}
+		else if (joystick.getRisingEdge(2))
+		{
+			elevarm.setElevatorHeight((elevarm.getTargetElevatorHeight() - 11 < Constants.ElevatorMinHeight ? Constants.ElevatorMinHeight : elevarm.getTargetElevatorHeight() - 11));
+		}
 		
 		if (buttonBox.getPOV() == 0)
 		{
@@ -322,11 +331,8 @@ public class Robot extends IterativeRobot {
 		{
 			//elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
 			elevarm.setArmAngle(elevarm.getTargetArmAngle() + 1);
-			System.out.println("h");
 		}
 		if (joystick.getRawButton(7) && joystick.getRawButton(8)) {
-			System.out.println("Forks");
-			System.out.println("i");
 			fork.set(true);
 		}
 

@@ -94,7 +94,7 @@ public final class Constants {
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
-	public static final double ElevatorDownHeight = 1.5; // Should be the proper position for getting cubes
+	public static final double ElevatorDownHeight = 2.5; // Should be the proper position for getting cubes
 	public static final double ElevatorUpHeight = 65; // Should be the standard position for placing cubes on the scale
 
 	// Arm

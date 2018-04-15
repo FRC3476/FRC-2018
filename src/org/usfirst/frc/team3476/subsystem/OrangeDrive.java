@@ -70,10 +70,11 @@ public class OrangeDrive extends Threaded {
 	private LazyTalonSRX leftTalon, rightTalon, leftSlaveTalon, leftSlave2Talon, rightSlaveTalon, rightSlave2Talon;
 	private PurePursuitController autonomousDriver;
 	private SynchronousPid turnPID;
-	private volatile double driveMultiplier;
 	private DriveState driveState;
 	private RateLimiter moveProfiler, turnProfiler;
 	private Solenoid shifter;
+	private Rotation wantedHeading;
+	private volatile double driveMultiplier;
 
 	private OrangeDrive() {
 		shifter = new Solenoid(Constants.DriveShifterId);
@@ -92,7 +93,8 @@ public class OrangeDrive extends Threaded {
 		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
 		
-		turnPID = new SynchronousPid(0, 0, 0, 0);
+		turnPID = new SynchronousPid(20, 0, 0, 0);
+		turnPID.setSetpoint(0);
 		turnPID.setTolerance(1);
 		
 		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
@@ -377,11 +379,11 @@ public class OrangeDrive extends Threaded {
 		leftTalon.set(ControlMode.Velocity, leftSetpoint);
 		rightTalon.set(ControlMode.Velocity, rightSetpoint);
 	}
-
+	
 	public synchronized void setSimpleDrive(boolean setting) {
 		drivePercentVbus = setting;
 	}
-
+	
 	@Override
 	public void update() {		
 		DriveState snapDriveState;
@@ -402,28 +404,29 @@ public class OrangeDrive extends Threaded {
 	
 	public void setRotation(Rotation angle) {
 		synchronized(this) {
-			turnPID.setSetpoint(angle.getDegrees());
+			wantedHeading = angle;
 		}
 		configHigh();
 	}
 	
-	private void updateTurn() {
-		double heading = getGyroAngle().getDegrees();
+		private void updateTurn() {
+		double error = wantedHeading.rotateBy(getGyroAngle().inverse()).getDegrees();
 		double deltaSpeed;
 		
 		synchronized(this) {
-			deltaSpeed = turnPID.update(heading);
+			deltaSpeed = turnPID.update(error);
 		}
+		deltaSpeed = OrangeUtility.normalize(deltaSpeed, 180, 0, Constants.HighDriveSpeed, 30);
 		if(turnPID.isDone()) {
 			setWheelVelocity(new DriveSignal(0, 0));
 			synchronized(this) {
-				driveState = DriveState.DONE;
+				driveState = DriveState.DONE; 
 			}
 		} else {
 			setWheelVelocity(new DriveSignal(deltaSpeed, -deltaSpeed));
 		}
 	}
-
+	
 	public void setShiftState(boolean state) {
 		shifter.set(state);
 		if (state) {
@@ -432,7 +435,7 @@ public class OrangeDrive extends Threaded {
 			configHigh();
 		}
 	}
-
+	
 	private void updatePurePursuit() {
 		AutoDriveSignal signal = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
 		if(signal.isDone){
@@ -447,9 +450,9 @@ public class OrangeDrive extends Threaded {
 	public void resetGyro() {
 		gyroSensor.reset();
 	}
-
+	
 	public boolean checkSubsystem() {
-
+	
 		// TODO: Get accurate thresholds
 		// TODO: Use PDP to get current
 		// boolean success =
@@ -461,13 +464,13 @@ public class OrangeDrive extends Threaded {
 		configMotors();
 		return success;
 	}
-
+	
 	public void stopMovement() {
 		leftTalon.set(ControlMode.PercentOutput, 0);
 		rightTalon.set(ControlMode.PercentOutput, 0);
 		driveState = DriveState.TELEOP;
 	}
-
+	
 	synchronized public boolean isFinished() {
 		return driveState == DriveState.DONE;
 	}

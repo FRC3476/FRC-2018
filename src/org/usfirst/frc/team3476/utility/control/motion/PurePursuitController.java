@@ -50,7 +50,6 @@ public class PurePursuitController {
 		double lookAheadDist = OrangeUtility.coercedNormalize(speedProfiler.getLatestValue(), Constants.MinPathSpeed,
 		Constants.MaxPathSpeed, Constants.MinLookAheadDistance, Constants.MaxLookAheadDistance);
 		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, lookAheadDist);
-		
 		if(data.remainingDist == 0.0) { //If robot passes point, remaining distance is 0
 			return new AutoDriveSignal(new DriveSignal(0, 0), true);
 		}

@@ -1,6 +1,8 @@
 package org.usfirst.frc.team3476.subsystem;
 
 import org.usfirst.frc.team3476.robot.Constants;
+import org.usfirst.frc.team3476.subsystem.Intake.IntakeState;
+import org.usfirst.frc.team3476.subsystem.Intake.SolenoidState;
 import org.usfirst.frc.team3476.utility.LazyTalonSRX;
 import org.usfirst.frc.team3476.utility.OrangeUtility;
 import org.usfirst.frc.team3476.utility.Threaded;
@@ -18,9 +20,12 @@ public class Intake extends Threaded {
 	private Solenoid intakeSolenoid60Psi;
 	private LazyTalonSRX intakeMotor1;
 	private LazyTalonSRX intakeMotor2;
+	private DigitalInput cubeSensor = new DigitalInput(1);
 	private IntakeState intakeState;
+	private SolenoidState solenoidState;
 	private BiasState biasState;
 	private double biasTimer;
+	private double autoGripTimeout;	
 	private static Intake intakeInstance = new Intake();
 	//private DigitalInput cubeSwitch = new DigitalInput(Constants.CubeSwitchId);
 	
@@ -46,6 +51,7 @@ public class Intake extends Threaded {
 		intakeSolenoid30Psi = new Solenoid(Constants.IntakeSolenoid30PsiId);
 		intakeSolenoid60Psi = new Solenoid(Constants.IntakeSolenoid60PsiId);
 		intakeState = IntakeState.NEUTRAL;
+		solenoidState = SolenoidState.CLAMP;
 		biasState = BiasState.NORMAL;
 	}
 
@@ -62,8 +68,8 @@ public class Intake extends Threaded {
 	{
 		synchronized(this) {
 			this.intakeState = intakeState;
+			this.solenoidState = solenoidState;
 		}
-		setIntakeSolenoid(solenoidState);
 	}
 
 	private void setIntakeSolenoid(SolenoidState state) {
@@ -93,12 +99,14 @@ public class Intake extends Threaded {
 
 	@Override
 	public void update() {
-		IntakeState snapState;
+		IntakeState snapIntake;
+		SolenoidState snapSolenoid;
 		synchronized(this) {
-			snapState = intakeState;			
+			snapIntake = intakeState;			
+			snapSolenoid = solenoidState;
 		}
 		
-		switch(snapState){
+		switch(snapIntake){
 			case INTAKE:
 				double currentRight = intakeMotor1.getOutputCurrent();
 				double currentLeft = intakeMotor2.getOutputCurrent();
@@ -149,6 +157,20 @@ public class Intake extends Threaded {
 				intakeMotor1.set(ControlMode.PercentOutput, 0);
 				intakeMotor2.set(ControlMode.PercentOutput, 0);
 				break;
+		}
+		
+
+		if(snapSolenoid == SolenoidState.AUTO) {
+			if(!cubeSensor.get()) {
+				autoGripTimeout = Timer.getFPGATimestamp();
+				setIntakeSolenoid(SolenoidState.INTAKING);
+			} else {
+				if(Timer.getFPGATimestamp() - autoGripTimeout > 0.5) {
+					setIntakeSolenoid(SolenoidState.OPEN);
+				}
+			}
+		} else {
+			setIntakeSolenoid(snapSolenoid);
 		}
 	}
 }

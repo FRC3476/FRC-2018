@@ -115,13 +115,12 @@ public class TCP extends Threaded {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-		try {
+		}		try {
 			Socket conn = connections.get(addr + port);
 			OutputStream outStream = conn.getOutputStream();
 			outStream.write(message.getBytes());
-		} catch (UnknownHostException e1) {
-			e1.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
 			System.out.println("Host:" + addr + " not found!");
 		} catch (IOException e) {
 			e.printStackTrace();

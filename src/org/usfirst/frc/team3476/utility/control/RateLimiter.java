@@ -61,7 +61,7 @@ public class RateLimiter {
 			/*
 			 * Limit accValue to the maximum acceleration
 			 */
-			OrangeUtility.coerce(accValue, maxAccel, -maxAccel);
+			accValue = OrangeUtility.coerce(accValue, maxAccel, -maxAccel);
 			latestValue += accValue * dt;
 		} else {
 			accValue = accValue - Math.copySign(maxJerk * dt, diff);

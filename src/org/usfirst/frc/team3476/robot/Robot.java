@@ -18,6 +18,7 @@ import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.PathOption;
 import org.usfirst.frc.team3476.utility.auto.AutoRoutineGenerator.StartPosition;
 import org.usfirst.frc.team3476.utility.control.motion.BezierCurve;
 import org.usfirst.frc.team3476.utility.control.motion.BezierCurve.BezierPoint;
+import org.usfirst.frc.team3476.utility.math.Rotation;
 import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 import edu.wpi.first.wpilibj.CameraServer;
@@ -43,14 +44,13 @@ public class Robot extends IterativeRobot {
 
 	ExecutorService mainExecutor = Executors.newFixedThreadPool(4);
 	ThreadScheduler scheduler = new ThreadScheduler();
-
+	
 	CameraServer camServer = CameraServer.getInstance();
 	SendableChooser<String> posChooser = new SendableChooser<>();
 	SendableChooser<String> optionChooser = new SendableChooser<>();
 	SendableChooser<String> mInDbUsInEsS = new SendableChooser<>();
 	SendableChooser<String> evilChooser = new SendableChooser<>();
-	DigitalInput dio = new DigitalInput(1);
-
+	
 	@Override
 	public void robotInit() {
 		drive.setPeriod(Duration.ofMillis(5));
@@ -125,7 +125,7 @@ public class Robot extends IterativeRobot {
 				sPos = StartPosition.RIGHT;
 				break;
 		}
-
+		
 		switch (option) {
 			case "SCALE":
 				pOption = PathOption.SCALE;
@@ -181,14 +181,16 @@ public class Robot extends IterativeRobot {
 		buttonBox.update();
 		joystick.update();
 		
-		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
-		//drive.setWheelVelocity(new DriveVelocity(20, 20));
-		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2); //|| drive.getSpeed() < 12;
-		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
-		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2);
 		
+		if(xbox.getRisingEdge(3)) {
+			drive.setRotation(Rotation.fromDegrees(60));
+		} else if(xbox.getRawButton(3)) {
+			
+		} else {
+			drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
+			
+		}
 		
 		/*if (joystick.getRisingEdge(9))
 		{
@@ -229,14 +231,7 @@ public class Robot extends IterativeRobot {
 			xbox.setRumble(RumbleType.kRightRumble, 0);
 		}
 		if ((joystick.getRawButton(3) || xbox.getRawButton(6)) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
-			if(!dio.get()) {
-				time = Timer.getFPGATimestamp();
-				intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
-			} else {
-				if(Timer.getFPGATimestamp() - time > 1) {
-					intake.setIntake(IntakeState.INTAKE, SolenoidState.OPEN);					
-				}
-			}
+			intake.setIntake(IntakeState.INTAKE, SolenoidState.AUTO);
 		}
 		else if (joystick.getRawButton(3) || xbox.getRawButton(6))
 		{			
@@ -337,16 +332,6 @@ public class Robot extends IterativeRobot {
 	public void testInit() {
 		drive.stopMovement();
 		elevarm.stopMovement();
-
-		double start = System.currentTimeMillis();
-		BezierCurve curve = new BezierCurve(
-				new BezierPoint(new Translation2d(0, 0), new Translation2d(0, 0), new Translation2d(5, 0), 10));
-		curve.addPoints(
-				new BezierPoint(new Translation2d(5, 0), new Translation2d(10, 0), new Translation2d(10, 5), 10));
-		curve.addPoints(
-				new BezierPoint(new Translation2d(10, 5), new Translation2d(10, 10), new Translation2d(10, 15), 10));
-		curve.computePath(0.01);
-		System.out.println(System.currentTimeMillis() - start);
 	}
 
 	public void configSubsytems() {
@@ -357,8 +342,6 @@ public class Robot extends IterativeRobot {
 		drive.stopMovement();
 		elevarm.stopMovement();
 	}
-
-	double time, time2;
 
 	@Override
 	public void testPeriodic() {

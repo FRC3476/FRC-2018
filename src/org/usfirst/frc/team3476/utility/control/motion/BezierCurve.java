@@ -44,7 +44,7 @@ public class BezierCurve {
 				Segment firstSeg = new Segment(firstPoint.start, firstPoint.nextTangent, 0);
 				Segment secondSeg = new Segment(firstPoint.nextTangent, secondPoint.prevTangent, 0);
 				Segment thirdSeg = new Segment(secondPoint.prevTangent, secondPoint.start, 0);
-				for(double j = step; j < 1.0; j += step) {
+				for(double j = step; j <= 1.0; j += step) {
 					Translation2d A = firstSeg.getPointByPercentage(j);
 					Translation2d B = secondSeg.getPointByPercentage(j);
 					Translation2d C = thirdSeg.getPointByPercentage(j);

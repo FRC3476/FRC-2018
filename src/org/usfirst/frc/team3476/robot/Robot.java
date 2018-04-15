@@ -216,7 +216,7 @@ public class Robot extends IterativeRobot {
 			xbox.setRumble(RumbleType.kLeftRumble, 0);
 			xbox.setRumble(RumbleType.kRightRumble, 0);
 		}
-		if ((joystick.getRawButton(3) || xbox.getRawButton(6)) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
+		if ((joystick.getRawButton(3) || xbox.getRawAxis(3) > 0.2) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
 			if(!dio.get()) {
 				time = Timer.getFPGATimestamp();
 				intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
@@ -226,16 +226,16 @@ public class Robot extends IterativeRobot {
 				}
 			}
 		}
-		else if (joystick.getRawButton(3) || xbox.getRawButton(6))
+		else if (joystick.getRawButton(3) || xbox.getRawAxis(3) > 0.2)
 		{			
 			System.out.println("Intake: " + intake.getCurrent());
 			intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
 		}
-		else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .95)
+		else if (joystick.getRawButton(6) || xbox.getRawButton(6))
 		{
 			intake.setIntake(IntakeState.OUTTAKE_FAST, SolenoidState.INTAKING);
 		}
-		else if (joystick.getRawButton(4) || xbox.getRawAxis(3) > .05)
+		else if (joystick.getRawButton(4) || xbox.getRawButton(5))
 		{
 			intake.setIntake(IntakeState.OUTTAKE, SolenoidState.INTAKING);
 		}
@@ -248,10 +248,10 @@ public class Robot extends IterativeRobot {
 			intake.setIntake(IntakeState.NEUTRAL, SolenoidState.CLAMP);
 		}
 
-		if (xbox.getRisingEdge(5)) {
+		if (xbox.getRisingEdge(1)) {
 			drive.setShiftState(true);
 		}
-		if (xbox.getFallingEdge(5)) {
+		if (xbox.getFallingEdge(1)) {
 			drive.setShiftState(false);
 		}
 		double nudge = joystick.getRawAxis(1);
@@ -307,7 +307,6 @@ public class Robot extends IterativeRobot {
 		{
 			double y = elevarm.getY();
 			elevarm.setOverallPosition(18.6, y);
-			System.out.println("Y: " + y);
 		}
 		else if (buttonBox.getRisingEdge(1))
 		{

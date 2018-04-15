@@ -181,30 +181,15 @@ public class Robot extends IterativeRobot {
 		buttonBox.update();
 		joystick.update();
 		
-		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2);
-		
-		if(xbox.getRisingEdge(3)) {
-			drive.setRotation(Rotation.fromDegrees(60));
-		} else if(xbox.getRawButton(3)) {
-			
-		} else {
-			drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
-			
-		}
-		
-		/*if (joystick.getRisingEdge(9))
-		{
-			elevarm.setXRate(.1);
-		}
-		else if (joystick.getRisingEdge(10))
-		{
-			elevarm.setXRate(-.1);
-		}
-		else if (joystick.getFallingEdge(9) || joystick.getFallingEdge(10))
-		{
-			elevarm.setXRate(0);
-		}*/		
-		
+		//drive.orangeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), xbox.getRawAxis(2) > .3);
+		//drive.setWheelVelocity(new DriveVelocity(20, 20));
+		boolean quickTurn = xbox.getRawButton(1) || xbox.getRawButton(2) /*|| drive.getSpeed() < 12*/;
+
+		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
+		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+
 		if (buttonBox.getRawButton(10))
 		{
 			elevarm.setClimberPercentOutput(.75);
@@ -232,17 +217,18 @@ public class Robot extends IterativeRobot {
 		}
 		if ((joystick.getRawButton(3) || xbox.getRawButton(6)) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
 			intake.setIntake(IntakeState.INTAKE, SolenoidState.AUTO);
+
 		}
-		else if (joystick.getRawButton(3) || xbox.getRawButton(6))
+		else if (joystick.getRawButton(3) || xbox.getRawAxis(3) > 0.2)
 		{			
 			System.out.println("Intake: " + intake.getCurrent());
 			intake.setIntake(IntakeState.INTAKE, SolenoidState.INTAKING);
 		}
-		else if (joystick.getRawButton(6) || xbox.getRawAxis(3) > .95)
+		else if (joystick.getRawButton(6) || xbox.getRawButton(6))
 		{
 			intake.setIntake(IntakeState.OUTTAKE_FAST, SolenoidState.INTAKING);
 		}
-		else if (joystick.getRawButton(4) || xbox.getRawAxis(3) > .05)
+		else if (joystick.getRawButton(4) || xbox.getRawButton(5))
 		{
 			intake.setIntake(IntakeState.OUTTAKE, SolenoidState.INTAKING);
 		}
@@ -255,10 +241,10 @@ public class Robot extends IterativeRobot {
 			intake.setIntake(IntakeState.NEUTRAL, SolenoidState.CLAMP);
 		}
 
-		if (xbox.getRisingEdge(5)) {
+		if (xbox.getRisingEdge(1)) {
 			drive.setShiftState(true);
 		}
-		if (xbox.getFallingEdge(5)) {
+		if (xbox.getFallingEdge(1)) {
 			drive.setShiftState(false);
 		}
 		double nudge = joystick.getRawAxis(1);
@@ -271,7 +257,25 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(9)) {
 			elevarm.homeElevator();
 		}
-		if (buttonBox.getRisingEdge(5)) {
+		if (joystick.getRisingEdge(9))
+		{
+			elevarm.setXRate(3);
+		}
+		else if (joystick.getRisingEdge(10))
+		{
+			elevarm.setXRate(-3);
+		}
+		else if (joystick.getFallingEdge(9) || joystick.getFallingEdge(10))
+		{
+			elevarm.setXRate(0);
+			elevarm.resetRateLimits();
+			elevarm.stopMovement();
+			elevarm.setArmAngle(elevarm.getTargetArmAngle());
+			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight());
+		}
+		
+		else if (buttonBox.getRisingEdge(5))
+		{
 			elevarm.setElevarmIntakePosition();
 		} else if (buttonBox.getRisingEdge(6)) {
 			elevarm.setArmAngle(80); // Switch Position - once PID is tuned
@@ -294,6 +298,15 @@ public class Robot extends IterativeRobot {
 		} else if(buttonBox.getRisingEdge(2)) {
 			elevarm.setOverallPosition(18.6, elevarm.getY());
 		} else if (buttonBox.getRisingEdge(1)) {
+			elevarm.setOverallPosition(10, elevarm.getY());
+		}
+		else if (buttonBox.getRisingEdge(2))
+		{
+			double y = elevarm.getY();
+			elevarm.setOverallPosition(18.6, y);
+		}
+		else if (buttonBox.getRisingEdge(1))
+		{
 			elevarm.setOverallPosition(10, elevarm.getY());
 		}
 		else if (joystick.getRisingEdge(1))
@@ -345,6 +358,7 @@ public class Robot extends IterativeRobot {
 		elevarm.configArmEncoder();
 		drive.stopMovement();
 		elevarm.stopMovement();
+		elevarm.resetRateLimits();
 	}
 
 	@Override

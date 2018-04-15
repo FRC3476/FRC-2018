@@ -185,7 +185,7 @@ public class OrangeDrive extends Threaded {
 			if (moveValue < 0.2) {
 				quickStopAccumulator = 0.9 * quickStopAccumulator + 0.1 * rotateValue * 2;
 			}
-			angularPower = rotateValue * 0.4;
+			angularPower = rotateValue * 0.2;
 		} else {
 			overPower = 0;
 			angularPower = Math.abs(moveValue) * rotateValue - quickStopAccumulator;
@@ -201,8 +201,6 @@ public class OrangeDrive extends Threaded {
 		moveValue = moveProfiler.update(moveValue * driveMultiplier) / driveMultiplier;
 		leftMotorSpeed = moveValue + angularPower;
 		rightMotorSpeed = moveValue - angularPower;
-
-		angularPower = Math.abs(moveValue) * rotateValue - quickStopAccumulator;
 		
 		if (leftMotorSpeed > 1.0) {
 			rightMotorSpeed -= overPower * (leftMotorSpeed - 1.0);
@@ -222,9 +220,6 @@ public class OrangeDrive extends Threaded {
 		} else {			
 			leftMotorSpeed *= driveMultiplier;
 			rightMotorSpeed *= driveMultiplier;
-			if(leftMotorSpeed == 0 && rightMotorSpeed == 0) {
-				setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));	
-			}
 			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
@@ -274,10 +269,8 @@ public class OrangeDrive extends Threaded {
 		leftSlave2Talon.set(ControlMode.Follower, Constants.LeftMasterDriveId);
 		rightSlaveTalon.set(ControlMode.Follower, Constants.RightMasterDriveId);
 		rightSlave2Talon.set(ControlMode.Follower, Constants.RightMasterDriveId);
-		setBrakeState(NeutralMode.Coast);
-		rightTalon.configNominalOutputForward(0.05, 10);
-		rightTalon.configNominalOutputReverse(-0.05, 10);
-
+		setBrakeState(NeutralMode.Brake);
+		
 		leftTalon.setInverted(true);
 		leftSlaveTalon.setInverted(true);
 		leftSlave2Talon.setInverted(true);

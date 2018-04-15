@@ -215,7 +215,7 @@ public class Robot extends IterativeRobot {
 			xbox.setRumble(RumbleType.kLeftRumble, 0);
 			xbox.setRumble(RumbleType.kRightRumble, 0);
 		}
-		if ((joystick.getRawButton(3) || xbox.getRawButton(6)) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
+		if ((joystick.getRawButton(3) || xbox.getRawAxis(3) > 0.2) && (joystick.getRawButton(5) || xbox.getRawAxis(Controller.Xbox.LeftTrigger) > 0.3)) {
 			intake.setIntake(IntakeState.INTAKE, SolenoidState.AUTO);
 
 		}

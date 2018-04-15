@@ -198,7 +198,7 @@ public class OrangeDrive extends Threaded {
 			}
 		}
 
-		moveValue = moveProfiler.update(moveValue * driveMultiplier) / driveMultiplier;
+		//moveValue = moveProfiler.update(moveValue * driveMultiplier) / driveMultiplier;
 		leftMotorSpeed = moveValue + angularPower;
 		rightMotorSpeed = moveValue - angularPower;
 		

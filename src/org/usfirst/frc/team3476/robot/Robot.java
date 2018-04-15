@@ -291,6 +291,10 @@ public class Robot extends IterativeRobot {
 		} else if (buttonBox.getRisingEdge(3)) {
 			elevarm.setElevatorHeight(56.5);
 			elevarm.setArmAngle(80);
+		} else if(buttonBox.getRisingEdge(2)) {
+			elevarm.setOverallPosition(18.6, elevarm.getY());
+		} else if (buttonBox.getRisingEdge(1)) {
+			elevarm.setOverallPosition(10, elevarm.getY());
 		}
 		else if (joystick.getRisingEdge(1))
 		{

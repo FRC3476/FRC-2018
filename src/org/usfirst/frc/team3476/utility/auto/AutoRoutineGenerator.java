@@ -376,10 +376,10 @@ public class AutoRoutineGenerator {
 							Path sixthPath;
 							if(switchPos == Position.LEFT) {
 								sixthPath = new Path(leftSwitchOuttakePositionNear);
-								sixthPath.addPoint(84,  -2, 80);
+								sixthPath.addPoint(84,  -3, 80);
 							} else {
 								sixthPath = new Path(rightSwitchOuttakePositionNear);	
-								sixthPath.addPoint(84,  2, 80);		
+								sixthPath.addPoint(84,  3, 80);		
 							}
 							sixthPath.addPoint(78,  0, 80);	
 							sixthPath.addCommand(new SetIntakeState(IntakeState.NEUTRAL, SolenoidState.CLAMP), 0.7);
@@ -464,22 +464,21 @@ public class AutoRoutineGenerator {
 						*/
 						if(good) {
 							if(scalePos == Position.RIGHT) { //NEAR SCALE
-								initialPath.addPoint(230, -135, 100);
-								initialPath.addPoint(260, -135, 40);
-								initialPath.addPoint(290, -105, 40);
-								initialPath.addPoint(260, -95, 40);
-								initialPath.addPoint(240, -88, 50);
-								initialPath.addPoint(220, -83, 60);
-								initialPath.addPoint(217, -79, 70);
+								initialPath.addPoint(230, -140, 80);
+								initialPath.addPoint(260, -140, 60);
+								initialPath.addPoint(290, -110, 50);
+								initialPath.addPoint(260, -90, 50);
+								initialPath.addPoint(245, -85, 60);
+								initialPath.addPoint(216, -74, 70);
 								initialPath.addRoutine(highScaleOuttakePosition, 0.4);
-								initialPath.addCommand(new SetIntakeState(IntakeState.OUTTAKE_MIDDLE, SolenoidState.INTAKING), 0.65);
+								initialPath.addCommand(new SetIntakeState(IntakeState.OUTTAKE_MIDDLE, SolenoidState.INTAKING), 0.7);
 								initialPath.addRoutine(intakePosition, .7);
 								initialPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.AUTO), 0.7);
 								initialDrive.addCommands(new SetDrivePath(initialPath, false));
 								
-								Path secondPath = new Path(new Translation2d(217, -76));
-								secondPath.addPoint(272, -105, 40);
-								secondPath.addPoint(262, -115, 40);
+								Path secondPath = new Path(new Translation2d(216, -79));
+								secondPath.addPoint(268, -105, 40);
+								secondPath.addPoint(264, -120, 40);
 								secondPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.INTAKING), 0);
 								secondPath.addCommand(new SetIntakeState(IntakeState.NEUTRAL, SolenoidState.CLAMP), 0.3);
 								secondPath.addRoutine(highScaleOuttakePosition, .3);
@@ -487,20 +486,19 @@ public class AutoRoutineGenerator {
 								secondPath.addRoutine(stowPosition, 1);
 								initialDrive.addCommands(new SetDrivePath(secondPath, true));
 								
-								Path thirdPath = new Path(new Translation2d(262, -118));
+								Path thirdPath = new Path(new Translation2d(264, -120));
 								thirdPath.addPoint(264, -105, 60);
-								thirdPath.addPoint(232, -74, 60);
-								thirdPath.addPoint(215, -55, 80);
+								thirdPath.addPoint(232, -90, 60);
+								thirdPath.addPoint(204, -58, 80);
 								thirdPath.addRoutine(intakePosition, 0);
 								thirdPath.addCommand(new SetIntakeState(IntakeState.NEUTRAL, SolenoidState.CLAMP), 0);
 								thirdPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.AUTO), 0.1);
 								thirdPath.addCommand(new SetIntakeState(IntakeState.INTAKE,  SolenoidState.INTAKING), 1);
 								initialDrive.addCommands(new SetDrivePath(thirdPath, false));
 								
-								Path fourthPath = new Path(new Translation2d(210, -63));
-								fourthPath.addPoint(232, -90, 40);
-								fourthPath.addPoint(272, -105, 40);
-								fourthPath.addPoint(262, -115, 40);
+								Path fourthPath = new Path(new Translation2d(208, -60));
+								fourthPath.addPoint(268, -105, 40);
+								fourthPath.addPoint(264, -120, 40);
 								fourthPath.addCommand(new SetIntakeState(IntakeState.NEUTRAL, SolenoidState.CLAMP), 0.3);
 								fourthPath.addRoutine(highScaleOuttakePosition, 0.3);
 								fourthPath.addCommand(new SetIntakeState(IntakeState.OUTTAKE_FAST, SolenoidState.INTAKING), 0.88);

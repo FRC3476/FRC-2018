@@ -329,7 +329,7 @@ public class Robot extends IterativeRobot {
 			//elevarm.setOverallPosition(elevarm.getDistance() - 1, elevarm.getHeight());
 			elevarm.setArmAngle(elevarm.getTargetArmAngle() + 1);
 		}
-		if (joystick.getRawButton(7) && joystick.getRawButton(8)) {
+		if (joystick.getRawButton(8)) {
 			fork.set(true);
 		}
 

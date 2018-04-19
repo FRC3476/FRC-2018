@@ -38,7 +38,7 @@ public class Intake extends Threaded {
 	}
 	
 	public enum IntakeState {
-		INTAKE, OUTTAKE, OUTTAKE_FAST, OUTTAKE_FASTEST, NEUTRAL
+		INTAKE, OUTTAKE, OUTTAKE_MIDDLE, OUTTAKE_FAST, OUTTAKE_FASTEST, NEUTRAL
 	}
 	
 	private enum BiasState {
@@ -144,6 +144,10 @@ public class Intake extends Threaded {
 			case OUTTAKE:
 				intakeMotor1.set(ControlMode.PercentOutput, .25);
 				intakeMotor2.set(ControlMode.PercentOutput, .25);
+				break;
+			case OUTTAKE_MIDDLE:
+				intakeMotor1.set(ControlMode.PercentOutput, .35);
+				intakeMotor2.set(ControlMode.PercentOutput, .35);
 				break;
 			case OUTTAKE_FAST:
 				intakeMotor1.set(ControlMode.PercentOutput, .5);

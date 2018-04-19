@@ -404,7 +404,6 @@ public class Elevarm extends Threaded {
 			case POSITION:
 				double setpoint = elevatorLimiter.update(snapElevSetpoint);
 				elevator.setHeight(setpoint);
-				System.out.println("elevator: " + snapElevSetpoint + " set: " + setpoint);
 				break;
 			case SPEED:
 				elevatorLimiter.setMaxAccel(elevatorSpeedSetpoint);
@@ -421,7 +420,6 @@ public class Elevarm extends Threaded {
 		case POSITION:
 			double setpoint = armLimiter.update(snapArmSetpoint);
 			arm.setAngle(setpoint);
-			System.out.println("arm: " + snapArmSetpoint + " set: " + setpoint);
 			break;
 		case SPEED:
 				armLimiter.setMaxAccel(armSpeedSetpoint);

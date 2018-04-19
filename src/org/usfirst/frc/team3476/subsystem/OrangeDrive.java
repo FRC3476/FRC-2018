@@ -281,6 +281,13 @@ public class OrangeDrive extends Threaded {
 
 		leftTalon.setSensorPhase(false);
 		rightTalon.setSensorPhase(false);
+		
+		rightTalon.setNeutralMode(NeutralMode.Coast);
+		leftTalon.setNeutralMode(NeutralMode.Coast);
+		rightSlaveTalon.setNeutralMode(NeutralMode.Coast);
+		leftSlaveTalon.setNeutralMode(NeutralMode.Coast);
+		rightSlave2Talon.setNeutralMode(NeutralMode.Coast);
+		leftSlave2Talon.setNeutralMode(NeutralMode.Coast);
 	}
 
 	public void resetMotionProfile() {

@@ -187,8 +187,8 @@ public class Robot extends IterativeRobot {
 
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
 		//drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		//System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
-		//System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
+		System.out.println("Angle: " + elevarm.getArmAngle()+ " Setpoint: " + elevarm.getTargetArmAngle());
+		System.out.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
 
 		if (buttonBox.getRawButton(10))
 		{
@@ -257,6 +257,7 @@ public class Robot extends IterativeRobot {
 		if (buttonBox.getRisingEdge(9)) {
 			elevarm.homeElevator();
 		}
+		/*
 		if (joystick.getRisingEdge(9))
 		{
 			elevarm.setXRate(3);
@@ -272,7 +273,7 @@ public class Robot extends IterativeRobot {
 			elevarm.stopMovement();
 			elevarm.setArmAngle(elevarm.getTargetArmAngle());
 			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight());
-		}
+		}*/
 		
 		else if (buttonBox.getRisingEdge(5))
 		{

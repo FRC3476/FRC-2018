@@ -93,9 +93,9 @@ public class OrangeDrive extends Threaded {
 		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
 		
-		turnPID = new SynchronousPid(20, 0, 0, 0);
+		turnPID = new SynchronousPid(0.6, 0, 0.1, 0);
+		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 		turnPID.setSetpoint(0);
-		turnPID.setTolerance(1);
 		
 		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
 		turnProfiler = new RateLimiter(100);
@@ -405,19 +405,20 @@ public class OrangeDrive extends Threaded {
 	public void setRotation(Rotation angle) {
 		synchronized(this) {
 			wantedHeading = angle;
+			driveState = DriveState.TURN;
 		}
 		configHigh();
 	}
 	
-		private void updateTurn() {
+	private void updateTurn() {
 		double error = wantedHeading.rotateBy(getGyroAngle().inverse()).getDegrees();
 		double deltaSpeed;
 		
 		synchronized(this) {
 			deltaSpeed = turnPID.update(error);
 		}
-		deltaSpeed = OrangeUtility.normalize(deltaSpeed, 180, 0, Constants.HighDriveSpeed, 30);
-		if(turnPID.isDone()) {
+		deltaSpeed = Math.copySign(OrangeUtility.coercedNormalize(Math.abs(deltaSpeed), 0, 180, 10, Constants.HighDriveSpeed), deltaSpeed);
+		if(Math.abs(error) < 5) {
 			setWheelVelocity(new DriveSignal(0, 0));
 			synchronized(this) {
 				driveState = DriveState.DONE; 

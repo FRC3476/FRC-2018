@@ -32,6 +32,13 @@ public class BezierCurve {
 		this.points.addAll(Arrays.asList(points));
 	}
 	
+	/**
+	 * Returns a path computed from the list of BezierPoints in the curve
+	 * 
+	 * @param step 
+	 * 			Determines how many points are generated. Step is > 0 and < 1.0. A smaller step generates more points.
+	 * @return
+	 */
 	public Path computePath(double step) {
 		if(points.size() > 1) {
 			Path generatedPath = new Path(points.get(0).start);

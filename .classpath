@@ -4,8 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="build/jars/cscore.jar"/>
 	<classpathentry kind="lib" path="build/jars/CTRE_Phoenix.jar"/>
-	<classpathentry kind="lib" path="build/jars/CTRLib.jar"/>
-	<classpathentry kind="lib" path="build/jars/gson-2.6.2.jar"/>
 	<classpathentry kind="lib" path="build/jars/json-simple-1.1.1.jar"/>
 	<classpathentry kind="lib" path="build/jars/ntcore.jar"/>
 	<classpathentry kind="lib" path="build/jars/opencv.jar"/>

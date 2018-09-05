@@ -107,9 +107,12 @@ public class Path {
 	public boolean isEmpty(){
 		return isEmpty;
 	}
+	
 	/**
-	 *
+	 * Used to alter path so that the ending angle will be in a certain direction.
+	 * Obselete because it does not guarantee the ending angle
 	 */
+	@Deprecated
 	public void processPoints() {
 		if (endAngle != null) {
 			Segment lastSegment = segments.get(segments.size() - 1);
@@ -174,6 +177,7 @@ public class Path {
 		DrivingData data = new DrivingData();
 		Translation2d closestPoint = segments.get(0).getClosestPoint(pose);
 		Translation2d closestToRobot = closestPoint.inverse().translateBy(pose);
+		//Remove old points that we have passed
 		while (segments.size() > 1) {
 			double distToClosest = Math.hypot(closestToRobot.getX(), closestToRobot.getY());
 			Translation2d closestNextPoint = segments.get(1).getClosestPoint(pose);
@@ -203,7 +207,7 @@ public class Path {
 		data.currentSegEnd = segments.get(0).getEnd();
 		Translation2d closestToEnd = closestPoint.inverse().translateBy(segments.get(0).getEnd());
 		Translation2d closestToStart = segments.get(0).getStart().inverse().translateBy(closestPoint);
-
+		
 		lookAheadDistance += Math.hypot(closestToRobot.getX(), closestToRobot.getY());
 		double remainingSegDist = Math.hypot(closestToEnd.getX(), closestToEnd.getY());
 		data.remainingDist = remainingSegDist;
@@ -211,9 +215,10 @@ public class Path {
 		for (int i = 1; i < segments.size(); i++) {
 			data.remainingDist += segments.get(i).getDistance();
 		}
+		//If the lookahead point lies on a path then return the point
+		//else extrapolate past the end point from the last segment
 		if (lookAheadDistance > remainingSegDist && segments.size() > 1) {
 			lookAheadDistance -= remainingSegDist;
-			Segment lastSegment;
 			for (int i = 1; i < segments.size(); i++) {
 				if (lookAheadDistance > segments.get(i).getDistance() && i != (segments.size() - 1)) {
 					lookAheadDistance -= segments.get(i).getDistance();

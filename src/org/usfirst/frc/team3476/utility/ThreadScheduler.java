@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * Keeps track of scheduled tasks and checks every 1ms to execute the task with
+ * Keeps track of scheduled tasks and checks every 5ms to execute the task with
  * given threads. Tasks that have not finished in the given time will not be ran
  * again until it finishes.
  */
@@ -28,8 +28,8 @@ public class ThreadScheduler implements Runnable {
 
 	@Override
 	public void run() {
+		long waitTime = Duration.ofMillis(5).toNanos();
 		while (isRunning) {
-			long waitTime = Duration.ofMillis(5).toNanos();
 			if (!paused) {
 				synchronized (this) {
 					for (Schedule schedule : schedules) {

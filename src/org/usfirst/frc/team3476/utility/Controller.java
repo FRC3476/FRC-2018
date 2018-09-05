@@ -29,7 +29,7 @@ public class Controller extends Joystick {
 
 	/*
 	 * The Driver Station sends back an int(32 bits) for buttons
-	 * Shifting 1 left (button - 1) times and ANDing it with
+	 * Shifting 1 left (button - 1) times and ANDing it with the
 	 * int sent from the Driver Station will either give you
 	 * 0 or a number not zero if it is true
 	 */

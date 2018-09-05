@@ -350,6 +350,8 @@ public class Robot extends IterativeRobot {
 	public void testInit() {
 		drive.stopMovement();
 		elevarm.stopMovement();
+		drive.resume();
+		scheduler.resume();
 	}
 
 	public void configSubsytems() {
@@ -394,15 +396,22 @@ public class Robot extends IterativeRobot {
 		} else {
 			elevarm.setArmPercentOutput(0);
 		}
+		/*
 		if (buttonBox.getRisingEdge(3)) {
 			elevarm.checkClimber();
 		}
+		*/
 
 		if (xbox.getRisingEdge(5)) {
 			elevarm.setElevatorPercentOutput(0.15);
 		}
 		if (xbox.getFallingEdge(5)) {
 			elevarm.setElevatorPercentOutput(0);
+		}
+		if(buttonBox.getRisingEdge(2)) {
+			drive.setRotation(Rotation.fromDegrees(180));
+		} else if(buttonBox.getRisingEdge(3)) {
+			drive.setRotation(Rotation.fromDegrees(0));
 		}
 	}
 }

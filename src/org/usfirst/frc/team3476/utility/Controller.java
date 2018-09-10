@@ -2,8 +2,10 @@ package org.usfirst.frc.team3476.utility;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+
 /**
- * This class stores the int sent back from the Driver Station and uses it to check for rising or falling edges
+ * This class stores the int sent back from the Driver Station and uses it to
+ * check for rising or falling edges
  */
 public class Controller extends Joystick {
 
@@ -28,10 +30,9 @@ public class Controller extends Joystick {
 	}
 
 	/*
-	 * The Driver Station sends back an int(32 bits) for buttons
-	 * Shifting 1 left (button - 1) times and ANDing it with the
-	 * int sent from the Driver Station will either give you
-	 * 0 or a number not zero if it is true
+	 * The Driver Station sends back an int(32 bits) for buttons Shifting 1 left
+	 * (button - 1) times and ANDing it with the int sent from the Driver
+	 * Station will either give you 0 or a number not zero if it is true
 	 */
 	private int oldButtons;
 	private int currentButtons;
@@ -56,8 +57,7 @@ public class Controller extends Joystick {
 	 *
 	 * @param button
 	 *            Joystick button ID
-	 * @return
-	 * 		Falling edge state of the button
+	 * @return Falling edge state of the button
 	 */
 	public boolean getFallingEdge(int button) {
 		boolean oldVal = getButtonState(button, oldButtons);
@@ -74,8 +74,7 @@ public class Controller extends Joystick {
 	 *
 	 * @param button
 	 *            Joystick button ID
-	 * @return
-	 * 		Rising edge state of the button
+	 * @return Rising edge state of the button
 	 */
 	public boolean getRisingEdge(int button) {
 		boolean oldVal = getButtonState(button, oldButtons);
@@ -137,7 +136,7 @@ public class Controller extends Joystick {
 		oldPOV = currentPOV;
 		for (int i = 0; i < povCount; i++) {
 			currentPOV[i] = DriverStation.getInstance().getStickPOV(getPort(), i);
-		}	
+		}
 	}
 
 	@Override
@@ -160,7 +159,7 @@ public class Controller extends Joystick {
 		}
 		return -1;
 	}
-	
+
 	public boolean getButtonState(int button, int state) {
 		return ((0x1 << (button - 1)) & state) != 0;
 	}

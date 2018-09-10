@@ -60,8 +60,7 @@ public class LoadController {
 
 	/**
 	 *
-	 * @return
-	 * 		Current feed forward coefficient
+	 * @return Current feed forward coefficient
 	 */
 	public double getBaseF() {
 		return baseF;
@@ -78,8 +77,7 @@ public class LoadController {
 
 	/**
 	 *
-	 * @return
-	 * 		Current decay rate
+	 * @return Current decay rate
 	 */
 	public double getDecayRate() {
 		return decayRate;
@@ -96,8 +94,7 @@ public class LoadController {
 
 	/**
 	 *
-	 * @return
-	 * 		Current load increase
+	 * @return Current load increase
 	 */
 	public double getLoadIncrease() {
 		return loadIncrease;

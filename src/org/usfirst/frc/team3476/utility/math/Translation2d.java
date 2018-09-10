@@ -1,7 +1,8 @@
 package org.usfirst.frc.team3476.utility.math;
 
 /**
- * Stores an x and y value. Rotates and Translates of objects returns a new object.
+ * Stores an x and y value. Rotates and Translates of objects returns a new
+ * object.
  */
 public class Translation2d implements Interpolable<Translation2d> {
 
@@ -123,8 +124,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	 *
 	 * @param rotationMat
 	 *            Rotation matrix to multiply point with
-	 * @return
-	 * 		Rotated point
+	 * @return Rotated point
 	 */
 	public Translation2d rotateBy(Rotation rotationMat) {
 		double x2 = x * rotationMat.cos() - y * rotationMat.sin();
@@ -137,8 +137,7 @@ public class Translation2d implements Interpolable<Translation2d> {
 	 *
 	 * @param delta
 	 *            Translation2d to change this point by
-	 * @return
-	 * 		Translated point
+	 * @return Translated point
 	 */
 	public Translation2d translateBy(Translation2d delta) {
 		return new Translation2d(x + delta.getX(), y + delta.getY());

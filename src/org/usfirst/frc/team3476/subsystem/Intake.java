@@ -25,22 +25,19 @@ public class Intake extends Threaded {
 	private SolenoidState solenoidState;
 	private BiasState biasState;
 	private double biasTimer;
-	private double autoGripTimeout;	
+	private double autoGripTimeout;
 	private static Intake intakeInstance = new Intake();
-	//private DigitalInput cubeSwitch = new DigitalInput(Constants.CubeSwitchId);
-	
-	public enum SolenoidState
-	{
-		OPEN,
-		CLAMP,
-		INTAKING,
-		AUTO
+	// private DigitalInput cubeSwitch = new
+	// DigitalInput(Constants.CubeSwitchId);
+
+	public enum SolenoidState {
+		OPEN, CLAMP, INTAKING, AUTO
 	}
-	
+
 	public enum IntakeState {
 		INTAKE, OUTTAKE, OUTTAKE_MIDDLE, OUTTAKE_FAST, OUTTAKE_FASTEST, NEUTRAL
 	}
-	
+
 	private enum BiasState {
 		REVERSE, NORMAL
 	}
@@ -58,15 +55,12 @@ public class Intake extends Threaded {
 	public static Intake getInstance() {
 		return intakeInstance;
 	}
+
 	/*
-	public boolean getCubeSwitch()
-	{
-		return !cubeSwitch.get();
-	}
-	*/
-	public void setIntake(IntakeState intakeState, SolenoidState solenoidState)
-	{
-		synchronized(this) {
+	 * public boolean getCubeSwitch() { return !cubeSwitch.get(); }
+	 */
+	public void setIntake(IntakeState intakeState, SolenoidState solenoidState) {
+		synchronized (this) {
 			this.intakeState = intakeState;
 			this.solenoidState = solenoidState;
 		}
@@ -74,18 +68,18 @@ public class Intake extends Threaded {
 
 	private void setIntakeSolenoid(SolenoidState state) {
 		switch (state) {
-		case OPEN:
-			intakeSolenoid30Psi.set(true);
-			intakeSolenoid60Psi.set(true);
-			break;
-		case CLAMP:
-			intakeSolenoid30Psi.set(false);
-			intakeSolenoid60Psi.set(false);
-			break;
-		case INTAKING:
-			intakeSolenoid30Psi.set(true);
-			intakeSolenoid60Psi.set(false);
-			break;
+			case OPEN:
+				intakeSolenoid30Psi.set(true);
+				intakeSolenoid60Psi.set(true);
+				break;
+			case CLAMP:
+				intakeSolenoid30Psi.set(false);
+				intakeSolenoid60Psi.set(false);
+				break;
+			case INTAKING:
+				intakeSolenoid30Psi.set(true);
+				intakeSolenoid60Psi.set(false);
+				break;
 		}
 	}
 
@@ -101,39 +95,32 @@ public class Intake extends Threaded {
 	public void update() {
 		IntakeState snapIntake;
 		SolenoidState snapSolenoid;
-		synchronized(this) {
-			snapIntake = intakeState;			
+		synchronized (this) {
+			snapIntake = intakeState;
 			snapSolenoid = solenoidState;
 		}
-		
-		switch(snapIntake){
+
+		switch (snapIntake) {
 			case INTAKE:
 				double currentRight = intakeMotor1.getOutputCurrent();
 				double currentLeft = intakeMotor2.getOutputCurrent();
-				//System.out.println(currentLeft + "   " + currentRight);
+				// System.out.println(currentLeft + " " + currentRight);
 				double powerLeft = OrangeUtility.coercedNormalize(currentLeft, 1.5, 20, 0.2, 1);
 				double powerRight = OrangeUtility.coercedNormalize(currentRight, 1.5, 20, 0.2, 1);
 				double bias = 0;
 				/*
-				if(!DriverStation.getInstance().isAutonomous()) {
-					if(getCurrent() > 10) {						
-						if(biasState == BiasState.NORMAL && Timer.getFPGATimestamp() - biasTimer > 0.8) {
-							biasState = BiasState.REVERSE;
-							biasTimer = Timer.getFPGATimestamp();
-							System.out.println("its a reverse");
-						} 
-						if(biasState == BiasState.REVERSE && Timer.getFPGATimestamp() - biasTimer > 0.5) {
-							biasState = BiasState.NORMAL;
-							biasTimer = Timer.getFPGATimestamp();
-							System.out.println("its a normal");
-						}
-					} else {
-						biasTimer = Timer.getFPGATimestamp();
-						biasState = BiasState.NORMAL;					
-					}					
-				}
-				*/
-				if(biasState == BiasState.NORMAL) {
+				 * if(!DriverStation.getInstance().isAutonomous()) {
+				 * if(getCurrent() > 10) { if(biasState == BiasState.NORMAL &&
+				 * Timer.getFPGATimestamp() - biasTimer > 0.8) { biasState =
+				 * BiasState.REVERSE; biasTimer = Timer.getFPGATimestamp();
+				 * System.out.println("its a reverse"); } if(biasState ==
+				 * BiasState.REVERSE && Timer.getFPGATimestamp() - biasTimer >
+				 * 0.5) { biasState = BiasState.NORMAL; biasTimer =
+				 * Timer.getFPGATimestamp(); System.out.println("its a normal");
+				 * } } else { biasTimer = Timer.getFPGATimestamp(); biasState =
+				 * BiasState.NORMAL; } }
+				 */
+				if (biasState == BiasState.NORMAL) {
 					intakeMotor1.set(ControlMode.PercentOutput, -powerRight);
 					intakeMotor2.set(ControlMode.PercentOutput, -powerLeft);
 				} else {
@@ -162,14 +149,13 @@ public class Intake extends Threaded {
 				intakeMotor2.set(ControlMode.PercentOutput, 0);
 				break;
 		}
-		
 
-		if(snapSolenoid == SolenoidState.AUTO) {
-			if(!cubeSensor.get()) {
+		if (snapSolenoid == SolenoidState.AUTO) {
+			if (!cubeSensor.get()) {
 				autoGripTimeout = Timer.getFPGATimestamp();
 				setIntakeSolenoid(SolenoidState.INTAKING);
 			} else {
-				if(Timer.getFPGATimestamp() - autoGripTimeout > 0.5) {
+				if (Timer.getFPGATimestamp() - autoGripTimeout > 0.5) {
 					setIntakeSolenoid(SolenoidState.OPEN);
 				}
 			}

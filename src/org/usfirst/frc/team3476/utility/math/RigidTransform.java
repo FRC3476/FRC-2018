@@ -20,17 +20,20 @@ public class RigidTransform implements Interpolable<RigidTransform> {
 
 	@Override
 	public RigidTransform interpolate(RigidTransform other, double percentage) {
-		return new RigidTransform(this.translationMat.interpolate(other.translationMat, percentage), this.rotationMat.interpolate(other.rotationMat, percentage));
+		return new RigidTransform(this.translationMat.interpolate(other.translationMat, percentage),
+				this.rotationMat.interpolate(other.rotationMat, percentage));
 	}
 
 	/**
-	 * Translates delta rotated by our rotation matrix and rotates our rotation matrix by the other rotation matrix
+	 * Translates delta rotated by our rotation matrix and rotates our rotation
+	 * matrix by the other rotation matrix
 	 *
 	 * @param delta
 	 *
 	 * @return
 	 */
 	public RigidTransform transform(RigidTransform delta) {
-		return new RigidTransform(translationMat.translateBy(delta.translationMat.rotateBy(rotationMat)), rotationMat.rotateBy(delta.rotationMat));
+		return new RigidTransform(translationMat.translateBy(delta.translationMat.rotateBy(rotationMat)),
+				rotationMat.rotateBy(delta.rotationMat));
 	}
 }

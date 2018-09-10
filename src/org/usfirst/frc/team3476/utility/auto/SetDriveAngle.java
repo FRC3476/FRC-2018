@@ -9,22 +9,22 @@ public class SetDriveAngle extends AutoCommand {
 
 	private Rotation angle;
 	private Translation2d point;
-	
+
 	public SetDriveAngle(Rotation angle) {
 		this.angle = angle;
 	}
-	
+
 	public SetDriveAngle(Translation2d point) {
 		this.point = point;
 		this.setBlocking(true);
 	}
-	
+
 	@Override
 	public void start() {
-		if(angle == null) {
+		if (angle == null) {
 			angle = RobotTracker.getInstance().getOdometry().translationMat.getAngle(point);
 			angle = angle.rotateBy(RobotTracker.getInstance().getOdometry().rotationMat);
-		} 		
+		}
 		OrangeDrive.getInstance().setRotation(angle);
 	}
 
@@ -33,5 +33,4 @@ public class SetDriveAngle extends AutoCommand {
 		return OrangeDrive.getInstance().isFinished();
 	}
 
-	
 }

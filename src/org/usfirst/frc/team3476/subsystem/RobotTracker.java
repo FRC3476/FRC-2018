@@ -43,22 +43,24 @@ public class RobotTracker extends Threaded {
 
 	synchronized public void resetOdometry() {
 		driveBase.resetGyro();
-		currentOdometry = new RigidTransform(new Translation2d().translateBy(translationOffset), Rotation.fromDegrees(0).rotateBy(rotationOffset));
+		currentOdometry = new RigidTransform(new Translation2d().translateBy(translationOffset),
+				Rotation.fromDegrees(0).rotateBy(rotationOffset));
 		oldDistance = driveBase.getDistance();
 	}
 
 	/**
-	 * Integrates the encoders and gyro to figure out robot position. A constant curvature is assumed
+	 * Integrates the encoders and gyro to figure out robot position. A constant
+	 * curvature is assumed
 	 */
 	@Override
 	public void update() {
 		double leftDist = driveBase.getLeftDistance();
 		double rightDist = driveBase.getRightDistance();
 		/*
-		 * Solve problem where Talon returns 0 for distance due to an error
-		 * This causes an abnormal deltaPosition
+		 * Solve problem where Talon returns 0 for distance due to an error This
+		 * causes an abnormal deltaPosition
 		 */
-		if(leftDist != 0 && rightDist != 0) {
+		if (leftDist != 0 && rightDist != 0) {
 			currentDistance = (leftDist + rightDist) / 2;
 		} else {
 			return;
@@ -69,15 +71,18 @@ public class RobotTracker extends Threaded {
 		synchronized (this) {
 			deltaRotation = currentOdometry.rotationMat.inverse().rotateBy(deltaRotation);
 			Rotation halfRotation = Rotation.fromRadians(deltaRotation.getRadians() / 2.0);
-			currentOdometry = currentOdometry.transform(new RigidTransform(deltaPosition.rotateBy(halfRotation), deltaRotation));
+			currentOdometry = currentOdometry
+					.transform(new RigidTransform(deltaPosition.rotateBy(halfRotation), deltaRotation));
 			vehicleHistory.add(new InterpolablePair<>(System.nanoTime(), currentOdometry));
 			gyroHistory.add(new InterpolablePair<>(System.nanoTime(), driveBase.getGyroAngle()));
 		}
 		oldDistance = currentDistance;
 
-		// System.out.println("Position: " + currentOdometry.translationMat.getX() + " " +
+		// System.out.println("Position: " +
+		// currentOdometry.translationMat.getX() + " " +
 		// currentOdometry.translationMat.getY());
-		// System.out.println("Gyro: " + currentOdometry.rotationMat.getDegrees());
+		// System.out.println("Gyro: " +
+		// currentOdometry.rotationMat.getDegrees());
 	}
 
 	/**

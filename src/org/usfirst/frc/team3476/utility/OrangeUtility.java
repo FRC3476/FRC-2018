@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class OrangeUtility {
 
-	public static boolean checkMotors(double output, double expectedCurrent, double expectedRPM, double expectedPosition, LazyTalonSRX sensorTalon, LazyTalonSRX... talons) {
+	public static boolean checkMotors(double output, double expectedCurrent, double expectedRPM,
+			double expectedPosition, LazyTalonSRX sensorTalon, LazyTalonSRX... talons) {
 		boolean success = true;
 		for (LazyTalonSRX talon : talons) {
 			talon.set(ControlMode.PercentOutput, 0);
@@ -35,8 +36,8 @@ public class OrangeUtility {
 				}
 				if (Math.abs(sensorTalon.getSelectedSensorPosition(0)
 						- expectedPosition) > Constants.ExpectedPositionTolerance) {
-					DriverStation.reportError("Motor " + talon.getDeviceID()
-							+ "position outside expected range.", false);
+					DriverStation.reportError("Motor " + talon.getDeviceID() + "position outside expected range.",
+							false);
 					success = false;
 				}
 			}
@@ -234,7 +235,8 @@ public class OrangeUtility {
 		return toNormalize * factor + add;
 	}
 
-	public static double coercedNormalize(double rawValue, double minInput, double maxInput, double minOutput, double maxOutput) {
+	public static double coercedNormalize(double rawValue, double minInput, double maxInput, double minOutput,
+			double maxOutput) {
 		if (rawValue < minInput) {
 			return minOutput;
 		} else if (rawValue > maxInput) {

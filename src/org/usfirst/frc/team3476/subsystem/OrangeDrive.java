@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class OrangeDrive extends Threaded {
-	
+
 	public enum DriveState {
 		TELEOP, PUREPURSUIT, TURN, DONE
 	}
@@ -36,7 +36,7 @@ public class OrangeDrive extends Threaded {
 
 		public DriveSignal(double left, double right) {
 			this(left, 0, right, 0);
-		}		
+		}
 
 		public DriveSignal(double left, double leftAcc, double right, double rightAcc) {
 			leftVelocity = left;
@@ -44,12 +44,12 @@ public class OrangeDrive extends Threaded {
 			rightVelocity = right;
 			this.rightAcc = rightAcc;
 		}
-	}	
+	}
 
 	public static class AutoDriveSignal {
 		public DriveSignal command;
 		public boolean isDone;
-		
+
 		public AutoDriveSignal(DriveSignal command, boolean isDone) {
 			this.command = command;
 			this.isDone = isDone;
@@ -83,7 +83,7 @@ public class OrangeDrive extends Threaded {
 
 		leftTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		rightTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		
+
 		leftSlaveTalon = new LazyTalonSRX(Constants.LeftSlaveDriveId);
 		leftSlave2Talon = new LazyTalonSRX(Constants.LeftSlave2DriveId);
 		rightSlaveTalon = new LazyTalonSRX(Constants.RightSlaveDriveId);
@@ -92,17 +92,17 @@ public class OrangeDrive extends Threaded {
 
 		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
-		
+
 		turnPID = new SynchronousPid(0.6, 0, 0.1, 0);
 		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 		turnPID.setSetpoint(0);
-		
+
 		moveProfiler = new RateLimiter(Constants.TeleopAccLimit);
 		turnProfiler = new RateLimiter(100);
-		
 
 		configHigh();
 	}
+
 	private void configAuto() {
 		rightTalon.config_kP(0, Constants.kRightAutoP, 10);
 		rightTalon.config_kD(0, Constants.kRightAutoD, 10);
@@ -110,21 +110,21 @@ public class OrangeDrive extends Threaded {
 		leftTalon.config_kP(0, Constants.kLeftAutoP, 10);
 		leftTalon.config_kD(0, Constants.kRightAutoD, 10);
 		leftTalon.config_kF(0, Constants.kLeftAutoF, 10);
-		driveMultiplier = Constants.HighDriveSpeed; 
-		rightTalon.configClosedloopRamp(12d/200d, 10);
-		leftTalon.configClosedloopRamp(12d/200d, 10);
+		driveMultiplier = Constants.HighDriveSpeed;
+		rightTalon.configClosedloopRamp(12d / 200d, 10);
+		leftTalon.configClosedloopRamp(12d / 200d, 10);
 	}
-	
+
 	private void configHigh() {
 		rightTalon.config_kP(0, Constants.kRightHighP, 10);
 		rightTalon.config_kD(0, Constants.kRightHighD, 10);
 		rightTalon.config_kF(0, Constants.kRightHighF, 10);
-		rightTalon.configClosedloopRamp(12d/200d, 10);
+		rightTalon.configClosedloopRamp(12d / 200d, 10);
 		leftTalon.config_kP(0, Constants.kLeftHighP, 10);
 		leftTalon.config_kD(0, Constants.kRightHighD, 10);
 		leftTalon.config_kF(0, Constants.kLeftHighF, 10);
-		leftTalon.configClosedloopRamp(12d/200d, 10);
-		
+		leftTalon.configClosedloopRamp(12d / 200d, 10);
+
 		driveMultiplier = Constants.HighDriveSpeed;
 	}
 
@@ -149,7 +149,7 @@ public class OrangeDrive extends Threaded {
 		moveValue = Math.copySign(Math.pow(moveValue, 2), moveValue);
 		rotateValue = Math.copySign(Math.pow(rotateValue, 2), rotateValue);
 		double maxValue = Math.abs(moveValue) + Math.abs(rotateValue);
-		if(maxValue > 1) {
+		if (maxValue > 1) {
 			moveValue -= Math.copySign(maxValue - 1, moveValue);
 		}
 		leftMotorSpeed = moveValue + rotateValue;
@@ -158,7 +158,7 @@ public class OrangeDrive extends Threaded {
 			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		} else {
 			leftMotorSpeed *= Constants.HighDriveSpeed;
-			rightMotorSpeed *= Constants.HighDriveSpeed;			
+			rightMotorSpeed *= Constants.HighDriveSpeed;
 			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
 	}
@@ -198,10 +198,11 @@ public class OrangeDrive extends Threaded {
 			}
 		}
 
-		//moveValue = moveProfiler.update(moveValue * driveMultiplier) / driveMultiplier;
+		// moveValue = moveProfiler.update(moveValue * driveMultiplier) /
+		// driveMultiplier;
 		leftMotorSpeed = moveValue + angularPower;
 		rightMotorSpeed = moveValue - angularPower;
-		
+
 		if (leftMotorSpeed > 1.0) {
 			rightMotorSpeed -= overPower * (leftMotorSpeed - 1.0);
 			leftMotorSpeed = 1.0;
@@ -215,9 +216,9 @@ public class OrangeDrive extends Threaded {
 			leftMotorSpeed += overPower * (-1.0 - rightMotorSpeed);
 			rightMotorSpeed = -1.0;
 		}
-		if(drivePercentVbus){
-			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));			
-		} else {			
+		if (drivePercentVbus) {
+			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
+		} else {
 			leftMotorSpeed *= driveMultiplier;
 			rightMotorSpeed *= driveMultiplier;
 			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
@@ -251,14 +252,14 @@ public class OrangeDrive extends Threaded {
 		} else if (rightMotorSpeed < -1.0) {
 			leftMotorSpeed += (-1.0 - rightMotorSpeed);
 			rightMotorSpeed = -1.0;
-		}		
-		if(drivePercentVbus){
-			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));			
-		} else {			
+		}
+		if (drivePercentVbus) {
+			setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
+		} else {
 			leftMotorSpeed *= driveMultiplier;
 			rightMotorSpeed *= driveMultiplier;
-			if(leftMotorSpeed == 0 && rightMotorSpeed == 0) {
-				setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));	
+			if (leftMotorSpeed == 0 && rightMotorSpeed == 0) {
+				setWheelPower(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 			}
 			setWheelVelocity(new DriveSignal(leftMotorSpeed, rightMotorSpeed));
 		}
@@ -270,7 +271,7 @@ public class OrangeDrive extends Threaded {
 		rightSlaveTalon.set(ControlMode.Follower, Constants.RightMasterDriveId);
 		rightSlave2Talon.set(ControlMode.Follower, Constants.RightMasterDriveId);
 		setBrakeState(NeutralMode.Brake);
-		
+
 		leftTalon.setInverted(true);
 		leftSlaveTalon.setInverted(true);
 		leftSlave2Talon.setInverted(true);
@@ -281,7 +282,7 @@ public class OrangeDrive extends Threaded {
 
 		leftTalon.setSensorPhase(false);
 		rightTalon.setSensorPhase(false);
-		
+
 		rightTalon.setNeutralMode(NeutralMode.Coast);
 		leftTalon.setNeutralMode(NeutralMode.Coast);
 		rightSlaveTalon.setNeutralMode(NeutralMode.Coast);
@@ -333,7 +334,9 @@ public class OrangeDrive extends Threaded {
 	}
 
 	public double scaleJoystickValues(double rawValue) {
-		return Math.copySign(OrangeUtility.coercedNormalize(Math.abs(rawValue), Constants.MinimumControllerInput, Constants.MaximumControllerInput, Constants.MinimumControllerOutput, Constants.MaximumControllerOutput), rawValue);
+		return Math.copySign(OrangeUtility.coercedNormalize(Math.abs(rawValue), Constants.MinimumControllerInput,
+				Constants.MaximumControllerInput, Constants.MinimumControllerOutput, Constants.MaximumControllerOutput),
+				rawValue);
 	}
 
 	public synchronized void setAutoPath(Path autoPath, boolean isReversed) {
@@ -352,10 +355,11 @@ public class OrangeDrive extends Threaded {
 		leftSlave2Talon.setNeutralMode(mode);
 		rightSlave2Talon.setNeutralMode(mode);
 	}
-	
-	public double getVoltage()
-	{
-		return (leftTalon.getMotorOutputVoltage() + rightTalon.getMotorOutputVoltage() + leftSlaveTalon.getMotorOutputVoltage() + rightSlaveTalon.getMotorOutputVoltage() + rightSlave2Talon.getMotorOutputVoltage() + leftSlave2Talon.getMotorOutputVoltage()) / 6;
+
+	public double getVoltage() {
+		return (leftTalon.getMotorOutputVoltage() + rightTalon.getMotorOutputVoltage()
+				+ leftSlaveTalon.getMotorOutputVoltage() + rightSlaveTalon.getMotorOutputVoltage()
+				+ rightSlave2Talon.getMotorOutputVoltage() + leftSlave2Talon.getMotorOutputVoltage()) / 6;
 	}
 
 	private void setWheelPower(DriveSignal setVelocity) {
@@ -370,64 +374,66 @@ public class OrangeDrive extends Threaded {
 			DriverStation.reportError("Velocity set over " + Constants.HighDriveSpeed + " !", false);
 			return;
 		}
-		//System.out.println("Left: " + setVelocity.leftWheelSpeed + " Speed:" + getLeftSpeed());
+		// System.out.println("Left: " + setVelocity.leftWheelSpeed + " Speed:"
+		// + getLeftSpeed());
 		// inches per sec to rotations per min
 		double leftSetpoint = (setVelocity.rightVelocity) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
 				* (62d / 22d) * 3d;
-		double rightSetpoint = (setVelocity.leftVelocity) * 4096 / (Constants.WheelDiameter * Math.PI * 10)
-				* (62 / 22d) * 3d;
+		double rightSetpoint = (setVelocity.leftVelocity) * 4096 / (Constants.WheelDiameter * Math.PI * 10) * (62 / 22d)
+				* 3d;
 		leftTalon.set(ControlMode.Velocity, leftSetpoint);
 		rightTalon.set(ControlMode.Velocity, rightSetpoint);
 	}
-	
+
 	public synchronized void setSimpleDrive(boolean setting) {
 		drivePercentVbus = setting;
 	}
-	
+
 	@Override
-	public void update() {		
+	public void update() {
 		DriveState snapDriveState;
-		synchronized(this) {
+		synchronized (this) {
 			snapDriveState = driveState;
 		}
-		switch(snapDriveState) {
-		case TELEOP:
-			break;
-		case PUREPURSUIT:
-			updatePurePursuit();
-			break;
-		case TURN:
-			updateTurn();
-			break;
+		switch (snapDriveState) {
+			case TELEOP:
+				break;
+			case PUREPURSUIT:
+				updatePurePursuit();
+				break;
+			case TURN:
+				updateTurn();
+				break;
 		}
 	}
-	
+
 	public void setRotation(Rotation angle) {
-		synchronized(this) {
+		synchronized (this) {
 			wantedHeading = angle;
 			driveState = DriveState.TURN;
 		}
 		configHigh();
 	}
-	
+
 	private void updateTurn() {
 		double error = wantedHeading.rotateBy(getGyroAngle().inverse()).getDegrees();
 		double deltaSpeed;
-		
-		synchronized(this) {
+
+		synchronized (this) {
 			deltaSpeed = turnPID.update(error);
 		}
-		deltaSpeed = Math.copySign(OrangeUtility.coercedNormalize(Math.abs(deltaSpeed), 0, 180, 10, Constants.HighDriveSpeed), deltaSpeed);
-		if(Math.abs(error) < 5) {
+		deltaSpeed = Math.copySign(
+				OrangeUtility.coercedNormalize(Math.abs(deltaSpeed), 0, 180, 10, Constants.HighDriveSpeed), deltaSpeed);
+		if (Math.abs(error) < 5) {
 			setWheelVelocity(new DriveSignal(0, 0));
-			synchronized(this) {
-				driveState = DriveState.DONE; 
+			synchronized (this) {
+				driveState = DriveState.DONE;
 			}
 		} else {
 			setWheelVelocity(new DriveSignal(deltaSpeed, -deltaSpeed));
 		}
 	}
-	
+
 	public void setShiftState(boolean state) {
 		shifter.set(state);
 		if (state) {
@@ -436,52 +442,53 @@ public class OrangeDrive extends Threaded {
 			configHigh();
 		}
 	}
-	
+
 	private void updatePurePursuit() {
 		AutoDriveSignal signal = autonomousDriver.calculate(RobotTracker.getInstance().getOdometry());
-		if(signal.isDone){
-			synchronized(this){
-				driveState = DriveState.DONE;				
+		if (signal.isDone) {
+			synchronized (this) {
+				driveState = DriveState.DONE;
 			}
 			configHigh();
 		}
 		setWheelVelocity(signal.command);
 	}
-	
+
 	public void resetGyro() {
 		gyroSensor.reset();
 	}
-	
+
 	public boolean checkSubsystem() {
-	
+
 		// TODO: Get accurate thresholds
 		// TODO: Use PDP to get current
 		// boolean success =
 		boolean success = leftTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0;
 		success = rightTalon.getSensorCollection().getPulseWidthRiseToRiseUs() == 0 && success;
-		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM, Constants.ExpectedDrivePosition, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
-		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM, Constants.ExpectedDrivePosition, leftTalon, leftTalon, leftSlaveTalon, leftSlave2Talon)
-				&& success;
+		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM,
+				Constants.ExpectedDrivePosition, rightTalon, rightTalon, rightSlaveTalon, rightSlave2Talon);
+		success = OrangeUtility.checkMotors(.25, Constants.ExpectedDriveCurrent, Constants.ExpectedDriveRPM,
+				Constants.ExpectedDrivePosition, leftTalon, leftTalon, leftSlaveTalon, leftSlave2Talon) && success;
 		configMotors();
 		return success;
 	}
-	
+
 	public void stopMovement() {
 		leftTalon.set(ControlMode.PercentOutput, 0);
 		rightTalon.set(ControlMode.PercentOutput, 0);
 		driveState = DriveState.TELEOP;
 	}
-	
+
 	synchronized public boolean isFinished() {
 		return driveState == DriveState.DONE;
 	}
-	
+
 	public void clearStickyFaults() {
 		leftTalon.clearStickyFaults(10);
 		leftSlaveTalon.clearStickyFaults(10);
-		leftSlave2Talon.clearStickyFaults(10); 
+		leftSlave2Talon.clearStickyFaults(10);
 		rightTalon.clearStickyFaults(10);
 		rightSlaveTalon.clearStickyFaults(10);
-		rightSlave2Talon.clearStickyFaults(10);		
+		rightSlave2Talon.clearStickyFaults(10);
 	}
 }

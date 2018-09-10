@@ -16,7 +16,8 @@ import org.usfirst.frc.team3476.utility.math.Translation2d;
 
 public class PurePursuitController {
 	/*
-	 * 1. Translation delta compared to robot 2. Find angle to path relative to robot 3. Drive towards point
+	 * 1. Translation delta compared to robot 2. Find angle to path relative to
+	 * robot 3. Drive towards point
 	 */
 
 	private Path robotPath;
@@ -27,19 +28,19 @@ public class PurePursuitController {
 		this.robotPath = robotPath;
 		this.isReversed = isReversed;
 		speedProfiler = new RateLimiter(100, 1000);
-		if(robotPath.isEmpty()){
-			
+		if (robotPath.isEmpty()) {
+
 		}
-		
+
 	}
 
 	/**
-	 * Calculates the look ahead and the desired speed for each side of the robot.
+	 * Calculates the look ahead and the desired speed for each side of the
+	 * robot.
 	 *
 	 * @param robotPose
 	 *            Robot position and gyro angle.
-	 * @return
-	 * 		Speed for each side of the robot.
+	 * @return Speed for each side of the robot.
 	 *
 	 */
 	@SuppressWarnings("unchecked")
@@ -48,9 +49,10 @@ public class PurePursuitController {
 			robotPose = new RigidTransform(robotPose.translationMat, robotPose.rotationMat.flip());
 		}
 		double lookAheadDist = OrangeUtility.coercedNormalize(speedProfiler.getLatestValue(), Constants.MinPathSpeed,
-		Constants.MaxPathSpeed, Constants.MinLookAheadDistance, Constants.MaxLookAheadDistance);
+				Constants.MaxPathSpeed, Constants.MinLookAheadDistance, Constants.MaxLookAheadDistance);
 		DrivingData data = robotPath.getLookAheadPoint(robotPose.translationMat, lookAheadDist);
-		if(data.remainingDist == 0.0) { //If robot passes point, remaining distance is 0
+		if (data.remainingDist == 0.0) { // If robot passes point, remaining
+											// distance is 0
 			return new AutoDriveSignal(new DriveSignal(0, 0), true);
 		}
 		double robotSpeed = speedProfiler.update(data.maxSpeed, data.remainingDist);
@@ -85,7 +87,7 @@ public class PurePursuitController {
 			robotSpeed *= -1;
 		}
 		double maxSpeed = Math.abs(robotSpeed) + Math.abs(deltaSpeed);
-		if(maxSpeed > Constants.MaxPathSpeed) {
+		if (maxSpeed > Constants.MaxPathSpeed) {
 			robotSpeed -= Math.copySign(maxSpeed - Constants.MaxPathSpeed, robotSpeed);
 		}
 		return new AutoDriveSignal(new DriveSignal(robotSpeed + deltaSpeed, robotSpeed - deltaSpeed), false);
@@ -102,7 +104,7 @@ public class PurePursuitController {
 		Translation2d lookAheadPointToRobot = robotPose.translationMat.inverse().translateBy(lookAheadPoint);
 		lookAheadPointToRobot = lookAheadPointToRobot.rotateBy(robotPose.rotationMat.inverse());
 		return lookAheadPointToRobot;
-		
+
 	}
 
 	/**
@@ -112,5 +114,5 @@ public class PurePursuitController {
 		// TODO: Big Bang
 		speedProfiler.reset();
 	}
-	
+
 }

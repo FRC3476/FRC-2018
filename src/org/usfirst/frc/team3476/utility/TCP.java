@@ -42,7 +42,7 @@ public class TCP extends Threaded {
 					rawMessage = new String(buffer, "UTF-8");
 					JSONObject message = (JSONObject) JSONValue.parse(rawMessage);
 					BezierCurve parsedCurve = BezierCurve.parseJson(message);
-					
+
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -115,7 +115,8 @@ public class TCP extends Threaded {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}		try {
+		}
+		try {
 			Socket conn = connections.get(addr + port);
 			OutputStream outStream = conn.getOutputStream();
 			outStream.write(message.getBytes());

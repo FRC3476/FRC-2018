@@ -5,7 +5,8 @@ import java.time.Duration;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
- * Classes that want to be threaded using ThreadScheduler need to implement this class
+ * Classes that want to be threaded using ThreadScheduler need to implement this
+ * class
  */
 public abstract class Threaded implements Runnable {
 
@@ -17,16 +18,16 @@ public abstract class Threaded implements Runnable {
 	@Override
 	public void run() {
 		boolean snapPaused;
-		synchronized(this) {
+		synchronized (this) {
 			snapPaused = isPaused;
 		}
 		if (!snapPaused) {
-			synchronized(this){
-				isUpdated = false;				
+			synchronized (this) {
+				isUpdated = false;
 			}
 			double start = Timer.getFPGATimestamp();
 			update();
-			synchronized(this) {
+			synchronized (this) {
 				lastRuntime = Timer.getFPGATimestamp() - start;
 				isUpdated = true;
 			}

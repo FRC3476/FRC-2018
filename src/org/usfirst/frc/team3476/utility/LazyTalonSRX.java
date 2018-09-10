@@ -11,7 +11,7 @@ public class LazyTalonSRX extends TalonSRX {
 
 	private double prevValue = 0;
 	private ControlMode prevControlMode = ControlMode.Disabled;
-	
+
 	public LazyTalonSRX(int deviceNumber) {
 		super(deviceNumber);
 		enableVoltageCompensation(true);

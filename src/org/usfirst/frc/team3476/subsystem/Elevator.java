@@ -17,10 +17,10 @@ public class Elevator {
 
 	private static final Elevator instance = new Elevator();
 
-	//P .1
-	//I .0001
-	//D .0001
-	//I Zone 1000
+	// P .1
+	// I .0001
+	// D .0001
+	// I Zone 1000
 	private Elevator() {
 		elevatorTalon = new LazyTalonSRX(Constants.ElevatorMotorId);
 		slaveTalon = new LazyTalonSRX(Constants.ElevatorSlaveMotorId);
@@ -36,7 +36,7 @@ public class Elevator {
 		climber2Talon.setInverted(true);
 
 		gearboxSolenoid = new Solenoid(Constants.ElevatorGearboxShifterId);
-		
+
 		elevatorTalon.config_kP(0, 0.125, 10);
 		elevatorTalon.config_kI(0, 0.0, 10);
 		elevatorTalon.config_kD(0, 0.0, 10);
@@ -69,8 +69,8 @@ public class Elevator {
 	}
 
 	public void setSpeed(double speed) {
-		elevatorTalon.set(ControlMode.Velocity, speed * (1d / Constants.ElevatorInchesPerMotorRotation)
-				* Constants.SensorTicksPerMotorRotation);
+		elevatorTalon.set(ControlMode.Velocity,
+				speed * (1d / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation);
 	}
 
 	public double getSpeed() {
@@ -83,8 +83,8 @@ public class Elevator {
 	}
 
 	protected void setHeight(double height) {
-		elevatorTalon.set(ControlMode.Position, height * (1d / Constants.ElevatorInchesPerMotorRotation)
-				* Constants.SensorTicksPerMotorRotation);
+		elevatorTalon.set(ControlMode.Position,
+				height * (1d / Constants.ElevatorInchesPerMotorRotation) * Constants.SensorTicksPerMotorRotation);
 	}
 
 	public void shiftElevatorGearbox(boolean engaged) {
@@ -114,12 +114,15 @@ public class Elevator {
 	}
 
 	public boolean checkSubystem() {
-		boolean success = OrangeUtility.checkMotors(.25, Constants.ExpectedElevatorCurrent, Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon, slaveTalon);
+		boolean success = OrangeUtility.checkMotors(.25, Constants.ExpectedElevatorCurrent,
+				Constants.ExpectedElevatorRPM, Constants.ExpectedElevatorPosition, elevatorTalon, elevatorTalon,
+				slaveTalon);
 		configMotors();
 		return success;
 	}
 
 	public boolean checkClimber() {
-		return OrangeUtility.checkMotors(.25, Constants.ExpectedClimberCurrent, 0, 0, null, climber1Talon, climber2Talon);
+		return OrangeUtility.checkMotors(.25, Constants.ExpectedClimberCurrent, 0, 0, null, climber1Talon,
+				climber2Talon);
 	}
 }

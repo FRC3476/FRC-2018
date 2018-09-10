@@ -15,9 +15,9 @@ public interface Interpolable<T> {
 	 * @param other
 	 *            Value of Interpolable that corresponds to 1 for percentage
 	 * @param percentage
-	 *            Percentage to interpolate. A value of 1 will return other and 0 will return this Interpolable
-	 * @return
-	 * 		New interpolated Interpolable
+	 *            Percentage to interpolate. A value of 1 will return other and
+	 *            0 will return this Interpolable
+	 * @return New interpolated Interpolable
 	 */
 	public T interpolate(T other, double percentage);
 }

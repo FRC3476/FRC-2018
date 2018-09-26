@@ -21,7 +21,11 @@ public class SetDrivePath extends AutoCommand {
 
 	@Override
 	public boolean isFinished() {
-		return OrangeDrive.getInstance().isFinished();
+		if(OrangeDrive.getInstance().isFinished()) {
+			System.out.println("pathcomplete");
+			return true;
+		}
+		return false;
 	}
 
 	@Override

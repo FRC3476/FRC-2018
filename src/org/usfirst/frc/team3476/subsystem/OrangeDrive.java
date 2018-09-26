@@ -93,7 +93,7 @@ public class OrangeDrive extends Threaded {
 		drivePercentVbus = false;
 		driveState = DriveState.TELEOP;
 
-		turnPID = new SynchronousPid(0.6, 0, 0.1, 0);
+		turnPID = new SynchronousPid(0.7, 0, 0.1, 0);
 		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 		turnPID.setSetpoint(0);
 
@@ -416,21 +416,20 @@ public class OrangeDrive extends Threaded {
 	}
 
 	private void updateTurn() {
-		double error = wantedHeading.rotateBy(getGyroAngle().inverse()).getDegrees();
+		double error = wantedHeading.rotateBy(RobotTracker.getInstance().getOdometry().rotationMat.inverse()).getDegrees();
 		double deltaSpeed;
-
-		synchronized (this) {
-			deltaSpeed = turnPID.update(error);
-		}
+		System.out.println(RobotTracker.getInstance().getOdometry().rotationMat.getDegrees());
+		System.out.println("error: " + error);
+		deltaSpeed = turnPID.update(error);
 		deltaSpeed = Math.copySign(
-				OrangeUtility.coercedNormalize(Math.abs(deltaSpeed), 0, 180, 10, Constants.HighDriveSpeed), deltaSpeed);
-		if (Math.abs(error) < 5) {
+				OrangeUtility.coercedNormalize(Math.abs(deltaSpeed), 0, 180, 0, Constants.HighDriveSpeed), deltaSpeed);
+		if (Math.abs(error) < 1) {
 			setWheelVelocity(new DriveSignal(0, 0));
 			synchronized (this) {
 				driveState = DriveState.DONE;
-			}
+			} 
 		} else {
-			setWheelVelocity(new DriveSignal(deltaSpeed, -deltaSpeed));
+			setWheelVelocity(new DriveSignal(-deltaSpeed, deltaSpeed));
 		}
 	}
 

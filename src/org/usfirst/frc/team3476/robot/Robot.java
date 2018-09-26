@@ -171,6 +171,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		configSubsytems();
+		tracker.resume();
 	}
 
 	double elevatorMaxCurrent = 150, armMaxCurrent = 40; // TEMP for testing
@@ -189,10 +190,7 @@ public class Robot extends IterativeRobot {
 
 		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
 		// drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
-		System.out.println("Angle: " + elevarm.getArmAngle() + " Setpoint: " + elevarm.getTargetArmAngle());
-		System.out
-				.println("Height: " + elevarm.getElevatorHeight() + " Setpoint: " + elevarm.getTargetElevatorHeight());
-
+		System.out.println(tracker.getOdometry().rotationMat.getDegrees());
 		if (buttonBox.getRawButton(10)) {
 			elevarm.setClimberPercentOutput(.75);
 			elevarm.setElevatorGearbox(true);

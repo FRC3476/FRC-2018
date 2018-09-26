@@ -12,7 +12,7 @@ public class HomeElevator extends AutoCommand {
 
 	@Override
 	public boolean isFinished() {
-		return Elevarm.getInstance().isHomed();
+		return true;//Elevarm.getInstance().isHomed();
 	}
 
 }

@@ -30,7 +30,7 @@ public class Elevarm extends Threaded {
 	private ArmState armState = ArmState.MANUAL;
 	private RateLimiter elevatorLimiter, armLimiter;
 	private volatile double elevatorSetpoint, armSetpoint, elevatorSpeedSetpoint, armSpeedSetpoint, xRateSetpoint;
-	public static final double maxElevatorSpeed = 100, maxArmSpeed = 100;
+	public static final double maxElevatorSpeed = 100, maxArmSpeed = 150;
 
 	private boolean elevatorIntakePositionSet = false;
 

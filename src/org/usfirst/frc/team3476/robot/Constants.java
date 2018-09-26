@@ -12,7 +12,7 @@ public final class Constants {
 	// Driving
 	public static final double HighDriveSpeed = 185;
 	public static final double LowDriveSpeed = 95;
-	public static final double kRightHighP = 0.03;
+	public static final double kRightHighP = 0.02;
 	public static final double kRightHighD = 0;
 	public static final double kRightHighF = 0.035;
 	public static final double kRightHighFIntercept = 0;
@@ -23,7 +23,7 @@ public final class Constants {
 	public static final double kRightLowFIntercept = 0;
 	public static final double kRightLowA = 0;
 
-	public static final double kLeftHighP = 0.03;
+	public static final double kLeftHighP = 0.0;
 	public static final double kLeftHighD = 0;
 	public static final double kLeftHighF = 0.035;
 	public static final double kLeftHighFIntercept = 0;
@@ -54,7 +54,7 @@ public final class Constants {
 	public static final double MaxAcceleration = 1000;
 
 	// Autonomous Driving
-	public static final double TrackRadius = 14;
+	public static final double TrackRadius = 13;
 	public static final double WheelDiameter = 6;
 	public static final double MinimumTurningRadius = 40;
 	public static final double MinPathSpeed = 20;
@@ -119,7 +119,7 @@ public final class Constants {
 	public static final double ArmVelocityLimit = 200;
 	public static final double ArmAccelerationLimit = 300;
 
-	public static final int PracticeBotArmTicksOffset = 1855 + 952 + 429;
+	public static final int PracticeBotArmTicksOffset = 2506;
 
 	public static final int PracticeBotArmAngleOffsetInTicks = (int) (ArmDownDegrees
 			* (1d / 360) /** (1 / ArmRotationsPerMotorRotation) */

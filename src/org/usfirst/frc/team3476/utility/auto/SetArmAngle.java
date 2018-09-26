@@ -24,7 +24,7 @@ public class SetArmAngle extends AutoCommand {
 
 	@Override
 	public boolean isFinished() {
-		return Math.abs(Elevarm.getInstance().getArmAngle() - angle) < 10;
+		return true;//Math.abs(Elevarm.getInstance().getArmAngle() - angle) < 10;
 	}
 
 }

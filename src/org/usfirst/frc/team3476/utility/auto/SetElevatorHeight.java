@@ -17,7 +17,7 @@ public class SetElevatorHeight extends AutoCommand {
 
 	@Override
 	public boolean isFinished() {
-		return Math.abs(Elevarm.getInstance().getElevatorHeight() - height) < 10;
+		return true;//Math.abs(Elevarm.getInstance().getElevatorHeight() - height) < 10;
 	}
 
 	@Override

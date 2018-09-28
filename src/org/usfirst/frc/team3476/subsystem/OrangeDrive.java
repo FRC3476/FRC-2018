@@ -90,10 +90,10 @@ public class OrangeDrive extends Threaded {
 		rightSlave2Talon = new LazyTalonSRX(Constants.RightSlave2DriveId);
 		configMotors();
 
-		drivePercentVbus = false;
+		drivePercentVbus = true;
 		driveState = DriveState.TELEOP;
 
-		turnPID = new SynchronousPid(0.7, 0, 0.1, 0);
+		turnPID = new SynchronousPid(0.7, 0, 1.2, 0);
 		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 		turnPID.setSetpoint(0);
 
@@ -283,12 +283,12 @@ public class OrangeDrive extends Threaded {
 		leftTalon.setSensorPhase(false);
 		rightTalon.setSensorPhase(false);
 
-		rightTalon.setNeutralMode(NeutralMode.Coast);
-		leftTalon.setNeutralMode(NeutralMode.Coast);
-		rightSlaveTalon.setNeutralMode(NeutralMode.Coast);
-		leftSlaveTalon.setNeutralMode(NeutralMode.Coast);
-		rightSlave2Talon.setNeutralMode(NeutralMode.Coast);
-		leftSlave2Talon.setNeutralMode(NeutralMode.Coast);
+		rightTalon.setNeutralMode(NeutralMode.Brake);
+		leftTalon.setNeutralMode(NeutralMode.Brake);
+		rightSlaveTalon.setNeutralMode(NeutralMode.Brake);
+		leftSlaveTalon.setNeutralMode(NeutralMode.Brake);
+		rightSlave2Talon.setNeutralMode(NeutralMode.Brake);
+		leftSlave2Talon.setNeutralMode(NeutralMode.Brake);
 	}
 
 	public void resetMotionProfile() {

@@ -188,8 +188,12 @@ public class Robot extends IterativeRobot {
 		boolean quickTurn = xbox.getRawButton(1)
 				|| xbox.getRawButton(2) /* || drive.getSpeed() < 12 */;
 
-		drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
-		// drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));
+		//drive.cheesyDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4), quickTurn);
+		if(quickTurn) {
+			drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));			
+		} else {
+			drive.arcadeDrive(-xbox.getRawAxis(1), 0.5 * -xbox.getRawAxis(4));				
+		}
 		System.out.println(tracker.getOdometry().rotationMat.getDegrees());
 		if (buttonBox.getRawButton(10)) {
 			elevarm.setClimberPercentOutput(.75);
@@ -235,7 +239,7 @@ public class Robot extends IterativeRobot {
 		if (xbox.getFallingEdge(1)) {
 			drive.setShiftState(false);
 		}
-		double nudge = joystick.getRawAxis(1);
+		double nudge = -joystick.getRawAxis(1);
 		if (nudge > Constants.JoystickDeadzone) {
 			elevarm.setElevatorHeight(elevarm.getTargetElevatorHeight() - (nudge - Constants.JoystickDeadzone) / 5);
 		} else if (nudge < -Constants.JoystickDeadzone) {

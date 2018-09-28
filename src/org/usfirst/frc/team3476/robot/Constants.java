@@ -75,6 +75,7 @@ public final class Constants {
 	public static final int RightSlaveDriveId = 12;
 	public static final int RightSlave2DriveId = 13;
 
+	public static final boolean OldIntake = false;
 	public static final int Intake1Id = 22;
 	public static final int Intake2Id = 23;
 
@@ -95,7 +96,7 @@ public final class Constants {
 	public static final double ExpectedElevatorCurrent = 0; //
 	public static final double ExpectedElevatorRPM = 0; //
 	public static final double ExpectedElevatorPosition = 0;
-	public static final double ElevatorDownHeight = 2.5; // Should be the proper
+	public static final double ElevatorDownHeight = 3.0; // Should be the proper
 															// position for
 															// getting cubes
 	public static final double ElevatorUpHeight = 65; // Should be the standard
@@ -119,7 +120,7 @@ public final class Constants {
 	public static final double ArmVelocityLimit = 200;
 	public static final double ArmAccelerationLimit = 300;
 
-	public static final int PracticeBotArmTicksOffset = 2506;
+	public static final int PracticeBotArmTicksOffset = 4000;
 
 	public static final int PracticeBotArmAngleOffsetInTicks = (int) (ArmDownDegrees
 			* (1d / 360) /** (1 / ArmRotationsPerMotorRotation) */

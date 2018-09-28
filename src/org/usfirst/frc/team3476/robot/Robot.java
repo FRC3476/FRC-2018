@@ -192,7 +192,7 @@ public class Robot extends IterativeRobot {
 		if(quickTurn) {
 			drive.arcadeDrive(-xbox.getRawAxis(1), -xbox.getRawAxis(4));			
 		} else {
-			drive.arcadeDrive(-xbox.getRawAxis(1), 0.5 * -xbox.getRawAxis(4));				
+			drive.arcadeDrive(-xbox.getRawAxis(1), 0.75 * -xbox.getRawAxis(4));				
 		}
 		System.out.println(tracker.getOdometry().rotationMat.getDegrees());
 		if (buttonBox.getRawButton(10)) {

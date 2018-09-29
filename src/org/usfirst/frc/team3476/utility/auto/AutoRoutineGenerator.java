@@ -397,8 +397,8 @@ public class AutoRoutineGenerator {
 							overallRoutine.addRoutines(initialDrive);
 							*/
 							initialPath.addPoint(180, 115, 80);
-							initialPath.addPoint(250, 90, 80);
-							initialPath.addPoint(250, -90, 80);
+							initialPath.addPoint(250, -55, 80);
+							initialPath.addPoint(270, -90, 80);
 							initialPath.addRoutine(highScaleOuttakePosition, 0.7);
 						
 							Path secondPath = new Path(new Translation2d(250, -90));
@@ -421,8 +421,8 @@ public class AutoRoutineGenerator {
 							
 							
 							overallRoutine.addRoutines(initialDrive);
-							overallRoutine.addCommands(new SetDriveAngle(Rotation.fromDegrees(0)));
-							overallRoutine.addCommands(new SetDrivePath(secondPath, false));
+							overallRoutine.addCommands(new SetDriveAngle(Rotation.fromDegrees(-35)));
+							//overallRoutine.addCommands(new SetDrivePath(secondPath, false));
 							//overallRoutine.addCommands(new SetDrivePath(thirdPath, true));
 							//overallRoutine.addCommands(new SetDriveAngle(new Translation2d(230, 80)));
 							

@@ -1,6 +1,8 @@
 package org.usfirst.frc.team3476.utility.auto;
 
 import java.util.ArrayList;
+import java.util.Set;
+
 import org.usfirst.frc.team3476.robot.Constants;
 import org.usfirst.frc.team3476.subsystem.RobotTracker;
 import org.usfirst.frc.team3476.subsystem.Intake;
@@ -436,6 +438,7 @@ public class AutoRoutineGenerator {
 						}
 						break;
 					case BOTH:
+						/* OLD one
 						initialPath.addPoint(midFieldLeftPosition, longDistanceSpeed);
 						if (scalePos == Position.RIGHT) {
 
@@ -459,6 +462,107 @@ public class AutoRoutineGenerator {
 									.addCommands(new DriveToPoints(switchSpeed, false, leftSwitchOuttakePositionFar));
 						}
 						overallRoutine.addRoutines(placeCubeInSwitch);
+						*/
+						if(switchPos == Position.LEFT) { //Near switch
+							
+							//Preload cube in switch
+							initialPath.addPoint(new Translation2d(168, 100), 80);
+							initialPath.addRoutine(switchOuttakePosition, 0.5);
+							initialPath.addPoint(new Translation2d(168, 90), 80);
+							initialPath.addCommand(new SetIntakeState(IntakeState.OUTTAKE_MIDDLE, SolenoidState.INTAKING), 0.8);
+							
+							
+							//align with next cube 
+							Path secondPath = new Path(new Translation2d(168, 90));
+							secondPath.addPoint(new Translation2d(238, 90), 80);
+							secondPath.addRoutine(intakePosition, 0.1);
+							secondPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.OPEN), 0.1);
+							secondPath.addPoint(new Translation2d(238, 78), 80);
+							secondPath.addPoint(new Translation2d(242, 78), 80); 
+							
+							//intake next cube
+							Path thirdPath = new Path(new Translation2d(242, 78));
+							thirdPath.addPoint(new Translation2d(228, 78), 35);
+							thirdPath.addCommand(new SetIntakeState(IntakeState.NEUTRAL, SolenoidState.CLAMP), 0.9);
+							
+							initialDrive.addCommands(new SetDrivePath(initialPath, false));
+							initialDrive.addCommands(new SetDrivePath(secondPath, true));
+							initialDrive.addCommands(new SetDrivePath(thirdPath, false));
+							
+							if(scalePos == Position.LEFT) {
+								//backtrack, static turn, release
+								Path fourthPath = new Path(new Translation2d(228, 78));
+								fourthPath.addPoint(270, 90, 60);
+								fourthPath.addRoutine(highScaleOuttakePosition, 0.7);
+								
+								initialDrive.addCommands(new SetDrivePath(fourthPath, true));
+								initialDrive.addCommands(new SetDriveAngle(Rotation.fromDegrees(-15)));
+								initialDrive.addCommands(new SetIntakeState(IntakeState.OUTTAKE_FAST, SolenoidState.OPEN));
+								
+							} else if(scalePos == Position.RIGHT) {
+								//drive backward to the right scale, then drive forward and release
+								Path fourthPath = new Path(new Translation2d(228, 78));
+								fourthPath.addPoint(new Translation2d(242, -88), 80);
+								fourthPath.addPoint(new Translation2d(238, -88), 80);
+								
+								Path fifthPath = new Path(new Translation2d(228, -88));
+								fifthPath.addPoint(new Translation2d(248, -88), 35);
+								fifthPath.addRoutine(scaleOuttakePosition, 0.0);
+								fifthPath.addCommand(new SetIntakeState(IntakeState.OUTTAKE_FAST, SolenoidState.OPEN), 0.9);
+								
+								initialDrive.addCommands(new SetDrivePath(fourthPath, true));
+								initialDrive.addCommands(new SetDrivePath(fifthPath, false));
+
+							}
+							
+							
+						} else { //far switch
+							//Drive to the other side of the switch and release preload
+							initialDrive.addCommands(new SetDrivePath(initialPath, false));
+							//initialPath.addPoint(new Translation2d(168, 100), 80); may or may not be needed
+							initialPath.addPoint(new Translation2d(238, 100), 80);
+							initialPath.addPoint(new Translation2d(238, -78), 80);
+							initialPath.addPoint(new Translation2d(233, -78), 80);
+							initialPath.addRoutine(switchOuttakePosition, 0.0);
+							initialPath.addCommand(new SetIntakeState(IntakeState.OUTTAKE_FAST, SolenoidState.INTAKING), 0.8);
+							initialDrive.addCommands(new SetDrivePath(initialPath, false));
+							
+							//Grab cube right in front of robot and score
+							Path secondPath = new Path(new Translation2d(233, -78));
+							secondPath.addPoint(new Translation2d(228, -78), 20);
+							initialPath.addRoutine(intakePosition, 0.0);
+							initialPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.INTAKING), 0.0);
+							initialPath.addRoutine(switchOuttakePosition, 0.9);
+							initialPath.addCommand(new SetIntakeState(IntakeState.OUTTAKE_FAST, SolenoidState.OPEN), 0.9);
+							
+							initialDrive.addCommands(new SetDrivePath(initialPath, false));
+							initialDrive.addCommands(new SetDrivePath(secondPath, true));
+							
+							
+							if(scalePos == Position.LEFT) {
+								Path fourthPath = new Path(new Translation2d(228, -78));
+								fourthPath.addPoint(new Translation2d(242, 88), 80);
+								fourthPath.addPoint(new Translation2d(238, 88), 80);
+								
+								Path fifthPath = new Path(new Translation2d(228, 88));
+								fifthPath.addPoint(new Translation2d(248, 88), 35);
+								fifthPath.addRoutine(scaleOuttakePosition, 0.0);
+								fifthPath.addCommand(new SetIntakeState(IntakeState.OUTTAKE_FAST, SolenoidState.OPEN), 0.9);
+								
+								initialDrive.addCommands(new SetDrivePath(fourthPath, true));
+								initialDrive.addCommands(new SetDrivePath(fifthPath, false));
+							} else if(scalePos == Position.RIGHT) {
+								Path fourthPath = new Path(new Translation2d(228, -78));
+								fourthPath.addPoint(270, -90, 60);
+								fourthPath.addRoutine(highScaleOuttakePosition, 0.7);
+								
+								initialDrive.addCommands(new SetDrivePath(fourthPath, true));
+								initialDrive.addCommands(new SetDriveAngle(Rotation.fromDegrees(15)));
+								initialDrive.addCommands(new SetIntakeState(IntakeState.OUTTAKE_FAST, SolenoidState.OPEN));
+								
+							}
+						}
+						
 						break;
 					case FORWARD:
 						initialPath.addPoint(midFieldLeftLeadUp, longDistanceSpeed);

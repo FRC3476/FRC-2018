@@ -151,6 +151,8 @@ public class Robot extends IterativeRobot {
 
 		}
 		String gameData = DriverStation.getInstance().getGameSpecificMessage().toLowerCase();
+		System.out.println("autostart");
+		System.out.println(gameData);
 		if (gameData.isEmpty()) {
 			gameData = "ll";
 			if (pOption == PathOption.NONE) {
@@ -171,9 +173,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		configSubsytems();
-		tracker.resume();
+		//	tracker.resume();
 	}
 
+	//kLeftAutoP
 	double elevatorMaxCurrent = 150, armMaxCurrent = 40; // TEMP for testing
 
 	@Override

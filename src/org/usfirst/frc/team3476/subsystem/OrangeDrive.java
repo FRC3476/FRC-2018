@@ -113,6 +113,8 @@ public class OrangeDrive extends Threaded {
 		driveMultiplier = Constants.HighDriveSpeed;
 		rightTalon.configClosedloopRamp(12d / 200d, 10);
 		leftTalon.configClosedloopRamp(12d / 200d, 10);
+		
+		//System.out.println(rightTalon.)
 	}
 
 	private void configHigh() {

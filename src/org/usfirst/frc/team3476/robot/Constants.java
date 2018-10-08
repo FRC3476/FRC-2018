@@ -120,7 +120,7 @@ public final class Constants {
 	public static final double ArmVelocityLimit = 200;
 	public static final double ArmAccelerationLimit = 300;
 
-	public static final int PracticeBotArmTicksOffset = 4000;
+	public static final int PracticeBotArmTicksOffset = 4007;//4000;
 
 	public static final int PracticeBotArmAngleOffsetInTicks = (int) (ArmDownDegrees
 			* (1d / 360) /** (1 / ArmRotationsPerMotorRotation) */

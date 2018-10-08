@@ -80,6 +80,8 @@ public class Robot extends IterativeRobot {
 
 		camServer.startAutomaticCapture(0);
 		camServer.startAutomaticCapture(1);
+		
+		elevarm.configArmEncoder();
 	}
 
 	@Override
@@ -197,7 +199,7 @@ public class Robot extends IterativeRobot {
 		} else {
 			drive.arcadeDrive(-xbox.getRawAxis(1), 0.75 * -xbox.getRawAxis(4));				
 		}
-		System.out.println(tracker.getOdometry().rotationMat.getDegrees());
+		//System.out.println(tracker.getOdometry().rotationMat.getDegrees());
 		if (buttonBox.getRawButton(10)) {
 			elevarm.setClimberPercentOutput(.75);
 			elevarm.setElevatorGearbox(true);
@@ -337,7 +339,7 @@ public class Robot extends IterativeRobot {
 		scheduler.resume();
 		drive.resetMotionProfile();
 		elevarm.resetMotionProfile();
-		elevarm.configArmEncoder();
+		//elevarm.configArmEncoder();
 		drive.stopMovement();
 		elevarm.stopMovement();
 		elevarm.resetRateLimits();

@@ -93,7 +93,7 @@ public class OrangeDrive extends Threaded {
 		drivePercentVbus = true;
 		driveState = DriveState.TELEOP;
 
-		turnPID = new SynchronousPid(1.0, 0, 1.2, 0);
+		turnPID = new SynchronousPid(1.0, 0, 1.2, 0); //P=1.0 OR 0.8
 		turnPID.setOutputRange(Constants.HighDriveSpeed, -Constants.HighDriveSpeed);
 		turnPID.setSetpoint(0);
 

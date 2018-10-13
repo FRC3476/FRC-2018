@@ -344,7 +344,7 @@ public class AutoRoutineGenerator {
 							initialDrive.addCommands(new SetDrivePath(initialPath, false));
 							initialDrive.addCommands(new SetDriveAngle(new Translation2d(231, 80)));
 							Path secondPath = new Path(new Translation2d(270, 90));
-							secondPath.addPoint(231, 80, 50); //35 
+							secondPath.addPoint(228, 80, 50); //231 
 							secondPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.OPEN), 0.0);
 							secondPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.CLAMP), 0.95);
 							secondPath.addRoutine(intakePosition, 0.0);
@@ -747,7 +747,7 @@ public class AutoRoutineGenerator {
 							initialDrive.addCommands(new SetDrivePath(secondPath, true));
 							Path thirdPath = new Path(new Translation2d(63, 0));
 							thirdPath.addPoint(83, 0, 80);
-							thirdPath.addCommand(new SetIntakeState(IntakeState.NEUTRAL, SolenoidState.OPEN), 0);
+							thirdPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.OPEN), 0);
 							thirdPath.addCommand(new SetIntakeState(IntakeState.NEUTRAL, SolenoidState.CLAMP), 0.95);
 							initialDrive.addCommands(new SetDrivePath(thirdPath, false));
 							Path fourthPath = new Path(new Translation2d(83, 0));
@@ -912,7 +912,7 @@ public class AutoRoutineGenerator {
 								initialDrive.addCommands(new SetDrivePath(initialPath, false));
 								initialDrive.addCommands(new SetDriveAngle(new Translation2d(231, -80)));
 								Path secondPath = new Path(new Translation2d(270, -90));
-								secondPath.addPoint(231, -80, 50); //35 
+								secondPath.addPoint(228, -80, 50); //35 
 								secondPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.OPEN), 0.0);
 								secondPath.addCommand(new SetIntakeState(IntakeState.INTAKE, SolenoidState.CLAMP), 0.95);
 								secondPath.addRoutine(intakePosition, 0.0);
